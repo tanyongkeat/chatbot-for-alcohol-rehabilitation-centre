@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block import %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/editable_style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/intents_style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/intents_edit_style.css') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='js/editable.js')}}"></script>
+{% endblock %}
+
+{% block body %}
+    <div class='flex-container'>
+        <div class='flex-item-left'>
+            <input id='intent-search-bar' type='text' placeholder='search here'>
+            <div id='intent-item-list'>
+                {% if intent %}
+                    {% set current_intent = intent %}
+                {% endif %}
+                {% for intent in intents %}
+                    <div class='intent-item'>
+                        {% if current_intent %}
+                            {% if intent.id == current_intent.id %}
+                                <a><b>> {{ intent.intent_name }}</b></a>
+                            {% else %}
+                                <a href='/intents_edit/{{ intent.intent_name }}'>{{ intent.intent_name }}</a>
+                            {% endif %}
+                        {% else %}
+                            <a href='/intents_edit/{{ intent.intent_name }}'>{{ intent.intent_name }}</a>
+                        {% endif %}
+                        <form action='/delete_intent' method='POST' style='display:inline;'>
+                            <input type="hidden" name='intent_id' value={{ intent.id }}>
+                            <input type='submit' name='intent_delete_button' class='intent-delete-button' value='x'>
+                        </form>
+                        <hr>
+                    </div>
+                {% endfor %}
+                <a class="add-button" href="/intents_add">+</a> <!-- same class as the add training sample button -->
+            </div>
+        </div>
+        <div class='flex-item-right'>
+            <div id=debug></div>
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <script>
+        $("#intent-search-bar").keyup(function(e) {
+            var search_content = document.getElementById('intent-search-bar').value;
+            // document.getElementById("debug").innerHTML = search_content;
+
+            var intent_items = document.querySelectorAll('.intent-item');
+
+            for (i = 0; i < intent_items.length; i++) {
+                var intent_item = intent_items[i];
+                var intent_item_name = intent_item.querySelectorAll('a')[0]
+                if (intent_item_name.innerHTML.toLowerCase().indexOf(search_content) !== -1) {
+                    intent_item.style.display = 'block';
+                } else {
+                    intent_item.style.display = 'none';
+                }
+            }
+            
+            // if (e.which == 13 && $("#textInput").val().length != 0){
+            //     getBotResponse();
+            // }
+        });
+    </script>
+{% endblock %}

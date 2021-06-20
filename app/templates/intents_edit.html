@@ -1,0 +1,102 @@
+{% extends "intents_base.html" %}
+
+{% block content %}
+    <h3>editing</h3>
+    <h1>{{ intent.intent_name }}</h1>
+    <div id='debug'></div>
+    <!-- <label for='deployed'>deployed</label>
+    <input type='checkbox' name='deployed' {% if intent.deployed %}checked{% endif %}>
+    <label for='deployed'>deployed</label>
+    <input type='checkbox' name='deployed' {% if intent.deployed %}checked{% endif %}> -->
+    <hr style='width: 99%;'>
+    <div id='debug'></div>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul class='flashed-message'>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    {% endwith %}
+    <h2>Chatbot response</h2>
+    <div id='reply-messages-container'>
+        <!-- <input type='submit' name='english' value='english'>
+        <input type='submit' name='malay' value='malay'> -->
+        {% set target = intent %}
+        {% set category = 'reply-message' %}
+        <a href="#select-language-button_en" class='select-language-button' id='select-language-button_en' onclick="cancel_edit_space_reply(this.id, '{{ category }}')">english</a><a href="#select-language-button_my" class='select-language-button' id='select-language-button_my' onclick="cancel_edit_space_reply(this.id, '{{ category }}')">malay</a>
+        <div id='reply-messages'>
+            {% for lang in ['my', 'en'] %}
+                <div class='{{ category }}-language-section' id='{{ category }}-language-section_{{ lang }}'>
+                    <div id='{{ category }}-display_{{ lang }}' class='{{ category }}-display'>
+                        <input id='edit-button_{{ lang }}' class='edit-button' type='submit' value='edit' onclick="show_edit_space_reply(this.id, '{{ category }}')">
+                        <span id='{{ category }}_{{ lang }}' class="editable-content">{{ intent["reply_message_"+lang] }}</span>
+                    </div>
+                    <div id='{{ category }}-edit_{{ lang }}' class='editable-edit' style='display:None;'>
+                        <!-- <span class='utterance'>editting</span> -->
+                        <form action="" method='POST' style='display:inline;'>
+                            <input type="hidden" name="lang" value="{{ lang }}">
+                            <input type="hidden" name="job" value="update_reply_message">
+                            <textarea style='height:60px;' class='editable-content' name='modified_content' id='{{ category }}-e_{{ lang }}' ori_value='{{ intent["reply_message_"+lang] }}' required>{{ intent["reply_message_"+lang] }}</textarea>
+                            <input id='save-button_{{ lang }}' class='save-button' type='submit' value='save'>
+                        </form>
+                        <input id='cancel-button_{{ lang }}' class='cancel-button' type='submit' value='cancel' onclick="cancel_edit_space_reply(this.id, '{{ category }}')">
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <h2>Training samples</h2>
+    <div id='training-samples'>
+        {% for training_sample in intent.training_data %}
+            {% set target = training_sample %}
+            {% set content = training_sample.user_message %}
+            {% set category='user-message' %}
+            {% set action='' %}
+            {% include 'editable.html' %}
+        {% endfor %}
+
+        {% set category = 'add-intent' %}
+        {% set placeholder = 69 %}
+        <div class='editable' id='add-intent-box' style='padding: 0 10px;'>
+            <!-- <div>hello</div> -->
+            <input id='{{ category }}-display_{{ placeholder }}' class='add-button' type='submit' value='+' onclick="show_edit_space(this.id, '{{ category }}')">
+            <div id='{{ category }}-edit_{{ placeholder }}' class='editable-edit' style='display: none; padding: 5px 0'>
+                <form action='' method='POST'>
+                    <input type="hidden" name="job" value="add_sample">
+                    <textarea class='editable-content' cols=2 name='user_message' id='{{ category }}-e_{{ placeholder }}' ori_value='' required></textarea>
+                    <input id='cancel-button_{{ placeholder }}' class='cancel-button' type='submit' value='cancel' onclick="cancel_edit_space(this.id, '{{ category }}')">
+                    <input id='save-button_{{ placeholder }}' class='save-button' type='submit' value='save'>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            document.getElementById('select-language-button_en').click();
+        });
+
+        function show_edit_space_reply(id, category) {
+            var edit_buttons = $(".reply-message-language-section").find('.edit-button');
+            for (i = 0; i < edit_buttons.length; i++) {
+                edit_buttons[i].style.display = 'none';
+            }
+            show_edit_space(id, category);
+        }
+
+        function cancel_edit_space_reply(id, category) {
+            var edit_buttons = $(".reply-message-language-section").find('.edit-button');
+            for (i = 0; i < edit_buttons.length; i++) {
+                edit_buttons[i].style.display = 'inline';
+            }
+            cancel_edit_space(id, category);
+        }
+
+        // window.onload = function() {
+        //     document.getElementById('select-language-button_en').trigger('click');
+        // };
+    </script>
+{% endblock %}

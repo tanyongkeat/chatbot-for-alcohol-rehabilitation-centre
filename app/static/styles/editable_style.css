@@ -1,0 +1,80 @@
+/* .editable-content {
+    display: inline-block;
+    padding: 5px;
+    border-radius: 5px;
+    width: 80%;
+    background-color: lightcoral;
+    border-style: none;
+} */
+
+.editable {
+    background-color: white;
+    padding: 5px 10px;
+    width: 85%;
+    border-radius: 5px;
+    margin: 5px;
+    /* box-shadow: 0px 0px 2px rgb(105, 105, 105); */
+}
+
+.editable-content {
+    vertical-align: bottom;
+}
+
+.editable-content {
+    display: inline-block;
+    width: 85%;
+    min-width: 85%;
+    max-width: 85%;
+    max-height: 70px;
+}
+
+textarea.editable-content {
+    height: 70px;
+}
+
+.editable-content {
+    border-style: none; 
+    border-color: Transparent; 
+    overflow: auto;
+    outline: none;
+}
+
+input[class*='button'] {
+    border-style: none;
+    background-color: transparent;
+    float: right;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 13.3333px;
+    vertical-align: center;
+}
+
+input[class*='button']:hover {
+    cursor: pointer;
+}
+
+.edit-button {
+    color: #2b83f7;
+}
+
+.edit-button:hover {
+    color: #6BA4EE;
+}
+
+.save-button {
+    color: #35aa89;
+    border-color: #35aa89;
+}
+
+.save-button:hover {
+    color: #04C78F;
+    border-color: #04C78F
+}
+
+.delete-button, .cancel-button {
+    color: #eb5151;
+}
+
+.delete-button:hover, .cancel-button:hover {
+    color: #FA8585;
+}

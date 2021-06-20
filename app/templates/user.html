@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/base.css') }}">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/user_style.css') }}">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway" />
+	</head>
+	<body>
+		<h1></h1>
+		<p id='debug'></p>
+		<div id='chatsection'>
+			<div id='chatheader'>
+
+			</div>
+
+			<div id="chatbox">
+				<div class='area botArea'>
+					<div class="botText">
+						<span>
+							<span>Hi! I'm Chatbot. How can I help you today?</span>
+						</span>
+					</div>
+				</div>
+			</div>
+
+			<div id="userInput">
+				<input id="textInput" type="text" name="msg" placeholder="" contenteditable="true">
+				<input id="buttonInput" type="image" src="https://img.icons8.com/ios-glyphs/23/3030ff/filled-sent.png">
+			</div>
+		</div>
+
+			<script>
+
+				var message_counter = 0;
+				apology_text = "I am sorry that it wasn\'t helpful.";
+				appreciation_text = "I am happy to help!";
+
+				contact_admin = 'None, contact admin';
+				selection_responses = {[contact_admin]: 'You can email testing@gmail.com for more info'};
+
+				function getBotResponse() {
+					var current_message_counter = message_counter;
+					message_counter += 1;
+
+					var raw_text = $("#textInput").val();
+					$("#textInput").val("");
+
+					sendMessage(raw_text, 'user', current_message_counter);
+					// https://img.icons8.com/office/23/fa314a/dots-loading--v3.png
+					// static/img/loading.gif
+					var botTextObj = sendMessage('<img src="https://img.icons8.com/office/23/fa314a/dots-loading--v3.png"/>', 'bot', current_message_counter);
+					reply(raw_text, botTextObj, current_message_counter);
+				}
+
+				function selection_clicked(obj) {
+					var selection_text = obj.innerText;
+					sendMessage(selection_responses[selection_text], 'bot', '');
+				}
+
+				function reply(utterence, target, current_message_counter) {
+					$.post('/reply', {
+						'utterence': utterence
+					}).done(function(response_all) {
+						thumbsdownId = "thumbsdown_" + current_message_counter;
+						thumbsupId = "thumbsdown_" + current_message_counter;
+						userMessageId = "userText_" + current_message_counter;
+					    document.getElementById(userMessageId).setAttribute('message_id', response_all['id']);
+						
+						response = response_all['prediction'];
+						if (response.length == 1) {
+							target.innerHTML = 
+							`
+							<span>
+								<span>
+									${response[0]['reply']}
+								</span>
+								<div class='thumbs_container'>
+									<input class="thumbsdown" id="${thumbsdownId}" type="image" alt='thumbs down' src="https://img.icons8.com/material-sharp/15/fa314a/thumbs-down.png" onclick="getPredictedWrongMessage(this.id, 'negative')">
+									<input class="thumbsup" id="${thumbsupId}" type="image" alt='thumbs up' src="https://img.icons8.com/material-rounded/15/26e07f/thumb-up.png" onclick="getPredictedWrongMessage(this.id, 'positive')">
+								</div>
+							</span>
+							`;
+							scroll(target);
+						} else {
+							selectionBox = document.createElement('div');
+							selectionBox.className = 'selection-box';
+							target.innerHTML = `<span><span>${"Sorry, I am still learning and not that capable yet, are you asking about one of these? Or you can rephrase your question."}</span></span>`;
+							response[response.length] = {'reply': selection_responses[contact_admin], 'nearest_message': contact_admin};
+							var selection;
+							var selections = [];
+							for (i = 0; i < response.length; i++){
+								selection = document.createElement('div');
+								selection_responses[response[i]['nearest_message']] = response[i]['reply'];
+								selection.className = 'selection';
+								selection.innerHTML = `<span>${response[i]['nearest_message']}</span>`;
+								selectionBox.appendChild(selection);
+								selections.push(selection);
+							}
+							
+							target.append(selectionBox);
+
+							selection.classList.toggle('rejected');
+							selection.id = 'contactAdminSelection_' + current_message_counter;
+							scroll(selection);
+
+							selections.forEach(item => {
+								item.addEventListener('click', event=> sendMessage(event.target.innerHTML, 'user', ''));
+							});
+
+							selection.onclick = function() {
+								getPredictedWrongMessage(this.id, 'negative');
+							};
+
+
+							// selections.forEach(item => { ####previously used
+							// 	item.addEventListener('click', event => selection_clicked(event.target));
+							// });
+							for (i = 0; i < selections.length-1; i++) {
+								var item = selections[i];
+								item.addEventListener('click', event => selection_clicked(event.target));
+							}
+
+						}
+
+					}).fail(function() {
+						target.querySelector('span span').innerHTML = 'error';
+					});
+				}
+
+				function scroll(id) {
+					var temp = (typeof(id) == 'object')? id: document.getElementById(id);
+					temp.scrollIntoView({block: 'start', behavior: 'smooth'});
+				}
+
+				function sendMessage(message, subject, current_message_counter) {
+					var textId = `${subject}Text_${current_message_counter}`;
+					var message_box = document.createElement('div');
+					message_box.className = subject + 'Text';
+					message_box.id = textId;
+					message_box.innerHTML = `<span><span>${message}</span></span>`;
+
+					var areas = document.getElementsByClassName('area');
+					var last_area = areas[areas.length-1];
+					current_area_class = subject + 'Area';
+					if (last_area.classList.contains(current_area_class)) {
+						last_area.append(message_box);
+					} else {
+						new_area = document.createElement('div');
+						new_area.className = 'area';
+						new_area.classList.toggle(current_area_class);
+						new_area.append(message_box);
+						$("#chatbox").append(new_area);
+					}
+					
+					scroll(message_box);
+					return message_box;
+				}
+
+				function getPredictedWrongMessage(id, feedback) {
+					var index = id.split("_")[1];
+				    var predictedWrongMessageId = "userText_"+index;
+					var predictedWrongMessage = document.getElementById(predictedWrongMessageId);
+					var db_message_id = predictedWrongMessage.getAttribute('message_id');
+					var wrongResponseId = "botText_"+index;
+
+					var apology;
+					if (feedback=='negative') {
+						apology = sendMessage(apology_text, 'bot', 'none');
+					} else {
+						apology = sendMessage(appreciation_text, 'bot', 'none');
+					}
+
+					$.post('/capture', {
+						'message_id': db_message_id, 
+						'feedback': feedback
+					}).done(function(response) {
+						// if (feedback=='positive') {
+						// 	predictedWrongMessage.querySelector("span span").style.backgroundColor='green';
+						// } else {
+						// 	predictedWrongMessage.querySelector("span span").style.backgroundColor='red';
+						// }
+						
+						to_remove = document.getElementById(id);
+						if (!id.includes('contactAdminSelection')) {
+							to_remove = to_remove.parentNode
+						}
+						to_remove.parentNode.removeChild(to_remove);
+						if (feedback=='negative') {
+							sendMessage('You can email testing@gmail.com for more info or try to rephrase your question to help me understand it better.', 'bot', 'none')
+						}
+					}).fail(function() {
+						apology.innerHTML = "<span><span>I am sorry, something is wrong. Feedback not captured.</span></span>"
+					});
+				    
+					scroll(apology);
+				}
+
+				$("#textInput").keypress(function(e) {
+					if (e.which == 13 && $("#textInput").val().length != 0){
+						getBotResponse();
+					}
+				});
+
+				$("#buttonInput").click(function() {
+					if ($("#textInput").val().length != 0) {
+						getBotResponse();
+					}
+				})
+			</script>
+		</div>
+	</body>
+</html>

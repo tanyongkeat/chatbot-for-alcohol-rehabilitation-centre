@@ -1,0 +1,60 @@
+body {
+    margin: 0;
+    height: 100%;
+}
+
+.flex-container {
+    position: absolute;
+    display: flex;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+.flex-item-left {
+    flex: 20%;
+    max-height: 100%;
+    overflow-y: auto;
+    /* background-color: rgb(235, 255, 255); */
+    background-color: white;
+    box-sizing: border-box;
+    border-right: 1px solid black;
+}
+  
+.flex-item-right {
+    flex: 90%;
+    max-height: 100%;
+}
+
+#intent-search-bar {
+    padding: 0px 5px;
+    font-size: 17px;
+}
+
+#intent-item-list {
+    padding: 5px;
+    padding-left: 10px;
+}
+
+.intent-item a {
+    display: inline-block;
+    width: 90%;
+    overflow-wrap: break-word;
+    text-decoration: none;
+    color: black;
+    font-size: 15px;
+}
+
+.intent-item a:hover {
+    font-weight: bold;
+}
+
+.intent-delete-button:hover {
+    color: red;
+}
+
+#intent-search-bar {
+    display: block;
+    width: 90%;
+    margin: 5px auto;
+}

@@ -1,0 +1,67 @@
+table {
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+table, th, td {
+    /* border: 1px solid black; */
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+.column-one {
+    width: 75%;
+
+}
+
+.column-two {
+    width: 15%;
+}
+
+.column-three {
+    width: 10%;
+}
+
+/* .utterance {
+    display: inline-block;
+    padding: 5px;
+    border-radius: 5px;
+    width: 80%;
+    background-color: lightcoral;
+    border-style: none;
+} */
+
+select {
+    display: block;
+    margin: 2.5px auto;
+    /* margin-left: auto;
+    margin-right: auto; */
+    border-style: none;
+}
+
+.editable {
+    width: 97%;
+    margin-left: 0;
+    margin-right: auto;
+}
+
+.retrain-submit {
+    display: block;
+    border: 2px solid#009168;
+    outline: none;
+    color: #009168;
+    background-color: transparent;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 5px;
+    padding: 5px 30px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.retrain-submit:hover {
+    border-color: #04C78F;
+    color: #04C78F;
+    cursor: pointer;
+}

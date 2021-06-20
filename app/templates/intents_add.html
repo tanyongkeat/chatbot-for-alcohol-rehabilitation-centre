@@ -1,0 +1,100 @@
+{% extends "intents_base.html" %}
+
+{% block import %}
+    {{ super() }}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/intents_add_style.css') }}">
+{% endblock %}
+
+{% block content %}
+    <form action="/intents_add" method="POST" id='add_form'>
+        {% if preset_sample_id %}
+            <input type='hidden' name='preset_sample_id' value={{ preset_sample_id }}>
+        {% endif %}
+    </form>
+    <h3>adding</h3>
+    <h1><input id='intent-name-input' name='intent_name' type='text' form='add_form' required></h1>
+    <hr>
+    <div id='debug'></div>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul class='flashed-message'>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    {% endwith %}
+
+
+    <h2>Chatbot response</h2>
+    <!-- <div id='reply-message-header'>
+        <input type='submit' name='english' value='english'>
+        <input type='submit' name='malay' value='malay'>
+    </div> -->
+    <div id='reply-messages-adding'>
+        <label for='reply-message_en'>English</label>
+        <textarea name="reply_message_en" form='add_form' required></textarea>
+        <label for='reply-message_my'>Malay</label>
+        <textarea cols=100 rows=5 name="reply_message_my" form='add_form' required></textarea>
+    </div>
+
+
+    <h2>Training samples</h2>
+    <div id='training-samples-add'>
+        {% if preset_training_sample %}
+            <div class='editable' id='training-sample-box_0'>
+                <input class='editable-content' type="text" name='training_sample_0' form='add_form' value='{{ preset_training_sample }}'>
+            </div>
+        {% endif %}
+    </div>
+    <input type='submit' value='+' class='add-button' onclick='add_training_samples()'>
+
+    <div>
+        <input class='save-button' name='save' type="submit" form='add_form' value='save'> 
+        <a class='cancel-button' href='/intents_edit'>cancel</a>
+    </div>
+
+
+    <script>
+        sample_count = 1;
+
+        function add_training_samples() {
+            var box = document.getElementById('training-samples-add');
+            var training_sample_box = document.createElement('div');
+            training_sample_box.id = 'training-sample-box_'+sample_count;
+            training_sample_box.className = 'editable';
+
+            var training_sample = document.createElement('input');
+            training_sample.type = 'text'
+            training_sample.name = 'training_sample_'+sample_count;
+            training_sample.setAttribute('form', 'add_form');
+            // training_sample.value = training_sample.name;
+            training_sample.className = 'editable-content';
+            training_sample.required = true;
+            
+            var delete_button = document.createElement('input');
+            delete_button.type = 'submit';
+            delete_button.id = 'sample-delete-button_'+sample_count;
+            delete_button.value = 'delete';
+            delete_button.className = 'delete-button';
+            delete_button.onclick = function () {
+                remove_training_sample(this.id)
+            };
+
+            training_sample_box.appendChild(training_sample);
+            training_sample_box.appendChild(delete_button);
+
+            sample_count += 1;
+            box.appendChild(training_sample_box);
+
+            training_sample.focus();
+        }
+
+        function remove_training_sample(id) {
+            // document.getElementById('debug').innerHTML = id;
+            var index = id.split("_")[1];
+            var training_sample_box = document.getElementById('training-sample-box_'+index);
+            training_sample_box.parentNode.removeChild(training_sample_box);
+        }
+    </script>
+{% endblock %}

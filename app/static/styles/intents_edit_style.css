@@ -1,0 +1,76 @@
+#reply-messages-container {
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#reply-messages {
+    height: 90px;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+}
+
+.reply-message-language-section {
+    position: absolute;
+    width: 87%;
+    background-color: white;
+    border-radius: 0px 5px 5px 5px; 
+    z-index: -1;
+    height: 70px;
+    box-shadow: 0px 0px 2px rgb(105, 105, 105);
+    padding: 5px;
+}
+
+#select-language-button_en:target ~ div #reply-message-language-section_en, 
+#select-language-button_my:target ~ div #reply-message-language-section_my  {
+    z-index: 1;
+}
+
+.reply-message-language-section .edit-button {
+    position: absolute;
+    right: 0px;
+    top: -23px;
+    border: none;
+    background-color: transparent;
+}
+
+.select-language-button {
+    position: relative;
+    background-color: white;
+    color: black;
+    text-decoration: none;
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 0px;
+    z-index: 0;
+    box-shadow: 0px -1px 1px rgb(139, 139, 139), -1px -1px 1px rgb(139, 139, 139), 1px -1px 1px rgb(139, 139, 139);
+    border-radius: 5px 5px 0px 0px;
+}
+
+.select-language-button:target {
+    font-weight: bold;
+    z-index: 2;
+}
+
+.select-language-button:focus, .select-language-button:active {
+    outline: 0;
+    border: none;
+}
+
+#training-samples {
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.add-button {
+    float: none;
+}
+
+.reply-message-display .editable-content {
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    overflow-wrap: break-word;
+}

@@ -1,0 +1,201 @@
+body{
+    font-family: Garamond;
+    background-color: white;
+}
+
+h1{
+    color: black;
+    margin-bottom: 0;
+    margin-top: 0;
+    text-align: center;
+    font-size: 40px;
+}
+
+h3{
+    color: black;
+    font-size: 20px;
+    margin-top: 3px;
+    text-align: center;
+}
+
+*:focus {
+    outline: none;
+}
+
+#chatsection {
+    height: 455px;
+    width: 277px;
+    font-family: Raleway;
+    font-weight: 400;
+    font-size: 13px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #BBBBBB;
+    border-radius: 3px;
+    padding: 0px;
+    background-color: #EDF0F4;
+    position: fixed;
+    bottom: 10%;
+    right: 5%;
+}
+
+#chatheader {
+    height: 7%;
+}
+
+#chatbox {
+    background-color: white;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    height: 85%;
+    overflow: auto;
+    color: white;
+    border-style: solid;
+    border-width: 1px 0px;
+    border-color: #BBBBBB;
+    box-sizing: border-box;
+}
+
+#userInput {
+    width: 100%;
+    height: 10%;
+    padding-top: 2px; /*hack*/
+}
+
+#textInput {
+    display: inline-block;
+    width: 80%;
+    max-width: 80%;
+    border: none;
+    border-bottom: 1px solid #323335;
+    padding: 5px 10px;
+    margin: 3px;
+}
+
+#buttonInput {
+    padding: 0px;
+    display: inline-block;
+    border-style: none;
+    margin: auto;
+    vertical-align: middle;
+}
+
+.area {
+    margin-bottom: 15px;
+}
+
+.botText, .userText {
+    padding: 0px;
+    margin: 5px 10px 5px;
+    /* margin-bottom: 15px; */
+}
+
+#chatbox > div > div > span {
+    display: inline-block;
+    margin: 0px;
+    /* padding: 7px 13px; */
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    max-width: 180px;
+    /* text-align: left; */
+}
+
+#chatbox span > span {
+    text-align: left;
+    display: inline-block;
+    margin: 0px;
+    padding: 7px 13px;
+}
+
+.userText {
+    text-align: right;
+}
+
+.userText span span {
+    display: inline-block;
+    width: fit-content;
+    background-color: #04C78F;
+    border-radius: 10px 10px 0px 10px;
+    /* padding-right: 10px !important; */
+}
+
+/* .botText:not(:first-child) {
+    margin-bottom: 25px;
+} */
+
+.botText span > span {
+    background-color: #6BA4EE;
+    border-radius: 0px 10px 10px 10px;
+    /* padding-left: 10px !important; */
+}
+
+.selection span {
+    color: green;
+    background-color: white;
+    padding: 7px;
+    border-radius: 5px;
+    border-color: green;
+    border-style: solid;
+    margin: 3px 10px;
+    border-width: 1px;
+    display: inline-block;
+}
+
+.selection span:hover {
+    color: lightgreen;
+    border-color: lightgreen;
+    cursor: pointer;
+}
+
+.selection.rejected span {
+    border-color: rgb(230, 84, 84);
+    border-width: 1px;
+    color: rgb(230, 84, 84);
+}
+
+.selection.rejected span:hover {
+    border-color: lightsalmon;
+    color: lightsalmon;
+}
+
+.botText input[class^='thumbs'] {
+    display: block;
+    position: relative;
+    border-radius: 5px;
+    border: none;
+    padding: 1px 7px;
+    float: right;
+}
+
+.botText input[class^='thumbs']:hover {
+    padding: 0px 6px;
+}
+
+.botText .thumbsdown {
+    background-color: pink;
+    top: -5px;
+    /* right: 50px; */
+}
+
+.botText .thumbsdown:hover {
+    border: solid 1px red;
+}
+
+.botText .thumbsup {
+    background-color: rgb(195, 247, 195);
+    display: None !important;
+    /* right: 50px; */
+}
+
+.botText .thumbsup:hover {
+    border: solid 1px rgb(0, 128, 0);
+    display: None;
+}
+
+#tidbit {
+    position:absolute;
+    bottom:0;
+    right:0;
+    width: 300px;
+}
