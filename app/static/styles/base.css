@@ -81,3 +81,72 @@ h1:first-letter, h3:first-letter {
 ::-webkit-scrollbar-thumb:hover {
   background: #555; 
 }
+
+.flex-container-panel {
+    position: absolute;
+    display: flex;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+}
+  
+.flex-item-panel-left {
+    flex: 10%;
+    max-height: 100%;
+    overflow-y: auto;
+    /* background-color: rgb(235, 255, 255); */
+    background-color: white;
+    box-sizing: border-box;
+    z-index: 5;
+    /* border-right: 1px solid black; */
+    box-shadow: 2px 0 3px #999999;
+}
+  
+.flex-item-panel-right {
+    flex: 90%;
+    max-height: 100%;
+}
+
+div#icon0 {
+    height: 74px;
+    display: flex;
+    justify-content: center;
+}
+
+div#icon0 img {
+    width: 90%;
+    height: 50px;
+    /* object-fit: cover; */
+    margin: auto;
+    display: block;
+}
+
+a.panel-selection {
+    text-decoration: none;
+    position: relative;
+    display: block;
+    height: 30px;
+    width: 100%;
+    text-align: center;
+    color: #5D5F61;
+    font-weight: 700;
+}
+
+a.panel-selection-selected {
+    background-color: #F2F7FC;
+    color: #045FC7;
+    font-weight: 900;
+    border-left-color: #045FC7;
+    border-left-width: 3px;
+    border-left-style: solid;
+}
+
+a.panel-selection div {
+    width: 100%;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 40%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}

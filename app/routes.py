@@ -60,7 +60,7 @@ def missed():
             if (not request.form['intent']) or (request.form['intent']=='new intent'):
                 intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
                 intents = sorted(intents, key=lambda x: x[1])
-                return render_template('intents_add.html', intents=intents, preset_sample_id=target_id, preset_training_sample=target.utterance)
+                return render_template('intents_add.html', current_page='intents', intents=intents, preset_sample_id=target_id, preset_training_sample=target.utterance)
             intent_id = request.form['intent']
             new_training_data = create_training_data(target.utterance, Intent.query.get(intent_id).intent_name)
             if new_training_data:
@@ -72,13 +72,13 @@ def missed():
     captureds = HistoryFull.query.filter_by(negative=True, trained=False).order_by(HistoryFull.id).all()
     intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
     intents = sorted(intents, key=lambda x: x[1])
-    return render_template('missed.html', captureds=captureds, intents=intents)
+    return render_template('missed.html', current_page='missed', captureds=captureds, intents=intents)
 
 @app.route('/intents_edit')
 def intents_base():
     intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
     intents = sorted(intents, key=lambda x: x[1])
-    return render_template('intents_base.html', intents=intents)
+    return render_template('intents_base.html', current_page='intents', intents=intents)
 
 @app.route('/intents_edit/<intent_name>', methods=['GET', 'POST'])
 def intents(intent_name):
@@ -112,7 +112,7 @@ def intents(intent_name):
     intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
     intents = sorted(intents, key=lambda x: x[1])
     
-    return render_template('intents_edit.html', intents=intents, intent=intent)
+    return render_template('intents_edit.html', current_page='intents', intents=intents, intent=intent)
 
 @app.route('/intents_add', methods=['GET', 'POST'])
 def intents_add():
@@ -141,7 +141,7 @@ def intents_add():
 
     intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
     intents = sorted(intents, key=lambda x: x[1])
-    return render_template('intents_add.html', intents=intents)
+    return render_template('intents_add.html', current_page='intents', intents=intents)
 
 @app.route('/delete_intent', methods=['POST'])
 def delete_intent():
