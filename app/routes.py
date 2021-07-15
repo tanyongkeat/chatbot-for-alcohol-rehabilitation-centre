@@ -11,9 +11,9 @@ from sqlalchemy import func
 FIELD_EMPTY_MESSAGE = 'please kindly fill in all the needed field'
 
 
-
 @app.route('/')
 def index():
+    print('yoyoyoyoyo')
     return render_template('user.html')
 
 @app.route('/reply', methods=['POST'])

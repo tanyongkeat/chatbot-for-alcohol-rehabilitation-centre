@@ -5,11 +5,13 @@ from app.models import Intent, TrainingData
 from sqlalchemy import func
 from flask import flash
 
+
 def query_db(sql):
     conn = psycopg2.connect("host='{}' port={} dbname='{}' user={} password={}".format(host, port, database, user, pw))
     data = pd.read_sql_query(sql, conn)
     conn.close()
     return data
+
 
 def create_training_data(user_message, intent_name):
     intent_id = Intent.query.filter_by(intent_name=intent_name).first().id
@@ -21,6 +23,7 @@ def create_training_data(user_message, intent_name):
         flash('Sample exists in '+same_sample.intent.intent_name)
         return None
     return TrainingData(user_message=user_message, intent_id=intent_id)
+
 
 def create_intent(intent_name, reply_message_en, reply_message_my):
     same_sample = Intent.query.filter(func.lower(Intent.intent_name) == func.lower(intent_name)).first()

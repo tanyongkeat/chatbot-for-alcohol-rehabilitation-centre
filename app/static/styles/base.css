@@ -34,6 +34,7 @@ h1 {
 
 h3 {
     margin: 10px auto 3px;
+    color: #474A4C;
 }
 
 h2 {
@@ -130,6 +131,7 @@ a.panel-selection {
     text-align: center;
     color: #5D5F61;
     font-weight: 700;
+    box-sizing: border-box;
 }
 
 a.panel-selection-selected {
