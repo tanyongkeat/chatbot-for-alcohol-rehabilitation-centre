@@ -3,11 +3,16 @@
     margin: 5px auto;
 }
 
+label {
+    display: block;
+}
+
 #reply-messages-adding textarea {
     margin-top: 5px;
-    width: 100%;
-    max-width: 100%;
-    min-width: 100%;
+    width: 85%;
+    box-sizing: border-box;
+    max-width: 85%;
+    min-width: 85%;
     height: 70px;
     max-height: 70px;
     min-height: 70px;
@@ -29,7 +34,7 @@
 
 .editable {
     margin: 5px 0px;
-    width: 100%;
+    width: 85%;
     box-sizing: border-box;
 }
 
@@ -54,6 +59,7 @@
     float: none !important;
     position: relative;
     display: block;
-    width: 95%;
+    width: calc(100% * 0.95 * 0.85);
     margin: 5px auto;
+    margin-left: 2.5%;
 }

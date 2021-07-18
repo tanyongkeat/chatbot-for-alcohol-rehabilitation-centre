@@ -26,6 +26,7 @@ body {
 .flex-item-right {
     flex: 90%;
     max-height: 100%;
+    overflow-y: auto;
 }
 
 #intent-search-bar {
@@ -56,10 +57,23 @@ body {
     padding-left: 10px;
 }
 
+.intent-item {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.intent-item span {
+    flex: 1;
+    color: black;
+    font-size: 15px;
+}
+
 .intent-item a {
-    display: inline-block;
-    width: 90%;
+    /* display: inline-block; */
+    flex: 8;
+    /* width: 90%; */
     overflow-wrap: break-word;
+    word-break: break-all;
     text-decoration: none;
     color: black;
     font-size: 15px;
@@ -69,9 +83,17 @@ body {
     font-weight: bold;
 }
 
-.intent-delete-button:hover {
+.intent-item form {
+    flex: 1;
+}
+
+.intent-item form input:hover {
     color: red;
 }
+
+/* .intent-delete-button:hover {
+    color: red;
+} */
 
 #intent-search-bar {
     display: block;

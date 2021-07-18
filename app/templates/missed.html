@@ -29,6 +29,11 @@
             <th>Predicted</th>
             <th></th>
         </tr>
+        {# {% set target = '{a captured a}' %} no idea yet
+        {% set content = '{a captured.utterance a}' %}
+        {% set category='utterance' %}
+        {% set action='missed' %}
+        {% include 'editable.html' %} #}
         {% for captured in captureds %}
             <tr>
                 <td>

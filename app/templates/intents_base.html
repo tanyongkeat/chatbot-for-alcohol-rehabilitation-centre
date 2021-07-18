@@ -19,19 +19,19 @@
                     <div class='intent-item'>
                         {% if current_intent %}
                             {% if intent.id == current_intent.id %}
-                                <a><b>> {{ intent.intent_name }}</b></a>
+                                <span><b>></b></span><a><b>{{ intent.intent_name }}</b></a>
                             {% else %}
-                                <a href='/intents_edit/{{ intent.intent_name }}'>{{ intent.intent_name }}</a>
+                                <span></span><a href='/intents_edit/{{ intent.intent_name }}'>{{ intent.intent_name }}</a>
                             {% endif %}
                         {% else %}
-                            <a href='/intents_edit/{{ intent.intent_name }}'>{{ intent.intent_name }}</a>
+                            <span></span><a href='/intents_edit/{{ intent.intent_name }}'>{{ intent.intent_name }}</a>
                         {% endif %}
-                        <form action='/delete_intent' method='POST' style='display:inline;'>
+                        <form action='/delete_intent' method='POST'>
                             <input type="hidden" name='intent_id' value={{ intent.id }}>
                             <input type='submit' name='intent_delete_button' class='intent-delete-button' value='x'>
                         </form>
-                        <hr>
                     </div>
+                    <hr>
                 {% endfor %}
                 <a class="add-button" href="/intents_add">+</a> <!-- same class as the add training sample button -->
             </div>
