@@ -29,15 +29,33 @@
             <th>Predicted</th>
             <th></th>
         </tr>
-        <div ng-app='{{ app }}' ng-controller='{{ ctrl }}' ng-init='{{ init }}'></div>
         {# {% set target = '{a captured a}' %} no idea yet
         {% set content = '{a captured.utterance a}' %}
         {% set category='utterance' %}
         {% set action='missed' %}
         {% include 'editable.html' %} #}
         {% for captured in captureds %}
-            <tr ng-repeat='target in {{ data }}'>
+            <tr>
                 <td>
+                    <!-- <div id='utterance-display_{{ captured.id }}' class='utterance-display'>
+                        <span id='utterance_{{ captured.id }}' class="utterance">{{ captured.utterance }}</span>
+                        <input id='edit-button_{{ captured.id }}' class='edit-button' type='submit' value='edit' onclick=show_edit_space(this.id)>
+                        <form action="/missed" method='POST' style='display:inline'>
+                            <input type="hidden" name="id" value={{ captured.id }}>
+                            <input type="hidden" name="job" value="delete">
+                            <input id='delete-button_{{ captured.id }}' class='delete-button' type='submit' value='delete'>
+                        </form>
+                    </div>
+                    <div id='utterance-edit_{{ captured.id }}' class='utterance-edit' style='display:None;'> -->
+                        <!-- <span class='utterance'>editting</span> -->
+                        <!-- <form action="/missed" method='POST' style='display:inline;'>
+                            <input type="hidden" name="id" value={{ captured.id }}>
+                            <input type="hidden" name="job" value="update">
+                            <input id='utterance-e_{{ captured.id }}' name='modified_utterance' type='text' class='utterance' value='{{ captured.utterance }}' ori_value='{{ captured.utterance }}'>
+                            <input id='save-button_{{ captured.id }}' class='save-button' type='submit' value='save'>
+                        </form>
+                        <input id='cancel-button_{{ captured.id }}' class='cancel-button' type='submit' value='cancel' onclick=cancel_edit_space(this.id)>
+                    </div> -->
                     {% set target = captured %}
                     {% set content = captured.utterance %}
                     {% set category='utterance' %}
