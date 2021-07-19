@@ -89,13 +89,14 @@ h1:first-letter, h3:first-letter {
     display: flex;
     height: 100%;
     width: 100%;
+    overflow-y:hidden;
     box-sizing: border-box;
 }
   
 .flex-item-panel-left {
     flex: 10%;
     max-height: 100%;
-    overflow-y: auto;
+    overflow-y: hidden;
     /* background-color: rgb(235, 255, 255); */
     background-color: white;
     box-sizing: border-box;
@@ -107,6 +108,7 @@ h1:first-letter, h3:first-letter {
 .flex-item-panel-right {
     flex: 90%;
     max-height: 100%;
+    overflow-y: auto;
 }
 
 div#icon0 {

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block import %}
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.2/angular.min.js"></script>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/editable_style.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/missed_style.css') }}">
     <script type="text/javascript" src="{{ url_for('static', filename='js/editable.js')}}"></script>
@@ -20,7 +21,102 @@
         </ul>
         {% endif %}
     {% endwith %}
-    <table>
+
+    <script>
+        var appMissed = angular.module('appMissed', []);
+
+        appMissed.config(['$interpolateProvider', function($interpolateProvider) {
+            $interpolateProvider.startSymbol('{a');
+            $interpolateProvider.endSymbol('a}');
+        }]);
+
+        appMissed.controller('ctrlMissed', function ctrlMissed($scope, $http) {
+            $scope.data_missed = [];
+            $scope.intents = [];
+            $scope.dummy;
+            
+            $scope.getMissedData = function getMissedData() {
+                $http.post('/view_missed', {params:{}})
+                .success(function(response)
+                    {
+                        $scope.data_missed = response.data;
+                    }
+                );
+            };
+
+            $scope.getMissedIntent = function getMissedIntent() {
+                $http.post('/view_missed_intent', {params:{}})
+                .success(function(response)
+                    {
+                        $scope.intents = response.data;
+                    }
+                );
+            };
+
+            $scope.submitForm = function submitForm(target, job) {
+                var form = document.getElementById('form-'+job+'_'+target.id);
+                var form_data = {};
+                for (i = 0; i < form.elements.length; i++) {
+                    var elem = form.elements[i];
+                    if (elem.type != 'submit') form_data[elem.name] = elem.value;
+                }
+                console.log(form_data);
+
+                if (job == 'retrain') {
+                    console.log(form_data)
+                    if ((!form_data.intent) || (form_data.intent=="new intent")) {
+                        form.setAttribute('action', '/missed_new_intent');
+                        form.submit();
+                    }
+                }
+
+                $http.post('/missed', form_data)
+                .success(function(response)
+                    {
+                        // $scope.dummy = form_data;
+                        console.log(form_data);
+                        console.log(response);
+                        $scope.getMissedData();
+                    }
+                );
+            };
+        });
+
+        appMissed.directive('jsSelect2', function ($timeout) {
+            return {
+                link: function (scope, element, attrs) {
+                    jQuery(element).select2();
+
+                    // scope.$watch(attrs.ngModel, function () {
+                    //     $timeout(function () {
+                    //         // element.trigger('change.select2');
+                    //     }, 100);
+                    // });
+
+                }
+            };
+        });
+
+        // appMissed.run(function() {
+        //     console.log('fuck');
+
+        //     $('.select2-select').select2({
+        //         placeholder: "deleted intent", 
+        //         width: "resolve"
+        //     });
+        // });
+
+        // $(".select2-select").ready(function() {
+        //     $('.select2-select').select2({
+        //         placeholder: "deleted intent", 
+        //         width: "resolve"
+        //     });
+
+        //     console.log($('.select2-select'));
+        // });
+    </script>
+
+    <table ng-app="appMissed" ng-controller="ctrlMissed" ng-init='getMissedData();getMissedIntent();'>
         <col class="column-one">
         <col class="column-two">
         <col class="column-three">
@@ -29,46 +125,32 @@
             <th>Predicted</th>
             <th></th>
         </tr>
-        <div ng-app='{{ app }}' ng-controller='{{ ctrl }}' ng-init='{{ init }}'></div>
-        {# {% set target = '{a captured a}' %} no idea yet
-        {% set content = '{a captured.utterance a}' %}
         {% set category='utterance' %}
-        {% set action='missed' %}
-        {% include 'editable.html' %} #}
-        {% for captured in captureds %}
-            <tr ng-repeat='target in {{ data }}'>
-                <td>
-                    {% set target = captured %}
-                    {% set content = captured.utterance %}
-                    {% set category='utterance' %}
-                    {% set action='missed' %}
-                    {% include 'editable.html' %}
-                </td>
-                <td>
-                    <div>
-                        <form action="/missed" method='POST' id='retrain_form_{{ captured.id }}'>
-                            <input type="hidden" name="id" value={{ captured.id }}>
-                            <input type="hidden" name="job" value="retrain">
-                            <select name="intent" class='select2-select' placeholder="Select State" style="width:100%;">
-                                <option></option>
-                                <option>new intent</option>
-                                {% for intent in intents %}
-                                    <option value="{{ intent.id }}" {% if captured.predicted_intent_id_top == intent.id %}selected{% endif %}>{{ intent.intent_name }}</option>
-                                {% endfor %}
-                            </select>
-                        </form>
-                    </div>
-                </td>
-                <td><div><input class='retrain-submit' type='submit' value='train' form='retrain_form_{{ captured.id }}'></div></td>
-            </tr>
-        {% endfor %}
+        {% set wrapped=True %}
+        {% set data='data_missed' %}
+        <tr ng-repeat="target in {{ data }}">
+            <td>
+                {% include 'editable.html' %}
+            </td>
+            <td>
+                <div>
+                    {% set job='retrain' %}
+                    <form method='POST' id='form-{{ job }}_{a target.id a}' ng-submit='submitForm(target, "{{ job }}")'>
+                        <!-- ng-submit='submitForm(target, {{ job }})' -->
+                        <input type="hidden" name="id" value="{a target.id a}">
+                        <input type="hidden" name="job" value="{{ job }}">
+                        <select data-js-select2="" name="intent" class='select2-select' placeholder="Select State" style="width:100%;">
+                            <option></option>
+                            <option>new intent</option>
+                            <!-- optimize -->
+                            <option ng-repeat="intent in intents" ng-if="target.predicted_intent_id_top == intent.id" value="{a intent.id a}" selected>{a intent.intent_name a}</option>
+                            <option ng-repeat="intent in intents | orderBy: 'intent_name'" ng-if="target.predicted_intent_id_top != intent.id" value="{a intent.id a}">{a intent.intent_name a}</option>
+                            <!-- <option ng-repeat="intent in intents" value="{a intent.id a}">{a intent.intent_name a}</option> -->
+                        </select>
+                    </form>
+                </div>
+            </td>
+            <td><div><input class='retrain-submit' type='submit' value='train' form='form-{{ job }}_{a target.id a}'></div></td>
+        </tr>
     </table>
-    <script>
-        $(document).ready(function() {
-            $('.select2-select').select2({
-                placeholder: "deleted intent", 
-                width: "resolve"
-            });
-        });
-    </script>
 {% endblock %}

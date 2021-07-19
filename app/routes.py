@@ -1,10 +1,12 @@
-from flask import render_template, jsonify, flash, redirect, url_for
+from dataclasses import dataclass
+from flask import render_template, render_template_string, jsonify, flash, redirect, url_for
 from app import app, db
 from app.intent import detect_intention, refresh_dataset
 from flask import request
 from app.models import HistoryFull, Intent, TrainingData
 from app.util import create_training_data, create_intent
 from sqlalchemy import func
+import json
 
 
 
@@ -41,38 +43,91 @@ def capture():
     db.session.commit()
     return jsonify({})
 
+
+
+#######################
+###                 ###
+###      MISSED     ###
+###                 ###
+#######################
+
+# GETTER
+@app.route('/view_missed', methods=['POST'])
+def view_missed():
+    captureds = HistoryFull.query.filter_by(negative=True, trained=False).order_by(HistoryFull.id).all()
+    with app.app_context():
+        return jsonify({'data': captureds})
+
+#GETTER
+@app.route('/view_missed_intent', methods=['POST'])
+def view_missed_intent():
+    intents = Intent.query.distinct().all()
+    # intents = sorted(intents, key=lambda x: x[1])
+    with app.app_context():
+        return jsonify({'data': intents})
+
+
+
 @app.route('/missed', methods=['GET', 'POST'])
 def missed():
     if request.method == 'POST':
-        target_id = request.form['id']
-        job = request.form['job']
+        data = json.loads(request.data.decode())
+        # target_id = request.form['id']
+        target_id = data['id']
+        # job = request.form['job']
+        job = data['job']
+        print(data)
         target = HistoryFull.query.get_or_404(target_id)
         if job == 'update':
-            if not request.form['modified_content']:
-                flash(FIELD_EMPTY_MESSAGE)
+            if not data['modified_content']:
+                return jsonify({'code': 400})
             else:
-                target.utterance = request.form['modified_content']
+                target.utterance = data['modified_content']
                 db.session.commit()
+                return jsonify({'code': 200})
         elif job == 'delete':
             target.negative = False
             db.session.commit()
+            return jsonify({'code': 200})
         elif job == 'retrain':
-            if (not request.form['intent']) or (request.form['intent']=='new intent'):
+            print(data)
+            if (not data['intent']) or (data['intent']=='new intent'):
+                # return error code
+                return jsonify({'code': 400})
                 intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
                 intents = sorted(intents, key=lambda x: x[1])
                 return render_template('intents_add.html', current_page='intents', intents=intents, preset_sample_id=target_id, preset_training_sample=target.utterance)
-            intent_id = request.form['intent']
+            intent_id = data['intent']
             new_training_data = create_training_data(target.utterance, Intent.query.get(intent_id).intent_name)
             if new_training_data:
                 db.session.add(new_training_data)
                 target.trained = True
                 db.session.commit()
                 refresh_dataset()
+                return jsonify({'code': 200})
+            else:
+                return jsonify({'code': 400})
 
     captureds = HistoryFull.query.filter_by(negative=True, trained=False).order_by(HistoryFull.id).all()
     intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
     intents = sorted(intents, key=lambda x: x[1])
     return render_template('missed.html', current_page='missed', captureds=captureds, intents=intents)
+
+@app.route('/missed_new_intent', methods=['POST'])
+def missed_new_intent():
+    target_id = request.form['id']
+    target = HistoryFull.query.get_or_404(target_id)
+    intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
+    intents = sorted(intents, key=lambda x: x[1])
+    return render_template('intents_add.html', current_page='intents', intents=intents, preset_sample_id=target_id, preset_training_sample=target.utterance)
+
+
+
+########################
+###                  ###
+###   INTENTS_EDIT   ###
+###                  ###
+########################
 
 @app.route('/intents_edit')
 def intents_base():
