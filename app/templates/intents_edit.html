@@ -49,14 +49,12 @@
     </div>
 
     <h2>Training samples</h2>
-    <div id='training-samples'>
-        {% for training_sample in intent.training_data %}
-            {% set target = training_sample %}
-            {% set content = training_sample.user_message %}
-            {% set category='user-message' %}
-            {% set action='' %}
-            {% include 'editable.html' %}
-        {% endfor %}
+    <div id='training-samples' ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditData();'>
+        {% set category='user-message' %}
+        {% set wrapped=False %}
+        {% set data='data_intents_edit' %}
+        {% set text='user_message' %}
+        {% include 'editable.html' %}
 
         {% set category = 'add-intent' %}
         {% set placeholder = 69 %}
@@ -67,7 +65,7 @@
                 <form action='' method='POST'>
                     <input type="hidden" name="job" value="add_sample">
                     <textarea class='editable-content' cols=2 name='user_message' id='{{ category }}-e_{{ placeholder }}' ori_value='' required></textarea>
-                    <input id='cancel-button_{{ placeholder }}' class='cancel-button' type='submit' value='cancel' onclick="cancel_edit_space(this.id, '{{ category }}')">
+                    <input id='cancel-button_{{ placeholder }}' class='cancel-button' type='submit' value='cancel' form='' onclick="cancel_edit_space(this.id, '{{ category }}')">
                     <input id='save-button_{{ placeholder }}' class='save-button' type='submit' value='save'>
                 </form>
             </div>
@@ -78,6 +76,10 @@
         $(document).ready(function() {
             document.getElementById('select-language-button_en').click();
         });
+
+        // angular.element(document).ready(function() {
+        //     document.getElementsByClassName('flex-item-right')[0].scrollTo(0, 0);
+        // });
 
         function show_edit_space_reply(id, category) {
             var edit_buttons = $(".reply-message-language-section").find('.edit-button');
@@ -94,6 +96,47 @@
             }
             cancel_edit_space(id, category);
         }
+
+        var appIntentsEdit = angular.module('appIntentsEdit', []);
+
+        appIntentsEdit.config(['$interpolateProvider', function($interpolateProvider) {
+            $interpolateProvider.startSymbol('{a');
+            $interpolateProvider.endSymbol('a}');
+        }]);
+
+        appIntentsEdit.controller('ctrlIntentsEdit', function ctrlIntentsEdit($scope, $http) {
+            $scope.data_intents_edit = [];
+            $scope.dummy;
+            
+            $scope.getIntentsEditData = function getIntentsEditData() {
+                $http.post('/view_intents_edit', {'intent_name': '{{ intent.intent_name }}'})
+                .success(function(response)
+                    {
+                        $scope.data_intents_edit = response.data;
+                    }
+                );
+            };
+
+            $scope.submitForm = function submitForm(target, job) {
+                var form = document.getElementById('form-'+job+'_'+target.id);
+                var form_data = {};
+                for (i = 0; i < form.elements.length; i++) {
+                    var elem = form.elements[i];
+                    if (elem.type != 'submit') form_data[elem.name] = elem.value;
+                }
+                console.log(form_data);
+
+                $http.post('/intents_edit/{{ intent.intent_name }}', form_data)
+                .success(function(response)
+                    {
+                        // $scope.dummy = form_data;
+                        console.log(form_data);
+                        console.log(response);
+                        $scope.getIntentsEditData();
+                    }
+                );
+            };
+        });
 
         // window.onload = function() {
         //     document.getElementById('select-language-button_en').trigger('click');

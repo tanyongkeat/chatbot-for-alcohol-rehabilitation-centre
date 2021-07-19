@@ -1,6 +1,6 @@
-<div class='editable' {% if not wrapped%}ng-repeat='target in {{ data }}'{% endif %}>
+<div class='editable' {% if not wrapped%}ng-repeat='target in {{ data }} | orderBy: "id"'{% endif %}>
     <div id='{{ category }}-display_{a target.id a}' class='editable-display'>
-        <span id='{{ category }}_{a target.id a}' class="editable-content">{a target.utterance a}</span>
+        <span id='{{ category }}_{a target.id a}' class="editable-content">{a target.{{ text }} a}</span>
         {% set job = 'delete' %}
         <form id='form-{{ job }}_{a target.id a}' method='POST' style='display:inline'>
             <input type="hidden" name="id" value="{a target.id a}">
@@ -13,9 +13,9 @@
         <!-- <span class='utterance'>editting</span> -->
         {% set job = 'update' %}
         <form id='form-{{ job }}_{a target.id a}' method='POST' style='display:inline;' ng-submit=''>
-            <input type="hidden" name="id" value="{a target.id a}"">
+            <input type="hidden" name="id" value="{a target.id a}">
             <input type="hidden" name="job" value="{{ job }}">
-            <textarea id='{{ category }}-e_{a target.id a}' name='modified_content' rows=3 class='editable-content' ori_value='{a target.utterance a}' required>{a target.utterance a}</textarea>
+            <textarea id='{{ category }}-e_{a target.id a}' name='modified_content' rows=3 class='editable-content' ori_value='{a target.{{ text }} a}' required>{a target.{{ text }} a}</textarea>
             <input id='cancel-button_{a target.id a}' class='cancel-button' type='submit' value='cancel' form='' onclick="cancel_edit_space(this.id, '{{ category }}')">
             <input ng-click="submitForm(target, '{{ job }}')" id='save-button_{a target.id a}' class='save-button' type='submit' value='save'>
         </form>

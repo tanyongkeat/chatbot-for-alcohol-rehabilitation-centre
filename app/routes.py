@@ -45,11 +45,11 @@ def capture():
 
 
 
-#######################
-###                 ###
-###      MISSED     ###
-###                 ###
-#######################
+######################
+###                ###
+###     MISSED     ###
+###                ###
+######################
 
 # GETTER
 @app.route('/view_missed', methods=['POST'])
@@ -129,6 +129,16 @@ def missed_new_intent():
 ###                  ###
 ########################
 
+#GETTER
+@app.route('/view_intents_edit', methods=['POST'])
+def view_intents_edit():
+    data = json.loads(request.data.decode())
+    intent_name = data['intent_name']
+    print(intent_name)
+    training_data = Intent.query.filter_by(intent_name=intent_name).first().training_data
+    with app.app_context():
+        return jsonify({'data': training_data})
+
 @app.route('/intents_edit')
 def intents_base():
     intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
@@ -140,7 +150,12 @@ def intents(intent_name):
     intent = Intent.query.filter_by(intent_name=intent_name).first()
 
     if request.method == 'POST':
-        job = request.form['job']
+        if request.data: # ajax
+            data = json.loads(request.data.decode())
+            job = data['job']
+        else: # form submission
+            job = request.form['job']
+
         if job == 'update_reply_message':
             lang = request.form['lang']
             if request.form['modified_content']:
@@ -148,16 +163,20 @@ def intents(intent_name):
             else:
                 flash(FIELD_EMPTY_MESSAGE)
         elif job == 'update':
-            id = request.form['id']
-            if request.form['modified_content']:
+            id = data['id']
+            if data['modified_content']:
                 temp = TrainingData.query.get(id)
-                temp.user_message = request.form['modified_content']
+                temp.user_message = data['modified_content']
+                return jsonify({'code': 200})
             else:
-                flash(FIELD_EMPTY_MESSAGE)
+                # flash(FIELD_EMPTY_MESSAGE)
+                return jsonify({'code': 400})
         elif job == 'delete':
-            id = request.form['id']
+            id = data['id']
             temp = TrainingData.query.get(id)
             db.session.delete(temp)
+            db.session.commit()
+            return jsonify({'code': 200})
         elif job == 'add_sample':
             training_data = create_training_data(request.form['user_message'], intent_name)
             if training_data:
