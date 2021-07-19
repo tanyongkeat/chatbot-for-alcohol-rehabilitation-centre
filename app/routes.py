@@ -166,7 +166,9 @@ def intents(intent_name):
             id = data['id']
             if data['modified_content']:
                 temp = TrainingData.query.get(id)
+                # TODO find if the modified content is present
                 temp.user_message = data['modified_content']
+                db.session.commit()
                 return jsonify({'code': 200})
             else:
                 # flash(FIELD_EMPTY_MESSAGE)
