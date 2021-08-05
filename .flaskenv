@@ -1,0 +1,2 @@
+FLASK_APP=chatbot.py
+FLASK_DEBUG=1
