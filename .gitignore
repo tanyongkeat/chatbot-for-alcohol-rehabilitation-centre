@@ -1,1 +1,10 @@
 venv
+testing
+venv_jupyter
+psql_data
+.dockerignore
+.idea
+.vscode
+app/__pycache__
+__pycache__
+testing

@@ -20,7 +20,7 @@ def create_training_data(user_message, intent_name):
         return None
     same_sample = TrainingData.query.filter(func.lower(TrainingData.user_message) == func.lower(user_message)).first()
     if same_sample:
-        flash('Sample exists in '+same_sample.intent.intent_name)
+        flash('Sample "' + user_message + '" exists in ' + same_sample.intent.intent_name)
         return None
     return TrainingData(user_message=user_message, intent_id=intent_id)
 

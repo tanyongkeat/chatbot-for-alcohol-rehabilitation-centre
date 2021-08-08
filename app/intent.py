@@ -12,7 +12,7 @@ from tqdm.auto import tqdm
 tqdm.pandas()
 
 
-model_on = False
+model_on = True
 target_language = 'en'
 
 

@@ -12,7 +12,7 @@
         {% endif %}
     </form>
     <h3>adding</h3>
-    <h1><input id='intent-name-input' name='intent_name' type='text' form='add_form' required></h1>
+    <h1><input id='intent-name-input' name='intent_name' type='text' form='add_form' {% if form_data %}value='{{ form_data.intent_name }}'{% endif %} required></h1>
     <hr>
     <div id='debug'></div>
     {% with messages = get_flashed_messages() %}
@@ -32,10 +32,10 @@
         <input type='submit' name='malay' value='malay'>
     </div> -->
     <div id='reply-messages-adding'>
-        <label for='reply-message_en'>English</label>
-        <textarea name="reply_message_en" form='add_form' required></textarea>
-        <label for='reply-message_my'>Malay</label>
-        <textarea cols=100 rows=5 name="reply_message_my" form='add_form' required></textarea>
+        <label for='reply_message_en'>English</label>
+        <textarea name="reply_message_en" form='add_form' required>{% if form_data %}{{ form_data.reply_message_en }}{% endif %}</textarea>
+        <label for='reply_message_my'>Malay</label>
+        <textarea cols=100 rows=5 name="reply_message_my" form='add_form' required>{% if form_data %}{{ form_data.reply_message_my }}{% endif %}</textarea>
     </div>
 
 
@@ -56,9 +56,15 @@
 
 
     <script>
+        $(document).ready(function() {
+            {% for training_data in training_datas %}
+                add_training_samples("{{ training_data }}");
+            {% endfor %}
+        })
+
         sample_count = 1;
 
-        function add_training_samples() {
+        function add_training_samples(training_sample_text='') {
             var box = document.getElementById('training-samples-add');
             var training_sample_box = document.createElement('div');
             training_sample_box.id = 'training-sample-box_'+sample_count;
@@ -71,6 +77,7 @@
             // training_sample.value = training_sample.name;
             training_sample.className = 'editable-content';
             training_sample.required = true;
+            training_sample.value = training_sample_text;
             
             var delete_button = document.createElement('input');
             delete_button.type = 'submit';
@@ -81,8 +88,12 @@
                 remove_training_sample(this.id)
             };
 
+            var error_messages = document.createElement('div');
+            // error_messages.innerHTML = 'hello'
+
             training_sample_box.appendChild(training_sample);
             training_sample_box.appendChild(delete_button);
+            training_sample_box.appendChild(error_messages);
 
             sample_count += 1;
             box.appendChild(training_sample_box);

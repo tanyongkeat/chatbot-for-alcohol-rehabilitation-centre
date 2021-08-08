@@ -94,9 +94,9 @@ def missed():
             if (not data['intent']) or (data['intent']=='new intent'):
                 # return error code
                 return jsonify({'code': 400})
-                intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
-                intents = sorted(intents, key=lambda x: x[1])
-                return render_template('intents_add.html', current_page='intents', intents=intents, preset_sample_id=target_id, preset_training_sample=target.utterance)
+                # intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
+                # intents = sorted(intents, key=lambda x: x[1])
+                # return render_template('intents_add.html', current_page='intents', intents=intents, preset_sample_id=target_id, preset_training_sample=target.utterance)
             intent_id = data['intent']
             new_training_data = create_training_data(target.utterance, Intent.query.get(intent_id).intent_name)
             if new_training_data:
@@ -192,10 +192,16 @@ def intents(intent_name):
 
 @app.route('/intents_add', methods=['GET', 'POST'])
 def intents_add():
+    error = False
     if request.method == 'POST':
         training_datas_args = [key for key in request.form if 'training_sample' in key]
         training_datas = [request.form[key] for key in training_datas_args]
         # if 
+        """
+            behavior:
+                - the form will be rejected if intent_name, reply_messages have issues
+                - if only training samples have issues, the form will be accepted and the training samples are removed with messages flashed
+        """
         intent_name = request.form['intent_name']
         reply_message_en = request.form['reply_message_en']
         reply_message_my = request.form['reply_message_my']
@@ -209,14 +215,32 @@ def intents_add():
                 if temp:
                     db.session.add(temp)
             if 'preset_sample_id' in request.form:
-                temp = HistoryFull.query.get(request.form['preset_sample_id'])
+                temp = HistoryFull.query.get_or_404(request.form['preset_sample_id'])
                 temp.trained = True
             db.session.commit()
             refresh_dataset()
             return redirect('intents_edit/'+intent_name)
+        error = True
 
     intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
     intents = sorted(intents, key=lambda x: x[1])
+
+    if error:
+        form_data = {
+            'intent_name': intent_name, 
+            'reply_message_en': reply_message_en, 
+            'reply_message_my': reply_message_my
+        }
+
+        target_id = None
+        target_utterance = None
+        if 'preset_sample_id' in request.form:
+            target_id = request.form['preset_sample_id']
+            target = HistoryFull.query.get_or_404(target_id)
+            target_utterance = target.utterance
+            training_datas = [request.form[key] for key in training_datas_args if key != 'training_sample_0']
+        
+        return render_template('intents_add.html', current_page='intents', intents=intents, form_data=form_data, training_datas=training_datas, preset_sample_id=target_id, preset_training_sample=target_utterance)
     return render_template('intents_add.html', current_page='intents', intents=intents)
 
 @app.route('/delete_intent', methods=['POST'])
