@@ -33,8 +33,9 @@ class TrainingData(db.Model):
     intent_id: int
 
     id = db.Column(db.Integer, primary_key=True)
-    user_message = db.Column(db.String(MAX_USER_INPUT_LEN), nullable=False)
+    user_message = db.Column(db.String(MAX_USER_INPUT_LEN), nullable=False, unique=True)
     intent_id = db.Column(db.Integer, db.ForeignKey('intent.id'), nullable=False)
+    encoding:str = db.Column(db.JSON, nullable=False)
 
 @dataclass
 class Intent(db.Model):

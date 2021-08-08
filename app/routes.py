@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from flask import render_template, render_template_string, jsonify, flash, redirect, url_for
 from app import app, db
-from app.intent import detect_intention, refresh_dataset
+from app.intent import detect_intention
 from flask import request
 from app.models import HistoryFull, Intent, TrainingData
 from app.util import create_training_data, create_intent
@@ -103,7 +103,7 @@ def missed():
                 db.session.add(new_training_data)
                 target.trained = True
                 db.session.commit()
-                refresh_dataset()
+                # refresh_dataset()
                 return jsonify({'code': 200})
             else:
                 return jsonify({'code': 400})
@@ -184,7 +184,7 @@ def intents(intent_name):
             if training_data:
                 db.session.add(training_data)
         db.session.commit()
-        refresh_dataset()
+        # refresh_dataset()
     intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
     intents = sorted(intents, key=lambda x: x[1])
     
@@ -218,7 +218,7 @@ def intents_add():
                 temp = HistoryFull.query.get_or_404(request.form['preset_sample_id'])
                 temp.trained = True
             db.session.commit()
-            refresh_dataset()
+            # refresh_dataset()
             return redirect('intents_edit/'+intent_name)
         error = True
 
@@ -249,7 +249,7 @@ def delete_intent():
     temp = Intent.query.get(intent_id)
     db.session.delete(temp)
     db.session.commit()
-    refresh_dataset()
+    # refresh_dataset()
     return redirect('/intents_edit')
 
 @app.route('/testing', methods=['GET', 'POST'])

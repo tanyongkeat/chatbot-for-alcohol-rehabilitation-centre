@@ -1,7 +1,9 @@
 from app import host, port, database, user, pw
 import psycopg2
 import pandas as pd
+import json
 from app.models import Intent, TrainingData
+from app.intent import model
 from sqlalchemy import func
 from flask import flash
 
@@ -22,7 +24,7 @@ def create_training_data(user_message, intent_name):
     if same_sample:
         flash('Sample "' + user_message + '" exists in ' + same_sample.intent.intent_name)
         return None
-    return TrainingData(user_message=user_message, intent_id=intent_id)
+    return TrainingData(user_message=user_message, intent_id=intent_id, encoding=json.dumps(model.encode(user_message).tolist()))
 
 
 def create_intent(intent_name, reply_message_en, reply_message_my):

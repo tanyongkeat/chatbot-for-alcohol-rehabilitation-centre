@@ -2,9 +2,10 @@ import numpy as np
 import pandas as pd
 import scipy
 from app import db
-from app.util import query_db
+# from app.util import query_db
 from app.models import TrainingData, Intent
 from sklearn.metrics.pairwise import cosine_similarity
+import json
 # import matplotlib.pyplot as plt
 # import seaborn as sns
 
@@ -21,7 +22,8 @@ def read_data():
     dataset = pd.read_sql_query(
         sql = TrainingData.query.with_entities(
             TrainingData.user_message, 
-            TrainingData.intent_id
+            TrainingData.intent_id, 
+            TrainingData.encoding
         ).statement, 
         con = db.session.bind
     )
@@ -37,24 +39,27 @@ def read_data():
         con = db.session.bind
     )
     dataset = dataset.merge(reply, how='left', left_on='intent_id', right_on='id')
-    if model_on:
-        dataset = pd.concat([dataset, pd.DataFrame(model.encode(dataset.user_message))], axis=1)
+    
+    loaded_encoding = dataset.encoding.apply(lambda x: json.loads(x)).tolist()
+    dataset = pd.concat([dataset, pd.DataFrame(loaded_encoding)], axis=1)
     return dataset
 
 
-def refresh_dataset():
-    global dataset
-    dataset = read_data()
-    print('done')
+# def refresh_dataset():
+#     global dataset
+#     dataset = read_data()
+#     print('done')
 
 
 if model_on:
     from sentence_transformers import SentenceTransformer
     model = SentenceTransformer('paraphrase-xlm-r-multilingual-v1')
-    dataset = read_data()
+    # dataset = read_data()
 
 
 def detect_intention2(user_input, target_language):
+    dataset = read_data()
+
     def sort_intent(df):
         return df.sort_values('cos_sim', ascending=False).iloc[0]
 
