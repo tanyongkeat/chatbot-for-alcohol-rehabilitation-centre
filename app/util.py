@@ -1,4 +1,4 @@
-from app import host, port, database, user, pw
+from config import host, port, database, user, pw
 import psycopg2
 import pandas as pd
 import json

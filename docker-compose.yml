@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+
+  mysqldb:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=admin
+    volumes:
+      - ./psql_data:/var/lib/postgresql/data
+
+  # app:
+  #   build: .
+  #   command: python chatbot.py
+  #   ports:
+  #     - "5000:5000"
+  #   volumes:
+  #     - ./:/app
+  #   environment:
+  #     FLASK_DEBUG: 1
+
+# volumes:
+  # fyp_psql_data:

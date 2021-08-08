@@ -7,4 +7,3 @@ psql_data
 .vscode
 app/__pycache__
 __pycache__
-testing
