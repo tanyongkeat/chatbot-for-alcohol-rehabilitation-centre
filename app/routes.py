@@ -1,9 +1,12 @@
 from dataclasses import dataclass
 import flask
 from flask import render_template, render_template_string, jsonify, flash, redirect, url_for, request, session
-from app import app, db
+from flask_login import current_user, login_user, logout_user, login_required
+from werkzeug.urls import url_parse
+from app import app, db, login_manager
 from app.intent import detect_intention
-from app.models import HistoryFull, Intent, TrainingData, ChatHistory
+from app.models import HistoryFull, Intent, TrainingData, ChatHistory, Admin
+from app.forms import LoginForm
 from app.util import create_training_data, create_intent
 from sqlalchemy import func
 import json
@@ -85,6 +88,34 @@ def user_information():
     return jsonify({'code': 200, 'user_name': user_name, 'user_email': user_email, 'chatbox': render_template('user_chatbox.html')})
 
 
+######################
+###                ###
+###     LOG IN     ###
+###                ###
+######################
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('missed'))
+    
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = Admin.query.filter_by(username=form.username.data).first()
+        if user is None or not user.check_password(form.password.data):
+            flash('Invalid username or password')
+            return redirect(url_for('login'))
+        login_user(user, remember=form.remember_me.data)
+
+        next_page = request.args.get('next')
+        if not next_page or url_parse(next_page).netloc != '':
+            next_page = url_for('missed')
+        return redirect(next_page)
+    return render_template('admin_login.html', form=form)
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
 
 ######################
 ###                ###
@@ -110,6 +141,7 @@ def view_missed_intent():
 
 
 @app.route('/missed', methods=['GET', 'POST'])
+@login_required
 def missed():
     '''
     TODO
