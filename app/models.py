@@ -16,7 +16,7 @@ class Captured(db.Model):
 class HistoryFull(db.Model):
     # __table_args__ = {'extend_existing': True}
     id:int = db.Column(db.Integer, primary_key=True)
-    chat_id:int = db.Column(db.Integer, nullable=False)
+    chat_id:int = db.Column(db.Integer, db.ForeignKey('chat_history.id'), nullable=False)
     utterance_original:str = db.Column(db.String(MAX_USER_INPUT_LEN))
     utterance:str = db.Column(db.String(MAX_USER_INPUT_LEN))
     predicted_intent_id_top:int = db.Column(db.Integer, nullable=False)
@@ -25,6 +25,13 @@ class HistoryFull(db.Model):
     positive:bool = db.Column(db.Boolean, default=False)
     negative:bool = db.Column(db.Boolean, default=False)
     trained:bool = db.Column(db.Boolean, default=False)
+
+@dataclass
+class ChatHistory(db.Model):
+    id:int = db.Column(db.Integer, primary_key=True)
+    user_email:str = db.Column(db.String(320)) # max email address character number is 320, setting nullable first to prevent stakeholder from changing their mind to suddenly respect the 'privacy' of the users
+    user_name:str = db.Column(db.String(MAX_USER_INPUT_LEN))
+    history_full:HistoryFull = db.relationship('HistoryFull', backref='chat_history', cascade='all,delete')
 
 @dataclass
 class TrainingData(db.Model):

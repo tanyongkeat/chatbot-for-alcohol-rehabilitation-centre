@@ -1,30 +1,42 @@
 from dataclasses import dataclass
-from flask import render_template, render_template_string, jsonify, flash, redirect, url_for
+import flask
+from flask import render_template, render_template_string, jsonify, flash, redirect, url_for, request, session
 from app import app, db
 from app.intent import detect_intention
-from flask import request
-from app.models import HistoryFull, Intent, TrainingData
+from app.models import HistoryFull, Intent, TrainingData, ChatHistory
 from app.util import create_training_data, create_intent
 from sqlalchemy import func
 import json
+import re
 
 
 
 FIELD_EMPTY_MESSAGE = 'please kindly fill in all the needed field'
+no_information_required = True
 
 
 @app.route('/')
 def index():
     print('yoyoyoyoyo')
-    return render_template('user.html')
+    registered = False
+
+    if no_information_required or 'chat_id' in session:
+        registered = True
+
+    return render_template('user.html', registered=registered)
 
 @app.route('/reply', methods=['POST'])
 def reply():
+    if not 'chat_id' in session:
+        if no_information_required:
+            session['chat_id'] = 1
+        else:
+            flask.abort(406) # importatnt
     ut = request.form['utterence']
     prediction = detect_intention(ut)
     predicted_intent_ids = [pre['intent_id'] for pre in prediction]
     obj = HistoryFull(
-        chat_id=0, 
+        chat_id=session['chat_id'], 
         utterance_original=ut, 
         utterance=ut, 
         predicted_intent_id_top=int(predicted_intent_ids[0]), 
@@ -42,6 +54,35 @@ def capture():
     setattr(history_full_instance, feedback, True)
     db.session.commit()
     return jsonify({})
+
+@app.route('/user_information', methods=['POST'])
+def user_information():
+    if not 'chat_id' in session:
+        user_name = request.form['user_name'][:150]
+        user_email = request.form['user_email'][:320]
+        email_pattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$"
+        error = {}
+
+        if not user_name:
+            error['user_name'] = 'Please fill in your name'
+
+        if not user_email:
+            error['user_email'] = 'Please fill in your email address'
+        elif not re.match(email_pattern, user_email):
+            error['user_email'] = 'Please enter a valid email address'
+
+        if error:
+            return jsonify({'code': 400, 'error': error})
+
+        obj = ChatHistory(user_name=user_name, user_email=user_email)
+        db.session.add(obj)
+        db.session.commit()
+
+        session['chat_id'] = obj.id
+        session['user_name'] = user_name
+        session['user_email'] = user_email
+
+    return jsonify({'code': 200, 'user_name': user_name, 'user_email': user_email, 'chatbox': render_template('user_chatbox.html')})
 
 
 
@@ -70,6 +111,10 @@ def view_missed_intent():
 
 @app.route('/missed', methods=['GET', 'POST'])
 def missed():
+    '''
+    TODO
+    1. when a sample exists as a training sample, the sample should be marked or removed 
+    '''
     if request.method == 'POST':
         data = json.loads(request.data.decode())
         # target_id = request.form['id']

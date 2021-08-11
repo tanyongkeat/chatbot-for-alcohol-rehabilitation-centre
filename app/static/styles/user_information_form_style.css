@@ -1,0 +1,98 @@
+#user-info-form {
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 30% 10%;
+    margin: 0;
+    overflow: hidden;
+}
+
+.line {
+    width: 100%;
+    position: relative;
+}
+
+#user-info-form label {
+    letter-spacing: 0.1rem;
+}
+
+#user-info-form input {
+    outline: none;
+    border: none;
+    display: block;
+    box-sizing: border-box;
+    padding: 5% 0 3%;
+    background-color: inherit;
+    width: 100%;
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 0.1rem;
+}
+
+#user-info-form input::placeholder {
+    color: rgb(190, 190, 190);
+}
+
+#user-info-form input:focus + div span, 
+#user-info-form input:valid + div span {
+    width: 100%;
+}
+
+#user-info-form input:valid + div span {
+    border-color: green;
+}
+
+#user-info-form span {
+    display: block;
+    height: 0;
+    margin: 0;
+    /* margin-bottom: 15%; */
+    padding: 0;
+    width: 100%;
+    border-top: 3px solid black;
+}
+
+#user-info-form span:nth-last-child(2n) {
+    border-color: rgb(190, 190, 190);
+    /* border-color: rgb(255, 146, 146); */
+    position: absolute;
+}
+
+#user-info-form span:nth-child(2n) {
+    border-color: rgb(77, 77, 77);
+    position: relative;
+    width: 0;
+    transition-property: width;
+    transition-duration: 0.7s;
+    transition-delay: 0;
+}
+
+.form-error-message {
+    display: block;
+    /* position: absolute; */
+    height: 15%;
+    width: 100%;
+    font-size: 0.7rem;
+    color: rgb(248, 97, 97);
+}
+
+#user-info-form input[type='submit'] {
+    color: white;
+    background-color: cornflowerblue;
+    border-radius: 5px;
+    font-size: 1rem;
+    box-shadow: 0 5px 0 0 rgb(37, 98, 155);
+    transition-property: all;
+    transition-duration: 0.2s;
+    transition-delay: 0;
+    margin-top: 30%;
+}
+
+#user-info-form input[type='submit']:active {
+    box-shadow: 0 0 0 0;
+    transform: translateY(5px);
+}
+
+#user-info-form input[type='submit']:hover {
+    cursor: pointer;
+}
