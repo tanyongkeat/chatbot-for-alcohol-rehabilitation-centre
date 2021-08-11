@@ -141,7 +141,7 @@ def view_missed_intent():
 
 
 @app.route('/missed', methods=['GET', 'POST'])
-@login_required
+# @login_required
 def missed():
     '''
     TODO
