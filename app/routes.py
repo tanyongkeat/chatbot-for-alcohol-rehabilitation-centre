@@ -15,7 +15,7 @@ import re
 
 
 FIELD_EMPTY_MESSAGE = 'please kindly fill in all the needed field'
-no_information_required = True
+no_information_required = False
 
 
 @app.route('/')
@@ -224,6 +224,10 @@ def intents_base():
 
 @app.route('/intents_edit/<intent_name>', methods=['GET', 'POST'])
 def intents(intent_name):
+    '''
+    TODO
+    404 error for non-existance intents
+    '''
     intent = Intent.query.filter_by(intent_name=intent_name).first()
 
     if request.method == 'POST':

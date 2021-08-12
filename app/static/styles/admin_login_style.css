@@ -1,6 +1,7 @@
 html, body {
     height: 100%;
-    overflow: hidden;
+    margin: 0;
+    overflow: auto;
 }
 
 #page-content {
@@ -28,14 +29,64 @@ html, body {
     background-position: 50% 50%;
 }
 
-#admin-login-form {
+#admin-login-form-block {
     flex: 23;
     padding-top: 100px;
     padding-left: 60px;
     min-width: 399;
 }
 
-#admin-login-form > span {
+#admin-login-form-block > span {
     font-size: 2.3rem;
     font-weight: 900;
+    display: block;
+    margin-bottom: 42px;
+}
+
+#admin-login-form {
+    padding: 0;
+    width: 60%;
+    height: auto;
+}
+
+.form-error-message {
+    height: 30px;
+}
+
+#remember_me, label[for='remember_me'] {
+    display: inline;
+    width: auto;
+    vertical-align: middle;
+}
+
+@media screen and (max-width: 1000px) {
+    #page-content {
+        width: 80%;
+    }
+
+    #admin-login-form {
+        width: 80%;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    #page-content {
+        display: block;
+    }
+
+    #pic-art {
+        flex: 0;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    #admin-login-form-block {
+        padding-left: 30px;
+    }
+}
+
+@media screen and (max-width: 300px) {
+    #page-content {
+        width: 95%;
+    }
 }

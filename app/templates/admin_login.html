@@ -4,30 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/base.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/user_information_form_style.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/admin_login_style.css') }}">
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <title>Login</title>
 </head>
 <body>
     <div id='page-content'>
         <div id='pic-art'></div>
-        <div id='admin-login-form'>
+        <div id='admin-login-form-block'>
             <span>Welcome</span>
-            <div>
-                {% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                    <ul class='flashed-message'>
-                        {% for message in messages %}
-                        <li>{{ message }}</li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
-                {% endwith %}
-            </div>
             
-            <form action="" method="post" novalidate>
+            <form id='admin-login-form' action="" method="POST" novalidate>
                 {{ form.hidden_tag() }}
-                <p>
+                <div>
+                    {{ form.username.label }}
+                    {% if form.username.data %}
+                        {{ form.username(size=32, id='username', placeholder='Username', value=form.username.data) }}
+                    {% else %}
+                        {{ form.username(size=32, id='username', placeholder='Username') }}
+                    {% endif %}
+                    <div class='line'>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+                <div class='form-error-message' id='form-error-message_username'>
+                    {% for error in form.username.errors %}
+                        {{ error }}<br>
+                    {% endfor %}
+                </div>
+
+                <div>
+                    {{ form.password.label }}
+                    {% if form.password.data %}
+                        {{ form.password(size=32, id='password', placeholder='Password', value=form.password.data) }}
+                    {% else %}
+                        {{ form.password(size=32, id='password', placeholder='Password') }}
+                    {% endif %}
+                    <div class='line'>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+                <div class='form-error-message' id='form-error-message_password'>
+                    {% for error in form.password.errors %}
+                        {{ error }}<br>
+                    {% endfor %}
+                </div>
+
+
+                <!-- <p>
                     {{ form.username.label }}<br>
                     {{ form.username(size=32) }}<br>
                     {% for error in form.username.errors %}
@@ -40,11 +68,32 @@
                     {% for error in form.password.errors %}
                     <span style="color: red;">[{{ error }}]</span>
                     {% endfor %}
-                </p>
-                <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
-                <p>{{ form.submit() }}</p>
+                </p> -->
+                <div>
+                    {{ form.remember_me() }} {{ form.remember_me.label }}
+                </div>
+                {{ form.submit() }}
+                <div class='form-error-message' id='form-error-message_submit' style='margin-top: 10px'>
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                {{ message }} <br>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                </div>
             </form>
         </div>
     </div>
+
+    <script>
+        $('#username').keyup(function(event) {
+            document.getElementById('form-error-message_username').innerText = '';
+        })
+
+        $('#password').keyup(function(event) {
+            document.getElementById('form-error-message_password').innerText = '';
+        })
+    </script>
 </body>
 </html>

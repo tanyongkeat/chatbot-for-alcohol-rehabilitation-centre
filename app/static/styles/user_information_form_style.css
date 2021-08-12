@@ -1,4 +1,4 @@
-#user-info-form {
+form {
     height: 100%;
     width: 100%;
     box-sizing: border-box;
@@ -12,16 +12,16 @@
     position: relative;
 }
 
-#user-info-form label {
+form label {
     letter-spacing: 0.1rem;
 }
 
-#user-info-form input {
+form input {
     outline: none;
     border: none;
     display: block;
     box-sizing: border-box;
-    padding: 5% 0 3%;
+    padding: 11px 0 7px;
     background-color: inherit;
     width: 100%;
     font-size: 1.3rem;
@@ -29,20 +29,20 @@
     letter-spacing: 0.1rem;
 }
 
-#user-info-form input::placeholder {
+form input::placeholder {
     color: rgb(190, 190, 190);
 }
 
-#user-info-form input:focus + div span, 
-#user-info-form input:valid + div span {
+form input:focus + div span, 
+form input:valid + div span {
     width: 100%;
 }
 
-#user-info-form input:valid + div span {
+form input:valid + div span {
     border-color: green;
 }
 
-#user-info-form span {
+form span {
     display: block;
     height: 0;
     margin: 0;
@@ -52,13 +52,13 @@
     border-top: 3px solid black;
 }
 
-#user-info-form span:nth-last-child(2n) {
+form span:nth-last-child(2n) {
     border-color: rgb(190, 190, 190);
     /* border-color: rgb(255, 146, 146); */
     position: absolute;
 }
 
-#user-info-form span:nth-child(2n) {
+form span:nth-child(2n) {
     border-color: rgb(77, 77, 77);
     position: relative;
     width: 0;
@@ -76,7 +76,7 @@
     color: rgb(248, 97, 97);
 }
 
-#user-info-form input[type='submit'] {
+form input[type='submit'] {
     color: white;
     background-color: cornflowerblue;
     border-radius: 5px;
@@ -88,11 +88,11 @@
     margin-top: 30%;
 }
 
-#user-info-form input[type='submit']:active {
+form input[type='submit']:active {
     box-shadow: 0 0 0 0;
     transform: translateY(5px);
 }
 
-#user-info-form input[type='submit']:hover {
+form input[type='submit']:hover {
     cursor: pointer;
 }
