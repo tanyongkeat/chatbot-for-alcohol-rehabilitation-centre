@@ -9,8 +9,14 @@ selection_responses = {[contact_admin]: 'You can email testing@gmail.com for mor
 
 
 $(document).ready(function() {
-    $("#textInput").keypress(function(e) {
-        if (e.which == 13 && $("#textInput").val().length != 0){
+    chatboxInit();
+})
+
+function chatboxInit() {
+    $("#textInput").keyup(function(e) {
+        $("#textInput").val($('#textInput').val().replace(/\n/, ''));
+        if ((e.keyCode === 10 || e.which == 13) && $("#textInput").val().length != 0){
+            document.activeElement.blur();
             getBotResponse();
         }
     });
@@ -20,9 +26,31 @@ $(document).ready(function() {
             getBotResponse();
         }
     })
-})
+
+    preventZoomOnInput();
+}
 
 
+var limit_reached = false;
+
+function autoResize(target) {
+    var hack = document.getElementById('hack');
+    // hack.style.maxWidth = (Math.floor(target.offsetWidth) - 2*10 - 1) + 'px';
+
+    if (document.getElementById('chatbox').offsetHeight <= 130 || limit_reached) {
+        limit_reached = true;
+        target.style.height = 'auto';
+        return;
+    }
+
+    hack.innerHTML=target.value.replace(/\n/, '');
+
+    if (! target.value) {
+        target.style.height = 'auto';
+    } else {
+        target.style.height = (Math.min(hack.offsetHeight, 49) + 0.99) + 'px';
+    }
+}
 
 function getBotResponse() {
     var current_message_counter = message_counter;
@@ -30,6 +58,9 @@ function getBotResponse() {
 
     var raw_text = $("#textInput").val();
     $("#textInput").val("");
+
+    document.getElementById('hack').innerHTML = "";
+    autoResize(document.getElementById('textInput'));
 
     sendMessage(raw_text, 'user', current_message_counter);
     // https://img.icons8.com/office/23/fa314a/dots-loading--v3.png

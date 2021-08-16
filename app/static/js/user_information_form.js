@@ -60,19 +60,8 @@ $(document).ready(function() {
         .done(function(response) {
             console.log(response);
             if (response['code'] == 200) {
-                //change innerhtml later
                 document.getElementById('chatsection').innerHTML = response['chatbox'];
-                $("#textInput").keypress(function(e) {
-                    if (e.which == 13 && $("#textInput").val().length != 0){
-                        getBotResponse();
-                    }
-                });
-                
-                $("#buttonInput").click(function() {
-                    if ($("#textInput").val().length != 0) {
-                        getBotResponse();
-                    }
-                })
+                chatboxInit();
             } else {
                 mark_error(response['error']);
             }

@@ -4,11 +4,13 @@
 		<meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 		
+		<script src="https://use.fontawesome.com/312841a3fe.js"></script>
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/base.css') }}">
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/user_style.css') }}">
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/user_chatbox_style.css') }}">
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/user_information_form_style.css') }}">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="{{ url_for('static',filename='js/util.js') }}"></script>
 		<script src="{{ url_for('static',filename='js/user_chatbox.js') }}"></script>
 		<script src="{{ url_for('static',filename='js/user_information_form.js') }}"></script>
 		<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway" />
@@ -23,5 +25,7 @@
 			    {% include 'user_information_form.html' %}
 			{% endif %}
 		</div>
+
+		<div id='chatcircle' class='hidden' onclick='document.getElementById("chatsection").classList.remove("hidden"); this.classList.add("hidden");'></div>
 	</body>
 </html>

@@ -1,5 +1,7 @@
-<div id='chatheader'>
+<div id='hack' contenteditable="true"></div>
 
+<div id='chatheader'>
+    <div onclick='document.getElementById("chatsection").classList.add("hidden"); document.getElementById("chatcircle").classList.remove("hidden");'><span class="fa fa-spinner fa-pulse fa-fw"></span></div>
 </div>
 
 <div id="chatbox">
@@ -13,6 +15,6 @@
 </div>
 
 <div id="userInput">
-    <input id="textInput" type="text" name="msg" placeholder="" contenteditable="true">
+    <textarea id="textInput" name="msg" placeholder="" rows="1" maxlength="150" oninput='autoResize(this)'></textarea>
     <input id="buttonInput" type="image" src="https://img.icons8.com/ios-glyphs/23/3030ff/filled-sent.png">
 </div>
