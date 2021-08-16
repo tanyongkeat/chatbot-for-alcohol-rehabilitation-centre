@@ -228,7 +228,7 @@ def intents(intent_name):
     TODO
     404 error for non-existance intents
     '''
-    intent = Intent.query.filter_by(intent_name=intent_name).first()
+    intent = Intent.query.filter_by(intent_name=intent_name).first_or_404()
 
     if request.method == 'POST':
         if request.data: # ajax
