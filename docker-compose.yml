@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
 
-  mysqldb:
+  psqldb:
     image: postgres
     ports:
       - 5432:5432
@@ -10,16 +10,24 @@ services:
       - POSTGRES_PASSWORD=admin
     volumes:
       - ./psql_data:/var/lib/postgresql/data
+    # healthcheck:
+    #   test: ["CMD-SHELL", "pg_isready"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
 
-  # app:
-  #   build: .
-  #   command: python chatbot.py
-  #   ports:
-  #     - "5000:5000"
-  #   volumes:
-  #     - ./:/app
-  #   environment:
-  #     FLASK_DEBUG: 1
+  app:
+    build: .
+    command: python chatbot.py
+    ports:
+      - "5000:5000"
+    # volumes:
+    #   - ./:/app
+    # depends_on:
+    #   psqldb:
+    #     condition: service_healthy
+    environment:
+      FLASK_DEBUG: 1
 
 # volumes:
   # fyp_psql_data:
