@@ -121,11 +121,11 @@ function reply(utterence, target, current_message_counter) {
             scroll(selection);
 
             selections.forEach(item => {
-                item.addEventListener('click', event=> sendMessage(event.target.innerHTML, 'user', ''));
+                item.firstChild.addEventListener('click', event=> sendMessage(event.target.innerHTML, 'user', ''));
             });
 
-            selection.onclick = function() {
-                getPredictedWrongMessage(this.id, 'negative');
+            selection.firstChild.onclick = function() {
+                getPredictedWrongMessage(this.parentNode.id, 'negative');
             };
 
 
@@ -134,7 +134,7 @@ function reply(utterence, target, current_message_counter) {
             // });
             for (i = 0; i < selections.length-1; i++) {
                 var item = selections[i];
-                item.addEventListener('click', event => selection_clicked(event.target));
+                item.firstChild.addEventListener('click', event => selection_clicked(event.target));
             }
 
         }
@@ -174,6 +174,7 @@ function sendMessage(message, subject, current_message_counter) {
 }
 
 function getPredictedWrongMessage(id, feedback) {
+    console.log(id);
     var index = id.split("_")[1];
     var predictedWrongMessageId = "userText_"+index;
     var predictedWrongMessage = document.getElementById(predictedWrongMessageId);

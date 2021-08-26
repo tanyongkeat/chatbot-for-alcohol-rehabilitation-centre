@@ -19,6 +19,7 @@
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
+    overflow-y: auto;
 }
 
 #chatcircle {
@@ -55,7 +56,13 @@ all and (max-height: 480px) {
     flex-shrink: 0;
 }
 
-#chatheader > div {
+#user-info-form-header {
+    height: 32px;
+    position: absolute;
+    width: 100%;
+}
+
+#chatheader > div, #user-info-form-header > div {
     position: relative;
     float: right;
     top: 50%;
