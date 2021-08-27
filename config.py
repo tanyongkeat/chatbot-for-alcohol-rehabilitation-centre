@@ -3,7 +3,7 @@ import os
 
 user = 'postgres'
 pw = 'admin'
-host = 'localhost'
+host = 'psqldb'
 port = '5432'
 url = f'{host}:{port}'
 database = 'fyp_viva'

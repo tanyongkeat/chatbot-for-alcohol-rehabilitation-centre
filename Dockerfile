@@ -11,7 +11,6 @@ COPY . /app
 
 EXPOSE 5000
 
-CMD python chatbot.py
-
+# CMD python chatbot.py
 
 # docker run -p 5000:5000 -v ${pwd}:/app fyp_app:first
