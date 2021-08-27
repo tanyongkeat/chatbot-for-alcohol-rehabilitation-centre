@@ -1,7 +1,7 @@
 venv
 testing
 venv_jupyter
-# psql_data
+psql_data
 .dockerignore
 .idea
 .vscode
