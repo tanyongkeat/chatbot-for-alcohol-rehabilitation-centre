@@ -4,10 +4,10 @@ services:
 
   psqldb:
     image: postgres
-    ports:
-      - 5432:5432
+    # ports:
+    #   - 5432:5432
     environment:
-      - POSTGRES_PASSWORD=admin
+      - POSTGRES_PASSWORD=letmein_justkidding
     volumes:
       - ./psql_data:/var/lib/postgresql/data
     healthcheck:

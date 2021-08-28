@@ -2,7 +2,7 @@ import os
 
 
 user = 'postgres'
-pw = 'admin'
+pw = 'Byte$Postgres9479'
 host = 'psqldb'
 port = '5432'
 url = f'{host}:{port}'
