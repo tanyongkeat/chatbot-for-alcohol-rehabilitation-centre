@@ -15,18 +15,24 @@
     border-color: #BBBBBB;
     border-radius: 3px;
     padding: 0px;
-    background-color: #EDF0F4;
+    /* background-color: #EDF0F4; */
+    background-color: #FAFAFA;
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 #chatcircle {
-    background-color: aquamarine;
+    background-color: rgb(104, 172, 235);
     width: 70px;
     height: 70px;
     border-radius: 35px;
+}
+
+#chatcircle:hover {
+    cursor: pointer;
 }
 
 #chatsection, #chatcircle {
@@ -36,6 +42,15 @@
     transition: all;
     transition-duration: 0.7s;
     transition-delay: 0;
+}
+
+#chatcircle > span {
+    display: inline-block;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
 }
 
 @media all and (max-width: 500px), 
@@ -60,18 +75,21 @@ all and (max-height: 480px) {
     height: 32px;
     position: absolute;
     width: 100%;
+    z-index: 3;
 }
 
 #chatheader > div, #user-info-form-header > div {
     position: relative;
+    color: #AAAAAA;
     float: right;
     top: 50%;
     transform: translateY(-50%);
-    margin-right: 7px;
+    margin-right: 9px;
 }
 
-#chatheader > div:hover {
-    color: red;
+#chatheader > div:hover, #user-info-form-header > div:hover {
+    color: black;
+    font-weight: 900;
     cursor: pointer;
 }
 

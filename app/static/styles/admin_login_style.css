@@ -54,9 +54,13 @@ html, body {
 }
 
 #remember_me, label[for='remember_me'] {
-    display: inline;
+    display: inline-block;
     width: auto;
     vertical-align: middle;
+}
+
+#remember_me {
+    -webkit-appearance: checkbox;
 }
 
 @media screen and (max-width: 1000px) {
