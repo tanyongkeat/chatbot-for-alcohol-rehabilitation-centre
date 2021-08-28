@@ -1,6 +1,6 @@
 body {
     background-color: #EDF0F4;
-    font-family: raleway;
+    font-family: 'Nunito', sans-serif,s Raleway;
 }
 
 body * {
@@ -9,6 +9,10 @@ body * {
 
 input[type='text']:focus {
     outline: none;
+}
+
+button {
+    background: none;
 }
 
 textarea {

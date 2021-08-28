@@ -91,7 +91,8 @@ form span:nth-child(2n) {
 }
 
 #form-error-message_submit {
-    height: 13%;
+    margin-top: 10px;
+    height: 11%;
 }
 
 form input[type='submit'] {

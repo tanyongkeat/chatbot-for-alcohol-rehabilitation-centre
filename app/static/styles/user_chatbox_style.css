@@ -7,7 +7,7 @@
 #chatsection {
     height: 455px;
     width: 277px;
-    font-family: Raleway;
+    font-family: 'Nunito', sans-serif, Raleway;
     font-weight: 400;
     font-size: 13px;
     border-style: solid;
@@ -157,7 +157,13 @@ all and (max-height: 480px) {
     padding: 0px;
     border-style: none;
     align-self: flex-end;
-    margin-bottom: 5px;
+    margin-bottom: 7px;
+    color: #045FC7;
+}
+
+#buttonInput:hover {
+    cursor: pointer;
+    color: black;
 }
 
 .area {
@@ -238,31 +244,36 @@ all and (max-height: 480px) {
     color: lightsalmon;
 }
 
-.botText input[class^='thumbs'] {
+.botText button[class^='thumbs'] {
     display: block;
     position: relative;
     border-radius: 5px;
     border: none;
-    padding: 1px 7px;
+    padding: 3px 7px;
     float: right;
+    top: -5px;
 }
 
-.botText input[class^='thumbs']:hover {
-    padding: 0px 6px;
+.botText button[class^='thumbs']:hover {
+    /* padding: 2px 6px; */
+    cursor: pointer;
 }
 
 .botText .thumbsdown {
     background-color: pink;
-    top: -5px;
+    color: #E34040;
     /* right: 50px; */
 }
 
 .botText .thumbsdown:hover {
-    border: solid 1px red;
+    /* border: solid 1px #E34040; */
+    transform-origin: 50% 50%;
+    transform: scale(1.2);
 }
 
 .botText .thumbsup {
     background-color: rgb(195, 247, 195);
+    color: #26e07f;
     display: None !important;
     /* right: 50px; */
 }

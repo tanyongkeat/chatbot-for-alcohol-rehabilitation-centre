@@ -92,8 +92,10 @@ function reply(utterence, target, current_message_counter) {
                     ${response[0]['reply']}
                 </span>
                 <div class='thumbs_container'>
-                    <input class="thumbsdown" id="${thumbsdownId}" type="image" alt='thumbs down' src="https://img.icons8.com/material-sharp/15/fa314a/thumbs-down.png" onclick="getPredictedWrongMessage(this.id, 'negative')">
-                    <input class="thumbsup" id="${thumbsupId}" type="image" alt='thumbs up' src="https://img.icons8.com/material-rounded/15/26e07f/thumb-up.png" onclick="getPredictedWrongMessage(this.id, 'positive')">
+                    <!-- <input class="thumbsdown" id="${thumbsdownId}" type="image" alt='thumbs down' src="https://img.icons8.com/material-sharp/15/fa314a/thumbs-down.png" onclick="getPredictedWrongMessage(this.id, 'negative')"> -->
+                    <!-- <input class="thumbsup" id="${thumbsupId}" type="image" alt='thumbs up' src="https://img.icons8.com/material-rounded/15/26e07f/thumb-up.png" onclick="getPredictedWrongMessage(this.id, 'positive')"> -->
+                    <button class="thumbsdown fa fa-thumbs-down fa-lg" id="${thumbsdownId}" type="button" onclick="getPredictedWrongMessage(this.id, 'negative')">
+                    <button class="thumbsup fa fa-thumbs-up fa-lg" id="${thumbsupId}" type="button" onclick="getPredictedWrongMessage(this.id, 'positive')">                    
                 </div>
             </span>
             `;
