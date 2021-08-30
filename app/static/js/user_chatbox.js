@@ -48,7 +48,7 @@ function autoResize(target) {
     if (! target.value) {
         target.style.height = 'auto';
     } else {
-        target.style.height = (Math.min(hack.offsetHeight, 49) + 0.99) + 'px';
+        target.style.height = (Math.min(hack.offsetHeight, 54) + 0.99) + 'px';
     }
 }
 

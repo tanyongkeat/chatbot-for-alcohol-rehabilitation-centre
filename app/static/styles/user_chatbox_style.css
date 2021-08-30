@@ -16,7 +16,7 @@
     border-radius: 3px;
     padding: 0px;
     /* background-color: #EDF0F4; */
-    background-color: #FAFAFA;
+    /* background-color: #FAFAFA; */
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
@@ -144,7 +144,7 @@ all and (max-height: 480px) {
     padding: 5px 10px;
     margin: 3px;
     border: none;
-    border-bottom: 1px solid #323335;
+    /* border-bottom: 1px solid #323335; */
     resize: none;
 }
 
@@ -157,13 +157,13 @@ all and (max-height: 480px) {
     padding: 0px;
     border-style: none;
     align-self: flex-end;
-    margin-bottom: 7px;
+    margin-bottom: 9px;
     color: #045FC7;
 }
 
 #buttonInput:hover {
     cursor: pointer;
-    color: black;
+    color: rgb(211, 211, 211);
 }
 
 .area {

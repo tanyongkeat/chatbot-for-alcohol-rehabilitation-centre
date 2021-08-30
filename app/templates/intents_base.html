@@ -16,22 +16,24 @@
                     {% set current_intent = intent %}
                 {% endif %}
                 {% for intent in intents %}
-                    <div class='intent-item'>
-                        {% if current_intent %}
-                            {% if intent.id == current_intent.id %}
-                                <span><b>></b></span><a><b>{{ intent.intent_name }}</b></a>
+                    <div class='intent-item-wrapper'>
+                        <div class='intent-item'>
+                            {% if current_intent %}
+                                {% if intent.id == current_intent.id %}
+                                    <span><b>></b></span><a><b>{{ intent.intent_name }}</b></a>
+                                {% else %}
+                                    <span></span><a href='/intents_edit/{{ intent.intent_name }}'>{{ intent.intent_name }}</a>
+                                {% endif %}
                             {% else %}
                                 <span></span><a href='/intents_edit/{{ intent.intent_name }}'>{{ intent.intent_name }}</a>
                             {% endif %}
-                        {% else %}
-                            <span></span><a href='/intents_edit/{{ intent.intent_name }}'>{{ intent.intent_name }}</a>
-                        {% endif %}
-                        <form action='/delete_intent' method='POST'>
-                            <input type="hidden" name='intent_id' value={{ intent.id }}>
-                            <input type='submit' name='intent_delete_button' class='intent-delete-button' value='x'>
-                        </form>
+                            <form action='/delete_intent' method='POST'>
+                                <input type="hidden" name='intent_id' value={{ intent.id }}>
+                                <input type='submit' name='intent_delete_button' class='intent-delete-button' value='x'>
+                            </form>
+                        </div>
+                        <hr>
                     </div>
-                    <hr>
                 {% endfor %}
                 <a class="add-button" href="/intents_add">+</a> <!-- same class as the add training sample button -->
             </div>
@@ -47,7 +49,7 @@
             var search_content = document.getElementById('intent-search-bar').value;
             // document.getElementById("debug").innerHTML = search_content;
 
-            var intent_items = document.querySelectorAll('.intent-item');
+            var intent_items = document.querySelectorAll('.intent-item-wrapper');
 
             for (i = 0; i < intent_items.length; i++) {
                 var intent_item = intent_items[i];

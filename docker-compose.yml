@@ -2,12 +2,31 @@ version: '3.7'
 
 services:
 
-  app:
-    command: flask run --host=0.0.0.0
-    volumes:
-      - ./:/app
+  psqldb:
+    image: postgres
+    # ports:
+    #   - 5432:5432
     environment:
-      FLASK_DEBUG: 1
+      - POSTGRES_PASSWORD=letmein_justkidding
+    volumes:
+      - ./psql_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    image: fyp_app_ubuntu
+    # build: .
+    command: gunicorn -b :5000 --access-logfile - --error-logfile - chatbot:app
+    ports:
+      - "5000:5000"
+    depends_on:
+      psqldb:
+        condition: service_healthy
+    environment:
+      PYTHONUNBUFFERED: 1
 
 # volumes:
   # fyp_psql_data:
