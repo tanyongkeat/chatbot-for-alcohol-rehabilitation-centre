@@ -27,6 +27,8 @@ function chatboxInit() {
         }
     })
 
+    autoResize(document.getElementById('textInput'));
+
     preventZoomOnInput();
 }
 
@@ -45,11 +47,11 @@ function autoResize(target) {
 
     hack.innerHTML=target.value.replace(/\n/, '');
 
-    if (! target.value) {
-        target.style.height = 'auto';
-    } else {
+    // if (! target.value) {
+    //     target.style.height = 'auto';
+    // } else {
         target.style.height = (Math.min(hack.offsetHeight, 54) + 0.99) + 'px';
-    }
+    // }
 }
 
 function getBotResponse() {
