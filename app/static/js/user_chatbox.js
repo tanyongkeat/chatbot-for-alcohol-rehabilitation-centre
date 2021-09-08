@@ -47,11 +47,11 @@ function autoResize(target) {
 
     hack.innerHTML=target.value.replace(/\n/, '');
 
-    // if (! target.value) {
-    //     target.style.height = 'auto';
-    // } else {
+    if ((! target.value) && (detectBrowser() != 'Firefox')) {
+        target.style.height = 'auto';
+    } else {
         target.style.height = (Math.min(hack.offsetHeight, 54) + 0.99) + 'px';
-    // }
+    }
 }
 
 function getBotResponse() {
@@ -67,7 +67,8 @@ function getBotResponse() {
     sendMessage(raw_text, 'user', current_message_counter);
     // https://img.icons8.com/office/23/fa314a/dots-loading--v3.png
     // static/img/loading.gif
-    var botTextObj = sendMessage('<img src="https://img.icons8.com/office/23/fa314a/dots-loading--v3.png"/>', 'bot', current_message_counter);
+    // var botTextObj = sendMessage('<img src="https://img.icons8.com/office/23/fa314a/dots-loading--v3.png"/>', 'bot', current_message_counter);
+    var botTextObj = sendMessage('<div class="loader"><span></span><span></span><span></span></div>', 'bot', current_message_counter);
     reply(raw_text, botTextObj, current_message_counter);
 }
 
