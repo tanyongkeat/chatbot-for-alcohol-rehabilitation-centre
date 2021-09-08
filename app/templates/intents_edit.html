@@ -25,9 +25,10 @@
         <input type='submit' name='malay' value='malay'> -->
         {% set target = intent %}
         {% set category = 'reply-message' %}
-        <a href="#select-language-button_en" class='select-language-button' id='select-language-button_en' onclick="cancel_edit_space_reply(this.id, '{{ category }}')">english</a><a href="#select-language-button_my" class='select-language-button' id='select-language-button_my' onclick="cancel_edit_space_reply(this.id, '{{ category }}')">malay</a>
+        {% set languages = ['my', 'en'] %}
+        <a href="#select-language-button_en" class='select-language-button' id='select-language-button_en' onclick="cancel_edit_space_reply_all('{{ category }}')">english</a><a href="#select-language-button_my" class='select-language-button' id='select-language-button_my' onclick="cancel_edit_space_reply_all('{{ category }}')">malay</a>
         <div id='reply-messages'>
-            {% for lang in ['my', 'en'] %}
+            {% for lang in languages %}
                 <div class='{{ category }}-language-section' id='{{ category }}-language-section_{{ lang }}'>
                     <div id='{{ category }}-display_{{ lang }}' class='{{ category }}-display'>
                         <input id='edit-button_{{ lang }}' class='edit-button' type='submit' value='edit' onclick="show_edit_space_reply(this.id, '{{ category }}')">
@@ -35,13 +36,15 @@
                     </div>
                     <div id='{{ category }}-edit_{{ lang }}' class='editable-edit' style='display:None;'>
                         <!-- <span class='utterance'>editting</span> -->
-                        <form action="" method='POST' style='display:inline;'>
+                        <form action="" method='POST'>
                             <input type="hidden" name="lang" value="{{ lang }}">
                             <input type="hidden" name="job" value="update_reply_message">
                             <textarea style='height:60px;' class='editable-content' name='modified_content' id='{{ category }}-e_{{ lang }}' ori_value='{{ intent["reply_message_"+lang] }}' required>{{ intent["reply_message_"+lang] }}</textarea>
-                            <input id='save-button_{{ lang }}' class='save-button' type='submit' value='save'>
+                            <!-- <input id='save-button_{{ lang }}' class='save-button' type='submit' value='save'>
+                            <input id='cancel-button_{{ lang }}' class='cancel-button' type='submit' form='' value='cancel' onclick="cancel_edit_space_reply(this.id, '{{ category }}')"> -->
+                            <button id='save-button_{{ lang }}' class='save-button' type='submit''>save</button>
+                            <button id='cancel-button_{{ lang }}' class='cancel-button' type='submit' form='' onclick="cancel_edit_space_reply(this.id, '{{ category }}')">cancel</button>
                         </form>
-                        <input id='cancel-button_{{ lang }}' class='cancel-button' type='submit' value='cancel' onclick="cancel_edit_space_reply(this.id, '{{ category }}')">
                     </div>
                 </div>
             {% endfor %}
@@ -65,8 +68,10 @@
                 <form action='' method='POST'>
                     <input type="hidden" name="job" value="add_sample">
                     <textarea class='editable-content' cols=2 name='user_message' id='{{ category }}-e_{{ placeholder }}' ori_value='' required></textarea>
-                    <input id='cancel-button_{{ placeholder }}' class='cancel-button' type='submit' value='cancel' form='' onclick="cancel_edit_space(this.id, '{{ category }}')">
-                    <input id='save-button_{{ placeholder }}' class='save-button' type='submit' value='save'>
+                    <!-- <input id='cancel-button_{{ placeholder }}' class='cancel-button' type='submit' value='cancel' form='' onclick="cancel_edit_space(this.id, '{{ category }}')">
+                    <input id='save-button_{{ placeholder }}' class='save-button' type='submit' value='save'> -->
+                    <button id='save-button_{{ placeholder }}' class='save-button' type='submit'>save</button>
+                    <button id='cancel-button_{{ placeholder }}' class='cancel-button' type='submit' form='' onclick="cancel_edit_space(this.id, '{{ category }}')">cancel</button>
                 </form>
             </div>
         </div>
@@ -94,7 +99,18 @@
             for (i = 0; i < edit_buttons.length; i++) {
                 edit_buttons[i].style.display = 'inline';
             }
-            cancel_edit_space(id, category);
+
+            if (Array.isArray(id)) for (i = 0; i < id.length; i++) cancel_edit_space(id[i], category);
+            else cancel_edit_space(id, category);
+        }
+
+        function cancel_edit_space_reply_all(category) {
+            all_languages_button = document.getElementsByClassName('select-language-button');
+            all_languages = [];
+            for (i = 0; i < all_languages_button.length; i++) {
+                all_languages.push(all_languages_button[i].id);
+            }
+            cancel_edit_space_reply(all_languages, category);
         }
 
         var appIntentsEdit = angular.module('appIntentsEdit', []);

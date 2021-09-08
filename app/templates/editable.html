@@ -1,23 +1,31 @@
 <div class='editable' {% if not wrapped%}ng-repeat='target in {{ data }} | orderBy: "id"'{% endif %}>
     <div id='{{ category }}-display_{a target.id a}' class='editable-display'>
-        <span id='{{ category }}_{a target.id a}' class="editable-content">{a target.{{ text }} a}</span>
+        
         {% set job = 'delete' %}
-        <form id='form-{{ job }}_{a target.id a}' method='POST' style='display:inline'>
+        <form id='form-{{ job }}_{a target.id a}' method='POST' style='display:flex'>
             <input type="hidden" name="id" value="{a target.id a}">
             <input type="hidden" name="job" value="{{ job }}">
-            <input ng-click="submitForm(target, '{{ job }}')" id='delete-button_{a target.id a}' class='delete-button' type='image' src='https://img.icons8.com/material/17/fa314a/delete-forever--v2.png'>
-            <input id='edit-button_{a target.id a}' class='edit-button' type='submit' value='edit' form='' onclick="show_edit_space(this.id, '{{ category }}')">
+            <span id='{{ category }}_{a target.id a}' class="editable-content">{a target.{{ text }} a}</span>
+            <!-- <input ng-click="submitForm(target, '{{ job }}')" id='delete-button_{a target.id a}' class='delete-button' type='image' src='https://img.icons8.com/material/17/fa314a/delete-forever--v2.png'>
+            <input id='edit-button_{a target.id a}' class='edit-button' type='submit' value='edit' form='' onclick="show_edit_space(this.id, '{{ category }}')"> -->
+            <button id='edit-button_{a target.id a}' class='edit-button' type='submit' form='' onclick="show_edit_space(this.id, '{{ category }}')">
+                edit
+            </button>
+            <button ng-click="submitForm(target, '{{ job }}')" id='delete-button_{a target.id a}' class='delete-button' type='image'>
+            </button>
         </form>
     </div>
     <div id='{{ category }}-edit_{a target.id a}' class='editable-edit' style='display:None;'>
         <!-- <span class='utterance'>editting</span> -->
         {% set job = 'update' %}
-        <form id='form-{{ job }}_{a target.id a}' method='POST' style='display:inline;' ng-submit=''>
+        <form id='form-{{ job }}_{a target.id a}' method='POST' style='display:flex;' ng-submit=''>
             <input type="hidden" name="id" value="{a target.id a}">
             <input type="hidden" name="job" value="{{ job }}">
             <textarea id='{{ category }}-e_{a target.id a}' name='modified_content' rows=3 class='editable-content' ori_value='{a target.{{ text }} a}' required>{a target.{{ text }} a}</textarea>
-            <input id='cancel-button_{a target.id a}' class='cancel-button' type='submit' value='cancel' form='' onclick="cancel_edit_space(this.id, '{{ category }}')">
-            <input ng-click="submitForm(target, '{{ job }}')" id='save-button_{a target.id a}' class='save-button' type='submit' value='save'>
+            <!-- <input id='cancel-button_{a target.id a}' class='cancel-button' type='submit' value='cancel' form='' onclick="cancel_edit_space(this.id, '{{ category }}')">
+            <input ng-click="submitForm(target, '{{ job }}')" id='save-button_{a target.id a}' class='save-button' type='submit' value='save'> -->
+            <button ng-click="submitForm(target, '{{ job }}')" id='save-button_{a target.id a}' class='save-button' type='submit'>save</button>
+            <button id='cancel-button_{a target.id a}' class='cancel-button' type='submit' form='' onclick="cancel_edit_space(this.id, '{{ category }}')">cancel</button>
         </form>
     </div>
 </div>
