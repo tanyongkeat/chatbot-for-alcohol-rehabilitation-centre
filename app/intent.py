@@ -34,11 +34,13 @@ def read_data():
             Intent.reply_message_en, 
             Intent.reply_message_my, 
             Intent.small_talk, 
+            Intent.deployed, 
             Intent.intent_name.label('intention')
-        ).statement, 
+        ).filter_by(deployed=True).statement, 
         con = db.session.bind
     )
-    dataset = dataset.merge(reply, how='left', left_on='intent_id', right_on='id')
+    dataset = reply.merge(dataset, how='left', left_on='id', right_on='intent_id')
+    # dataset = dataset[dataset.deployed]
     
     loaded_encoding = dataset.encoding.apply(lambda x: json.loads(x)).tolist()
     dataset = pd.concat([dataset, pd.DataFrame(loaded_encoding)], axis=1)

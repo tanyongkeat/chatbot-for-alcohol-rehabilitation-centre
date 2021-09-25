@@ -210,11 +210,12 @@ def missed_new_intent():
 @app.route('/view_intents_edit', methods=['POST'])
 def view_intents_edit():
     data = json.loads(request.data.decode())
-    intent_name = data['intent_name']
+    intent_name = data['intent_id']
     print(intent_name)
-    training_data = Intent.query.filter_by(intent_name=intent_name).first().training_data
+    intent = Intent.query.get_or_404(intent_name)
+    
     with app.app_context():
-        return jsonify({'data': training_data})
+        return jsonify({'training_data': intent.training_data, 'deployed': intent.deployed})
 
 @app.route('/intents_edit')
 def intents_base():
@@ -270,6 +271,15 @@ def intents(intent_name):
     intents = sorted(intents, key=lambda x: x[1])
     
     return render_template('intents_edit.html', current_page='intents', intents=intents, intent=intent)
+
+@app.route('/intents_edit/toggle_deployed', methods=['POST'])
+def toggle_deployed():
+    data = json.loads(request.data.decode())
+    print(data)
+    intent = Intent.query.get_or_404(data['intent_id'])
+    intent.deployed = data['value']
+    db.session.commit()
+    return jsonify({'code': 200, 'value': intent.deployed})
 
 @app.route('/intents_add', methods=['GET', 'POST'])
 def intents_add():

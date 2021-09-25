@@ -37,18 +37,18 @@
             
             $scope.getMissedData = function getMissedData() {
                 $http.post('/view_missed', {params:{}})
-                .success(function(response)
+                .then(function(response)
                     {
-                        $scope.data_missed = response.data;
+                        $scope.data_missed = response.data.data;
                     }
                 );
             };
 
             $scope.getMissedIntent = function getMissedIntent() {
                 $http.post('/view_missed_intent', {params:{}})
-                .success(function(response)
+                .then(function(response)
                     {
-                        $scope.intents = response.data;
+                        $scope.intents = response.data.data;
                     }
                 );
             };
@@ -71,7 +71,7 @@
                 }
 
                 $http.post('/missed', form_data)
-                .success(function(response)
+                .then(function(response)
                     {
                         // $scope.dummy = form_data;
                         console.log(form_data);

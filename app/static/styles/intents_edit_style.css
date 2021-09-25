@@ -1,4 +1,4 @@
-#reply-messages-container {
+#reply-messages-container, #switches {
     width: 95%;
     margin-left: auto;
     margin-right: auto;
@@ -74,4 +74,33 @@
     max-width: 100%;
     width: 100%;
     overflow-wrap: break-word;
+}
+
+#switches md-switch.md-checked .md-bar {
+    background-color: rgb(165, 165, 252);
+}
+
+#switches md-switch.md-checked .md-thumb {
+    --thumb-color: rgb(84, 84, 253);
+    background-color: var(--thumb-color);
+    color: var(--thumb-color);
+}
+
+#switches {
+    display: flex;
+    align-items: center;
+}
+
+md-switch:last-of-type {
+    margin: auto 0;
+}
+
+md-switch {
+    display: block;
+}
+
+#switches .md-container {
+    float: none;
+    top: 50%;
+    transform: translateY(-50%);
 }

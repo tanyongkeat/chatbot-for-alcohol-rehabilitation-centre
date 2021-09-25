@@ -1,5 +1,9 @@
 {% extends "intents_base.html" %}
 
+{% block angularjs_ng_app %}
+ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditData();'
+{% endblock %}
+
 {% block content %}
     <h3>editing</h3>
     <h1>{{ intent.intent_name }}</h1>
@@ -19,6 +23,12 @@
         </ul>
         {% endif %}
     {% endwith %}
+    
+    <div id="switches">
+        <md-switch ng-model="deployed" aria-label="deployed_switch" ng-change="toggleDeployed({{ intent.id }});"></md-switch>
+        <div>Deployed</div>
+    </div>
+    
     <h2>Chatbot response</h2>
     <div id='reply-messages-container'>
         <!-- <input type='submit' name='english' value='english'>
@@ -42,7 +52,7 @@
                             <textarea style='height:60px;' class='editable-content' name='modified_content' id='{{ category }}-e_{{ lang }}' ori_value='{{ intent["reply_message_"+lang] }}' required>{{ intent["reply_message_"+lang] }}</textarea>
                             <!-- <input id='save-button_{{ lang }}' class='save-button' type='submit' value='save'>
                             <input id='cancel-button_{{ lang }}' class='cancel-button' type='submit' form='' value='cancel' onclick="cancel_edit_space_reply(this.id, '{{ category }}')"> -->
-                            <button id='save-button_{{ lang }}' class='save-button' type='submit''>save</button>
+                            <button id='save-button_{{ lang }}' class='save-button' type='submit'>save</button>
                             <button id='cancel-button_{{ lang }}' class='cancel-button' type='submit' form='' onclick="cancel_edit_space_reply(this.id, '{{ category }}')">cancel</button>
                         </form>
                     </div>
@@ -52,7 +62,7 @@
     </div>
 
     <h2>Training samples</h2>
-    <div id='training-samples' ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditData();'>
+    <div id='training-samples'>
         {% set category='user-message' %}
         {% set wrapped=False %}
         {% set data='data_intents_edit' %}
@@ -113,7 +123,7 @@
             cancel_edit_space_reply(all_languages, category);
         }
 
-        var appIntentsEdit = angular.module('appIntentsEdit', []);
+        var appIntentsEdit = angular.module('appIntentsEdit', ['ngMaterial', 'ngMessages']);
 
         appIntentsEdit.config(['$interpolateProvider', function($interpolateProvider) {
             $interpolateProvider.startSymbol('{a');
@@ -123,15 +133,47 @@
         appIntentsEdit.controller('ctrlIntentsEdit', function ctrlIntentsEdit($scope, $http) {
             $scope.data_intents_edit = [];
             $scope.dummy;
+            $scope.deployed = false;
             
             $scope.getIntentsEditData = function getIntentsEditData() {
-                $http.post('/view_intents_edit', {'intent_name': '{{ intent.intent_name }}'})
-                .success(function(response)
-                    {
-                        $scope.data_intents_edit = response.data;
-                    }
+                $http.post('/view_intents_edit', {'intent_id': '{{ intent.id }}'})
+                .then(
+                    function(response)
+                        {
+                            $scope.data_intents_edit = response.data.training_data;
+                            $scope.deployed = response.data.deployed;
+                        }, 
+                    function(response)
+                        {
+                            console.log('getIntentsEditData error');
+                            console.log(response);
+                        }
                 );
+                // error handling
             };
+
+            $scope.toggleDeployed = function(intent_id) {
+                var ori = !$scope.deployed;
+
+                var data = {};
+                data['intent_id'] = intent_id;
+                data['value'] = $scope.deployed;
+                console.log(data);
+
+                $http.post('/intents_edit/toggle_deployed', data)
+                .then(
+                    function(response)
+                        {
+                            console.log(response);
+                            $scope.getIntentsEditData();
+                        }, 
+                    function(response)
+                        {
+                            console.log('toggleDeployed error');
+                            $scope.deployed = ori;
+                        }
+                )
+            }
 
             $scope.submitForm = function submitForm(target, job) {
                 var form = document.getElementById('form-'+job+'_'+target.id);
@@ -143,13 +185,19 @@
                 console.log(form_data);
 
                 $http.post('/intents_edit/{{ intent.intent_name }}', form_data)
-                .success(function(response)
-                    {
-                        // $scope.dummy = form_data;
-                        console.log(form_data);
-                        console.log(response);
-                        $scope.getIntentsEditData();
-                    }
+                .then(
+                    function(response)
+                        {
+                            // $scope.dummy = form_data;
+                            console.log(form_data);
+                            console.log(response);
+                            $scope.getIntentsEditData();
+                        }, 
+                    function(response)
+                        {
+                            console.log('submitForm error');
+                            console.log(response);
+                        }
                 );
             };
         });
