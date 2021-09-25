@@ -215,7 +215,7 @@ def view_intents_edit():
     intent = Intent.query.get_or_404(intent_name)
     
     with app.app_context():
-        return jsonify({'training_data': intent.training_data, 'deployed': intent.deployed})
+        return jsonify({'training_data': intent.training_data, 'deployed': intent.deployed, 'small_talk': intent.small_talk})
 
 @app.route('/intents_edit')
 def intents_base():
@@ -272,14 +272,14 @@ def intents(intent_name):
     
     return render_template('intents_edit.html', current_page='intents', intents=intents, intent=intent)
 
-@app.route('/intents_edit/toggle_deployed', methods=['POST'])
-def toggle_deployed():
+@app.route('/intents_edit/toggle', methods=['POST'])
+def toggle():
     data = json.loads(request.data.decode())
     print(data)
     intent = Intent.query.get_or_404(data['intent_id'])
-    intent.deployed = data['value']
+    setattr(intent, data['field'], data['value'])
     db.session.commit()
-    return jsonify({'code': 200, 'value': intent.deployed})
+    return jsonify({'code': 200, 'deployed': intent.deployed, 'small_talk': intent.small_talk})
 
 @app.route('/intents_add', methods=['GET', 'POST'])
 def intents_add():

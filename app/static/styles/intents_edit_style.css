@@ -76,6 +76,17 @@
     overflow-wrap: break-word;
 }
 
+#switches {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+#switches > div {
+    display: flex;
+    align-items: center;
+}
+
 #switches md-switch.md-checked .md-bar {
     background-color: rgb(165, 165, 252);
 }
@@ -86,13 +97,8 @@
     color: var(--thumb-color);
 }
 
-#switches {
-    display: flex;
-    align-items: center;
-}
-
-md-switch:last-of-type {
-    margin: auto 0;
+md-switch, md-switch:last-of-type {
+    margin: auto 16px auto 7px;
 }
 
 md-switch {

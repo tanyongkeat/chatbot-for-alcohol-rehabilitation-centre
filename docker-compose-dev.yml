@@ -2,6 +2,10 @@ version: '3.7'
 
 services:
 
+  psqldb:
+    ports:
+      - 5432:5432
+
   app:
     command: flask run --host=0.0.0.0
     volumes:

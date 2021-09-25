@@ -25,8 +25,14 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
     {% endwith %}
     
     <div id="switches">
-        <md-switch ng-model="deployed" aria-label="deployed_switch" ng-change="toggleDeployed({{ intent.id }});"></md-switch>
-        <div>Deployed</div>
+        <div>
+            <div>Deployed</div>
+            <md-switch ng-model="switches.deployed" aria-label="deployed_switch" ng-change="toggle({{ intent.id }}, 'deployed');"></md-switch>
+        </div>
+        <div>
+            <div>Casual</div>
+            <md-switch ng-model="switches.small_talk" aria-label="casual_switch" ng-change="toggle({{ intent.id }}, 'small_talk');"></md-switch>
+        </div>
     </div>
     
     <h2>Chatbot response</h2>
@@ -133,7 +139,10 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
         appIntentsEdit.controller('ctrlIntentsEdit', function ctrlIntentsEdit($scope, $http) {
             $scope.data_intents_edit = [];
             $scope.dummy;
-            $scope.deployed = false;
+            $scope.switches = {
+                'deployed': false, 
+                'small_talk': false
+            };
             
             $scope.getIntentsEditData = function getIntentsEditData() {
                 $http.post('/view_intents_edit', {'intent_id': '{{ intent.id }}'})
@@ -141,7 +150,8 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
                     function(response)
                         {
                             $scope.data_intents_edit = response.data.training_data;
-                            $scope.deployed = response.data.deployed;
+                            $scope.switches.deployed = response.data.deployed;
+                            $scope.switches.small_talk = response.data.small_talk;
                         }, 
                     function(response)
                         {
@@ -152,15 +162,16 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
                 // error handling
             };
 
-            $scope.toggleDeployed = function(intent_id) {
-                var ori = !$scope.deployed;
+            $scope.toggle = function(intent_id, field) {
+                var ori = !$scope.switches[field];
 
                 var data = {};
                 data['intent_id'] = intent_id;
-                data['value'] = $scope.deployed;
+                data['value'] = $scope.switches[field];
+                data['field'] = field;
                 console.log(data);
 
-                $http.post('/intents_edit/toggle_deployed', data)
+                $http.post('/intents_edit/toggle', data)
                 .then(
                     function(response)
                         {
@@ -169,8 +180,8 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
                         }, 
                     function(response)
                         {
-                            console.log('toggleDeployed error');
-                            $scope.deployed = ori;
+                            console.log(`toggle {field} error`);
+                            $scope.switches[field] = ori;
                         }
                 )
             }
