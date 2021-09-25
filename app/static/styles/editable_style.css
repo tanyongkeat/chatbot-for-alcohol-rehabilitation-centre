@@ -55,10 +55,13 @@ input[class*='button']:hover, button[class*='button'] {
 
 .delete-button::before {
     content: url('https://img.icons8.com/material/17/fa314a/delete-forever--v2.png');
-    position: relative;
-    /* transform: translateY(-50%); */
-    display: inline-block;
+    float: left; /* using float without clearing it so that no vertical space will be taken */
 }
+
+/* .delete-button:hover::before {
+    content: url('https://img.icons8.com/material/17/ff7383/delete-forever--v2.png');
+    color: #ff7383;
+} */
 
 .editable form, 
 #reply-messages form {
@@ -122,3 +125,9 @@ input[class*='button']:hover, button[class*='button'] {
 .delete-button:hover, .cancel-button:hover {
     color: #FA8585;
 }
+
+/* .delete-button:hover, .cancel-button:hover {
+    transition: all;
+    transition-duration: 0.7s;
+    transition-delay: 1s;
+} */
