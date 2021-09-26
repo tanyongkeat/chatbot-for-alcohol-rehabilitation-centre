@@ -130,7 +130,6 @@ def view_missed():
     with app.app_context():
         return jsonify({'data': captureds})
 
-#GETTER
 @app.route('/view_missed_intent', methods=['POST'])
 def view_missed_intent():
     intents = Intent.query.distinct().all()
@@ -141,7 +140,7 @@ def view_missed_intent():
 
 
 @app.route('/missed', methods=['GET', 'POST'])
-# @login_required
+@login_required
 def missed():
     '''
     TODO
@@ -191,6 +190,7 @@ def missed():
     return render_template('missed.html', current_page='missed', captureds=captureds, intents=intents)
 
 @app.route('/missed_new_intent', methods=['POST'])
+@login_required
 def missed_new_intent():
     target_id = request.form['id']
     target = HistoryFull.query.get_or_404(target_id)
@@ -217,13 +217,17 @@ def view_intents_edit():
     with app.app_context():
         return jsonify({'training_data': intent.training_data, 'deployed': intent.deployed, 'small_talk': intent.small_talk})
 
+
+
 @app.route('/intents_edit')
+@login_required
 def intents_base():
     intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
     intents = sorted(intents, key=lambda x: x[1])
     return render_template('intents_base.html', current_page='intents', intents=intents)
 
 @app.route('/intents_edit/<intent_name>', methods=['GET', 'POST'])
+@login_required
 def intents(intent_name):
     '''
     TODO
@@ -273,6 +277,7 @@ def intents(intent_name):
     return render_template('intents_edit.html', current_page='intents', intents=intents, intent=intent)
 
 @app.route('/intents_edit/toggle', methods=['POST'])
+@login_required
 def toggle():
     data = json.loads(request.data.decode())
     print(data)
@@ -282,6 +287,7 @@ def toggle():
     return jsonify({'code': 200, 'deployed': intent.deployed, 'small_talk': intent.small_talk})
 
 @app.route('/intents_add', methods=['GET', 'POST'])
+@login_required
 def intents_add():
     error = False
     if request.method == 'POST':
@@ -335,6 +341,7 @@ def intents_add():
     return render_template('intents_add.html', current_page='intents', intents=intents)
 
 @app.route('/delete_intent', methods=['POST'])
+@login_required
 def delete_intent():
     intent_id = request.form['intent_id']
     temp = Intent.query.get(intent_id)
