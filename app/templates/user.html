@@ -24,7 +24,27 @@
 	</head>
 	<body>
 		<h1></h1>
-		<p id='debug'></p>
+		<div id='content'>
+			<p id='debug'></p>
+
+			<div id="wrapD3Cube">
+				<h3>Website in Progress</h3>
+				<div id="D3Cube">
+					<div id="side1"></div>
+					<div id="side2"></div>
+					<div id="side3"></div>
+					<div id="side4"></div>
+					<div id="side5"></div>
+					<div id="side6"></div>
+				</div>
+			</div>
+		</div>
+
+		<footer>
+			<div>Powered by</div>
+			<img src="{{ url_for('static', filename='img/exabytes_logo_1.svg') }}" alt="Exabytes" width='160px'>
+		</footer>
+
 		<div id='chatsection'>
 			{% if registered %}
 				{% include 'user_chatbox.html' %}
@@ -33,7 +53,7 @@
 			{% endif %}
 		</div>
 
-		<div id='chatcircle' class='hidden' onclick='document.getElementById("chatsection").classList.remove("hidden"); this.classList.add("hidden"); document.getElementById("textInput").focus()'>
+		<div id='chatcircle' class='hidden' onclick='document.getElementById("chatsection").classList.remove("hidden"); this.classList.add("hidden");'>
 			<span class="fa fa-comments fa-3x" aria-hidden="true"></span>
 		</div>
 	</body>

@@ -24,6 +24,7 @@
     flex-wrap: nowrap;
     overflow-y: auto;
     overflow-x: hidden;
+    background-color: white;
 }
 
 @media
@@ -133,6 +134,11 @@ all and (max-height: 480px) {
     justify-content: space-evenly;
     /* height: 8%; */
     /* padding-top: 2px; hack */
+}
+
+.userInput_focus {
+    z-index: 3;
+    box-shadow: 0 -1px 5px 1px #f0f0f0;
 }
 
 #hack {
