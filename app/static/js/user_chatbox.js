@@ -88,6 +88,9 @@ function reply(utterence, target, current_message_counter) {
         
         response = response_all['prediction'];
         if (response.length == 1) {
+            var thumbsdown_icon = 'thumbsdown fa fa-thumbs-down fa-lg';
+            var thumbsup_icon = 'thumbsup fa fa-thumbs-up fa-lg';
+
             target.innerHTML = 
             `
             <span>
@@ -97,8 +100,10 @@ function reply(utterence, target, current_message_counter) {
                 <div class='thumbs_container'>
                     <!-- <input class="thumbsdown" id="${thumbsdownId}" type="image" alt='thumbs down' src="https://img.icons8.com/material-sharp/15/fa314a/thumbs-down.png" onclick="getPredictedWrongMessage(this.id, 'negative')"> -->
                     <!-- <input class="thumbsup" id="${thumbsupId}" type="image" alt='thumbs up' src="https://img.icons8.com/material-rounded/15/26e07f/thumb-up.png" onclick="getPredictedWrongMessage(this.id, 'positive')"> -->
-                    <button class="thumbsdown fa fa-thumbs-down fa-lg" id="${thumbsdownId}" type="button" onclick="getPredictedWrongMessage(this.id, 'negative')">
-                    <button class="thumbsup fa fa-thumbs-up fa-lg" id="${thumbsupId}" type="button" onclick="getPredictedWrongMessage(this.id, 'positive')">                    
+                    <button class="${thumbsdown_icon}" id="${thumbsdownId}" type="button" 
+                        onclick="sendMessage('That is not what I meant.', 'user', '');getPredictedWrongMessage(this.id, 'negative')">
+                    <button class="${thumbsup_icon}" id="${thumbsupId}" type="button" 
+                        onclick="sendMessage('Good job.', 'user', '');getPredictedWrongMessage(this.id, 'positive')">                    
                 </div>
             </span>
             `;
@@ -126,7 +131,7 @@ function reply(utterence, target, current_message_counter) {
             scroll(selection);
 
             selections.forEach(item => {
-                item.firstChild.addEventListener('click', event=> sendMessage(event.target.innerHTML, 'user', ''));
+                item.firstChild.addEventListener('click', event => sendMessage(event.target.innerHTML, 'user', ''));
             });
 
             selection.firstChild.onclick = function() {
@@ -212,7 +217,7 @@ function getPredictedWrongMessage(id, feedback) {
             sendMessage('You can email testing@gmail.com for more info or try to rephrase your question to help me understand it better.', 'bot', 'none')
         }
     }).fail(function() {
-        apology.innerHTML = "<span><span>I am sorry, something is wrong. Feedback not captured.</span></span>"
+        apology.innerHTML = "<span><span>I am sorry, something is wrong. Feedback is not captured.</span></span>"
     });
     
     scroll(apology);
