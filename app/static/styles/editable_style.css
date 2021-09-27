@@ -49,13 +49,23 @@ input[class*='button'], button[class*='button'] {
     text-align: center;
 }
 
-input[class*='button']:hover, button[class*='button'] {
+input[class*='button']:hover, button[class*='button']:hover {
     cursor: pointer;
 }
 
 .delete-button::before {
-    content: url('https://img.icons8.com/material/17/fa314a/delete-forever--v2.png');
-    float: left; /* using float without clearing it so that no vertical space will be taken */
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+
+    /* content: url('https://img.icons8.com/material/17/fa314a/delete-forever--v2.png'); */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 400; /* use 900 for fuller version */
+    /* content: "\f1f8"; */
+    content: "\f2ed";
+    /* float: left; /* using float without clearing it so that no vertical space will be taken */
 }
 
 /* .delete-button:hover::before {
@@ -70,13 +80,14 @@ input[class*='button']:hover, button[class*='button'] {
     align-items: flex-start;
 }
 
-.editable form button, 
-#reply-messages form button {
+/* changed .editable form button/etc to only .editable button, change back if there is any bug */
+.editable button, 
+#reply-messages button {
     flex-grow: 0;
     flex-shrink: 0;
 }
 
-.editable form textarea, .editable form .editable-content, 
+.editable textarea, .editable .editable-content, 
 #reply-messages form textarea, #reply-messages form .editable-content {
     flex-grow: 1;
     flex-shrink: 1;
@@ -85,16 +96,17 @@ input[class*='button']:hover, button[class*='button'] {
 
 @media all and (max-width: 700px) {
     .editable form, 
+    .itents-add-elem .editable, 
     #reply-messages form {
         flex-wrap: wrap;
     }
 
-    .editable form textarea, .editable form .editable-content, 
+    .editable textarea, .editable .editable-content, 
     #reply-messages form textarea, #reply-messages form .editable-content {
         width: 100%;
     }
 
-    .editable form button:first-of-type, 
+    .editable button:first-of-type, 
     #reply-messages form button:first-of-type {
         margin-left: auto;
     }

@@ -33,9 +33,7 @@ label {
 }
 
 .editable {
-    margin: 5px 0px;
-    width: 85%;
-    box-sizing: border-box;
+    display: flex;
 }
 
 .save-button, .cancel-button {

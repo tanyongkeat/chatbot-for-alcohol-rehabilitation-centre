@@ -40,7 +40,7 @@
 
 
     <h2>Training samples</h2>
-    <div id='training-samples-add'>
+    <div id='training-samples-add' class='itents-add-elem'>
         {% if preset_training_sample %}
             <div class='editable' id='training-sample-box_0'>
                 <input class='editable-content' type="text" name='training_sample_0' form='add_form' value='{{ preset_training_sample }}'>
@@ -79,10 +79,10 @@
             training_sample.required = true;
             training_sample.value = training_sample_text;
             
-            var delete_button = document.createElement('input');
+            var delete_button = document.createElement('button');
             delete_button.type = 'submit';
             delete_button.id = 'sample-delete-button_'+sample_count;
-            delete_button.value = 'delete';
+            delete_button.innerHTML = ' delete';
             delete_button.className = 'delete-button';
             delete_button.onclick = function () {
                 remove_training_sample(this.id)
