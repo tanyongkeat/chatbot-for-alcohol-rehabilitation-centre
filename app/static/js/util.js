@@ -27,6 +27,10 @@ function preventZoomOnInput() {
     }
 }
 
+function removeError(node) {
+    document.getElementById('error').removeChild(node.parentNode.parentNode);
+}
+
 
 function hideKeyboard() {
     //this set timeout needed for case when hideKeyborad

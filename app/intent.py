@@ -39,7 +39,7 @@ def read_data():
         ).filter_by(deployed=True).statement, 
         con = db.session.bind
     )
-    dataset = reply.merge(dataset, how='left', left_on='id', right_on='intent_id')
+    dataset = reply.merge(dataset, how='inner', left_on='id', right_on='intent_id')
     # dataset = dataset[dataset.deployed]
     
     loaded_encoding = dataset.encoding.apply(lambda x: json.loads(x)).tolist()

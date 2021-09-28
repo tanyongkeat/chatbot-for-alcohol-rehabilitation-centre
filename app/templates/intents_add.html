@@ -54,14 +54,20 @@
         <a class='cancel-button' href='/intents_edit'>cancel</a>
     </div>
 
+    {% if training_datas %}
+        <script>
+            $(document).ready(function() {
+                // var training_datas = JSON.parse('{{ training_datas }}');
+                // console.log({{ training_datas | safe }})
+                var training_datas = JSON.parse('{{ training_datas | tojson | safe }}');
+                // var training_datas = {{ training_datas | tojson | safe }};
+                console.log(training_datas)
+                for (i = 0; i < training_datas.length; i++) add_training_samples(training_datas[i])
+            })
+        </script>
+    {% endif %}
 
     <script>
-        $(document).ready(function() {
-            {% for training_data in training_datas %}
-                add_training_samples("{{ training_data }}");
-            {% endfor %}
-        })
-
         sample_count = 1;
 
         function add_training_samples(training_sample_text='') {

@@ -68,6 +68,52 @@ h1:first-letter, h3:first-letter {
     color: red;
 }
 
+#error {
+    width: 80%;
+    margin-left: 2.5%;
+    margin-right: auto;
+    margin-bottom: 1rem;
+}
+
+#error > div {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    border-color: red;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 5px;
+    color: red;
+    background: rgb(255, 219, 219);
+}
+
+.error-messages {
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin: 3px 0;
+}
+
+.error-message {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* .error-message::before {
+    content: '\21';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 400;
+} */
+
+#error > div span {
+    margin: 3px 15px 0;
+    font-size: 0.7rem;
+}
+
+#error > div span a:hover {
+    cursor: pointer;
+    color:rgb(255, 139, 139)
+}
+
 ::-webkit-scrollbar {
     width: 3px;
 }

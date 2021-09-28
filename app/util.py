@@ -2,10 +2,26 @@ from config import host, port, database, user, pw
 import psycopg2
 import pandas as pd
 import json
+import werkzeug
 from app.models import Intent, TrainingData
 from app.intent import model
 from sqlalchemy import func
+import flask
 from flask import flash
+
+
+FIELD_EMPTY_MESSAGE = 'This field cannot be left empty'
+
+class EmptyRequiredField(werkzeug.exceptions.HTTPException):
+    code = 400
+    description = FIELD_EMPTY_MESSAGE
+
+class CustomError(werkzeug.exceptions.HTTPException):
+    def __init__(self, description='Something is not right', code=400):
+        super().__init__()
+        self.description = description
+        self.code = code
+
 
 
 def query_db(sql):
@@ -15,9 +31,13 @@ def query_db(sql):
     return data
 
 
-def create_training_data(user_message, intent_name):
-    intent_id = Intent.query.filter_by(intent_name=intent_name).first().id
-    if not intent_id:
+def create_training_data(user_message, intent_id):
+    if not user_message:
+        flash(FIELD_EMPTY_MESSAGE)
+        return None
+
+    intent = Intent.query.get(intent_id)
+    if not intent:
         flash('Cannot find intent')
         return None
     same_sample = TrainingData.query.filter(func.lower(TrainingData.user_message) == func.lower(user_message)).first()
@@ -33,3 +53,9 @@ def create_intent(intent_name, reply_message_en, reply_message_my):
         flash('The intent name already exists')
         return None
     return Intent(intent_name=intent_name, reply_message_en=reply_message_en, reply_message_my=reply_message_my)
+
+def strip_tags(string):
+    return flask.Markup(string).striptags()
+
+def sanitize(string):
+    return flask.escape(string)

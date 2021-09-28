@@ -14,6 +14,19 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
     <input type='checkbox' name='deployed' {% if intent.deployed %}checked{% endif %}> -->
     <hr style='width: 97%;'>
     <div id='debug'></div>
+        
+    <div id='error'>
+        <div>
+            <span class="fa-solid fa-triangle-exclamation"></span>
+            <div class='error-messages'>
+                <div class="error-message">The reply field cannot be left empty</div>
+                <!-- <div class="error-message">Error message 2</div>
+                <div class="error-message">Error message 3</div> -->
+            </div>
+            <span><a class="fa-solid fa-xmark" onclick='removeError(this)'></a></span>
+        </div>
+    </div>
+
     {% with messages = get_flashed_messages() %}
         {% if messages %}
         <ul class='flashed-message'>
@@ -82,12 +95,15 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
             <input id='{{ category }}-display_{{ placeholder }}' class='add-button' type='submit' value='+' onclick="show_edit_space(this.id, '{{ category }}')">
             <div id='{{ category }}-edit_{{ placeholder }}' class='editable-edit' style='display: none; padding: 5px 0'>
                 <form action='' method='POST'>
-                    <input type="hidden" name="job" value="add_sample">
-                    <textarea class='editable-content' cols=2 name='user_message' id='{{ category }}-e_{{ placeholder }}' ori_value='' required></textarea>
+                    <!-- <input type="hidden" name="job" value="add_sample"> -->
+                    <textarea class='editable-content' cols=2 name='user_message' id='{{ category }}-e_{{ placeholder }}' 
+                        ng-model='add_intent_form.user_message' ori_value='' required></textarea>
                     <!-- <input id='cancel-button_{{ placeholder }}' class='cancel-button' type='submit' value='cancel' form='' onclick="cancel_edit_space(this.id, '{{ category }}')">
                     <input id='save-button_{{ placeholder }}' class='save-button' type='submit' value='save'> -->
-                    <button id='save-button_{{ placeholder }}' class='save-button' type='submit'>save</button>
-                    <button id='cancel-button_{{ placeholder }}' class='cancel-button' type='submit' form='' onclick="cancel_edit_space(this.id, '{{ category }}')">cancel</button>
+                    <button id='save-button_{{ placeholder }}' class='save-button' type='submit' form='' 
+                        ng-click="addSample($event, '{{ category }}');">save</button>
+                    <button id='cancel-button_{{ placeholder }}' class='cancel-button' type='submit' form='' 
+                        onclick="cancel_edit_space(this.id, '{{ category }}')">cancel</button>
                 </form>
             </div>
         </div>
@@ -95,7 +111,7 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
 
     <script>
         $(document).ready(function() {
-            document.getElementById('select-language-button_en').click();
+            document.getElementById('select-language-button_{% if language %}{{ language }}{% else %}en{% endif %}').click();
         });
 
         // angular.element(document).ready(function() {
@@ -143,6 +159,10 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
                 'deployed': false, 
                 'small_talk': false
             };
+            $scope.add_intent_form = {
+                'intent_id': parseInt("{{ intent.id }}"), 
+                'user_message': ''
+            }
             
             $scope.getIntentsEditData = function getIntentsEditData() {
                 $http.post('/view_intents_edit', {'intent_id': '{{ intent.id }}'})
@@ -208,9 +228,40 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
                         {
                             console.log('submitForm error');
                             console.log(response);
+                            alert(response.data);
                         }
                 );
             };
+
+            $scope.addSample = function(event, category) {
+                var intent_id = $scope.add_intent_form.intent_id;
+                var user_message = $scope.add_intent_form.user_message;
+
+                if (!user_message) {
+                    alert('This field cannot be left empty');
+                    return;
+                }
+
+                form_data = {'intent_id': intent_id, 'user_message': user_message};
+
+                $http.post('/intents_edit/add_sample', form_data)
+                .then(
+                    function(response)
+                        {
+                            console.log(form_data);
+                            console.log(response);
+                            $scope.getIntentsEditData();
+                        }, 
+                    function(response)
+                        {
+                            console.log('addSample error');
+                            console.log(response);
+                            alert(response.data);
+                        }
+                );
+
+                cancel_edit_space(event.target.id, category);
+            }
         });
 
         // window.onload = function() {

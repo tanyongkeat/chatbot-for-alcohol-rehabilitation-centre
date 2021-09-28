@@ -8,9 +8,6 @@ selection_responses = {[contact_admin]: 'You can email testing@gmail.com for mor
 
 
 
-$(document).ready(function() {
-    chatboxInit();
-})
 
 function chatboxInit() {
     $("#textInput").keyup(function(e) {
@@ -62,11 +59,16 @@ function autoResize(target) {
     }
 }
 
+function sanitize(string) {
+    return document.createElement('div').appendChild(document.createTextNode(string)).parentNode.innerHTML;
+}
+
 function getBotResponse() {
     var current_message_counter = message_counter;
     message_counter += 1;
 
     var raw_text = $("#textInput").val();
+    raw_text = sanitize(raw_text);
     $("#textInput").val("");
 
     document.getElementById('hack').innerHTML = "";

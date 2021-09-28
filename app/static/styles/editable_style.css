@@ -53,26 +53,6 @@ input[class*='button']:hover, button[class*='button']:hover {
     cursor: pointer;
 }
 
-.delete-button::before {
-    display: inline-block;
-    font-style: normal;
-    font-variant: normal;
-    text-rendering: auto;
-    -webkit-font-smoothing: antialiased;
-
-    /* content: url('https://img.icons8.com/material/17/fa314a/delete-forever--v2.png'); */
-    font-family: "Font Awesome 6 Free";
-    font-weight: 400; /* use 900 for fuller version */
-    /* content: "\f1f8"; */
-    content: "\f2ed";
-    /* float: left; /* using float without clearing it so that no vertical space will be taken */
-}
-
-/* .delete-button:hover::before {
-    content: url('https://img.icons8.com/material/17/ff7383/delete-forever--v2.png');
-    color: #ff7383;
-} */
-
 .editable form, 
 #reply-messages form {
     display: flex;
@@ -137,6 +117,51 @@ input[class*='button']:hover, button[class*='button']:hover {
 .delete-button:hover, .cancel-button:hover {
     color: #FA8585;
 }
+
+button::before {
+    margin-right: 0.2rem;
+    font-size: 0.75rem;
+}
+
+.editable-edit .save-button::before {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 400;
+    content: "\f0c7";
+}
+
+.edit-button::before {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    content: "\f304";
+}
+
+.delete-button::before {
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+
+    /* content: url('https://img.icons8.com/material/17/fa314a/delete-forever--v2.png'); */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 400; /* use 900 for fuller version */
+    /* content: "\f1f8"; */
+    content: "\f2ed";
+    /* float: left; /* using float without clearing it so that no vertical space will be taken */
+}
+
+.editable-edit .cancel-button::before {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    content: "\f00d";
+    vertical-align: middle;
+}
+
+
+/* .delete-button:hover::before {
+    content: url('https://img.icons8.com/material/17/ff7383/delete-forever--v2.png');
+    color: #ff7383;
+} */
 
 /* .delete-button:hover, .cancel-button:hover {
     transition: all;

@@ -2,19 +2,22 @@ from dataclasses import dataclass
 import flask
 from flask import render_template, render_template_string, jsonify, flash, redirect, url_for, request, session
 from flask_login import current_user, login_user, logout_user, login_required
+import werkzeug
 from werkzeug.urls import url_parse
+from werkzeug.exceptions import BadRequest
+from werkzeug.wrappers import Response
+
 from app import app, db, login_manager
 from app.intent import detect_intention
 from app.models import HistoryFull, Intent, TrainingData, ChatHistory, Admin
 from app.forms import LoginForm
-from app.util import create_training_data, create_intent
+from app.util import create_training_data, create_intent, FIELD_EMPTY_MESSAGE, EmptyRequiredField, CustomError, strip_tags, sanitize
 from sqlalchemy import func
 import json
 import re
 
 
 
-FIELD_EMPTY_MESSAGE = 'please kindly fill in all the needed field'
 no_information_required = False
 
 
@@ -35,7 +38,7 @@ def reply():
             session['chat_id'] = 1
         else:
             flask.abort(406) # importatnt
-    ut = request.form['utterence']
+    ut = sanitize(request.form['utterence'])
     prediction = detect_intention(ut)
     predicted_intent_ids = [pre['intent_id'] for pre in prediction]
     obj = HistoryFull(
@@ -174,7 +177,7 @@ def missed():
                 # intents = sorted(intents, key=lambda x: x[1])
                 # return render_template('intents_add.html', current_page='intents', intents=intents, preset_sample_id=target_id, preset_training_sample=target.utterance)
             intent_id = data['intent']
-            new_training_data = create_training_data(target.utterance, Intent.query.get(intent_id).intent_name)
+            new_training_data = create_training_data(target.utterance, intent_id)
             if new_training_data:
                 db.session.add(new_training_data)
                 target.trained = True
@@ -234,6 +237,7 @@ def intents(intent_name):
     404 error for non-existance intents
     '''
     intent = Intent.query.filter_by(intent_name=intent_name).first_or_404()
+    lang = None
 
     if request.method == 'POST':
         if request.data: # ajax
@@ -265,16 +269,16 @@ def intents(intent_name):
             db.session.delete(temp)
             db.session.commit()
             return jsonify({'code': 200})
-        elif job == 'add_sample':
-            training_data = create_training_data(request.form['user_message'], intent_name)
-            if training_data:
-                db.session.add(training_data)
+        # elif job == 'add_sample':
+        #     training_data = create_training_data(request.form['user_message'], intent.id)
+        #     if training_data:
+        #         db.session.add(training_data)
         db.session.commit()
         # refresh_dataset()
     intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
     intents = sorted(intents, key=lambda x: x[1])
     
-    return render_template('intents_edit.html', current_page='intents', intents=intents, intent=intent)
+    return render_template('intents_edit.html', current_page='intents', intents=intents, intent=intent, language=lang)
 
 @app.route('/intents_edit/toggle', methods=['POST'])
 @login_required
@@ -286,13 +290,33 @@ def toggle():
     db.session.commit()
     return jsonify({'code': 200, 'deployed': intent.deployed, 'small_talk': intent.small_talk})
 
+@app.route('/intents_edit/add_sample', methods=['POST'])
+@login_required
+def add_sample():
+    data = json.loads(request.data.decode())
+    print(data)
+    training_data = create_training_data(data['user_message'], data['intent_id'])
+    if training_data:
+        db.session.add(training_data)
+    else:
+        return jsonify({'code': 400})
+    db.session.commit()
+    return jsonify({'code': 200})
+
+
+#######################
+###                 ###
+###   INTENTS_ADD   ###
+###                 ###
+#######################
+
 @app.route('/intents_add', methods=['GET', 'POST'])
 @login_required
 def intents_add():
     error = False
     if request.method == 'POST':
         training_datas_args = [key for key in request.form if 'training_sample' in key]
-        training_datas = [request.form[key] for key in training_datas_args]
+        training_datas = [strip_tags(request.form[key]) for key in training_datas_args]
         # if 
         """
             behavior:
@@ -308,7 +332,7 @@ def intents_add():
             db.session.commit()
             # TODO ajax to signify that a training sample is used
             for training_data in training_datas:
-                temp = create_training_data(training_data, intent_name)
+                temp = create_training_data(training_data, intent.id)
                 if temp:
                     db.session.add(temp)
             if 'preset_sample_id' in request.form:
@@ -335,9 +359,11 @@ def intents_add():
             target_id = request.form['preset_sample_id']
             target = HistoryFull.query.get_or_404(target_id)
             target_utterance = target.utterance
-            training_datas = [request.form[key] for key in training_datas_args if key != 'training_sample_0']
+            training_datas = [strip_tags(request.form[key]) for key in training_datas_args if key != 'training_sample_0']
         
-        return render_template('intents_add.html', current_page='intents', intents=intents, form_data=form_data, training_datas=training_datas, preset_sample_id=target_id, preset_training_sample=target_utterance)
+        return render_template('intents_add.html', current_page='intents', intents=intents, 
+                                form_data=form_data, training_datas=training_datas, preset_sample_id=target_id, 
+                                preset_training_sample=target_utterance)
     return render_template('intents_add.html', current_page='intents', intents=intents)
 
 @app.route('/delete_intent', methods=['POST'])
@@ -357,6 +383,29 @@ def testing():
         return 'you just posted something mdfk ' + haha
     return render_template('testing.html')
 
+
+
+##########################
+###                    ###
+###   ERROR_HANDLING   ###
+###                    ###
+##########################
+
+@app.errorhandler(EmptyRequiredField)
+def handle_emptyRequiredField(e):
+    return jsonify({'error_description': e.description}), e.code
+
+@app.errorhandler(CustomError)
+def handle_customError(e):
+    return jsonify({'error_description': e.description}), e.code
+    # raise CustomError(jsonify({'text': 'hello'})) # use this to return object
+    # try:
+    #     raise CustomError('which side will it be on? try catch or wsgi?')
+    # except werkzeug.exceptions.HTTPException as ce:
+    #     print('it is wsgi!' + ce.description)
+    #     return 'it is wsgi!' + ce.description, 400
+
+    
 
 # if __name__ == '__main__':
 #     app.run(debug=True)

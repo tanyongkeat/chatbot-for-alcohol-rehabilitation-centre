@@ -8,12 +8,8 @@
             <span id='{{ category }}_{a target.id a}' class="editable-content">{a target.{{ text }} a}</span>
             <!-- <input ng-click="submitForm(target, '{{ job }}')" id='delete-button_{a target.id a}' class='delete-button' type='image' src='https://img.icons8.com/material/17/fa314a/delete-forever--v2.png'>
             <input id='edit-button_{a target.id a}' class='edit-button' type='submit' value='edit' form='' onclick="show_edit_space(this.id, '{{ category }}')"> -->
-            <button id='edit-button_{a target.id a}' class='edit-button' type='submit' form='' onclick="show_edit_space(this.id, '{{ category }}')">
-                edit
-            </button>
-            <button ng-click="submitForm(target, '{{ job }}')" id='delete-button_{a target.id a}' class='delete-button' type='submit'>
-                delete
-            </button>
+            <button id='edit-button_{a target.id a}' class='edit-button' type='submit' form='' onclick="show_edit_space(this.id, '{{ category }}')">edit</button>
+            <button ng-click="submitForm(target, '{{ job }}')" id='delete-button_{a target.id a}' class='delete-button' type='submit'>delete</button>
         </form>
     </div>
     <div id='{{ category }}-edit_{a target.id a}' class='editable-edit' style='display:None;'>
