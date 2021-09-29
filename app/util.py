@@ -12,15 +12,16 @@ from flask import flash
 
 FIELD_EMPTY_MESSAGE = 'This field cannot be left empty'
 
-class EmptyRequiredField(werkzeug.exceptions.HTTPException):
-    code = 400
-    description = FIELD_EMPTY_MESSAGE
 
 class CustomError(werkzeug.exceptions.HTTPException):
     def __init__(self, description='Something is not right', code=400):
         super().__init__()
         self.description = description
         self.code = code
+
+class EmptyRequiredField(CustomError):
+    def __init__(self, field='This field', code=400):
+        super().__init__(field+' cannot be left empty', code)
 
 
 
@@ -40,9 +41,10 @@ def create_training_data(user_message, intent_id):
     if not intent:
         flash('Cannot find intent')
         return None
+    
     same_sample = TrainingData.query.filter(func.lower(TrainingData.user_message) == func.lower(user_message)).first()
     if same_sample:
-        flash('Sample "' + user_message + '" exists in ' + same_sample.intent.intent_name)
+        flash('Sample <em>' + user_message + '</em> exists in <em>' + same_sample.intent.intent_name + '</em>')
         return None
     return TrainingData(user_message=user_message, intent_id=intent_id, encoding=json.dumps(model.encode(user_message).tolist()))
 

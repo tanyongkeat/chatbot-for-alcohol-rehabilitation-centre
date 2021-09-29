@@ -31,6 +31,30 @@ function removeError(node) {
     document.getElementById('error').removeChild(node.parentNode.parentNode);
 }
 
+function flashError(error_list) {
+    if (!error_list || error_list.length == 0) return;
+
+    document.getElementById('error').innerHTML = document.getElementById('error').innerHTML + `
+    <div>
+        <span class="fa-solid fa-triangle-exclamation"></span>
+        <div class='error-messages'>
+            ${
+                error_list.map(function(error_message) {
+                    return `<div class="error-message">${error_message}</div>`
+                }).join('')
+            }
+        </div>
+        <span><a class="fa-solid fa-xmark" onclick='removeError(this)'></a></span>
+    </div>
+    `
+}
+
+function flashFlashed() {
+    flashed = get_flashed();
+    console.log(flashed);
+    flashError(flashed);
+}
+
 
 function hideKeyboard() {
     //this set timeout needed for case when hideKeyborad

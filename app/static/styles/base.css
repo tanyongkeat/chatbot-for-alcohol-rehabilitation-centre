@@ -85,6 +85,7 @@ h1:first-letter, h3:first-letter {
     border-radius: 5px;
     color: red;
     background: rgb(255, 219, 219);
+    margin-bottom: 3px;
 }
 
 .error-messages {

@@ -15,6 +15,9 @@
     <h1><input id='intent-name-input' name='intent_name' type='text' form='add_form' {% if form_data %}value='{{ form_data.intent_name }}'{% endif %} required></h1>
     <hr>
     <div id='debug'></div>
+    <div id='error'></div>
+
+    {#
     {% with messages = get_flashed_messages() %}
         {% if messages %}
         <ul class='flashed-message'>
@@ -24,7 +27,7 @@
         </ul>
         {% endif %}
     {% endwith %}
-
+    #}
 
     <h2>Chatbot response</h2>
     <!-- <div id='reply-message-header'>
@@ -51,23 +54,26 @@
 
     <div>
         <input class='save-button' name='save' type="submit" form='add_form' value='save'> 
-        <a class='cancel-button' href='/intents_edit'>cancel</a>
+        {% if previous_page == 'missed' %}
+            <a class='cancel-button' href='/missed'>cancel</a>
+        {% else %}
+            <a class='cancel-button' href='/intents_edit'>cancel</a>
+        {% endif %}
     </div>
 
-    {% if training_datas %}
-        <script>
-            $(document).ready(function() {
-                // var training_datas = JSON.parse('{{ training_datas }}');
-                // console.log({{ training_datas | safe }})
-                var training_datas = JSON.parse('{{ training_datas | tojson | safe }}');
-                // var training_datas = {{ training_datas | tojson | safe }};
-                console.log(training_datas)
-                for (i = 0; i < training_datas.length; i++) add_training_samples(training_datas[i])
-            })
-        </script>
-    {% endif %}
+    {% include 'jinja.jinja-html' %}
 
     <script>
+        $(document).ready(function() {
+            // var error_messages = {{ get_flashed_messages() | tojson | safe }};
+            // var error_messages = get_flashed();
+            flashFlashed();
+
+            var training_datas = get_training_datas();
+            console.log(training_datas)
+            for (i = 0; i < training_datas.length; i++) add_training_samples(training_datas[i]);
+        })
+
         sample_count = 1;
 
         function add_training_samples(training_sample_text='') {

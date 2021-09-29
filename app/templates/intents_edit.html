@@ -15,18 +15,9 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
     <hr style='width: 97%;'>
     <div id='debug'></div>
         
-    <div id='error'>
-        <div>
-            <span class="fa-solid fa-triangle-exclamation"></span>
-            <div class='error-messages'>
-                <div class="error-message">The reply field cannot be left empty</div>
-                <!-- <div class="error-message">Error message 2</div>
-                <div class="error-message">Error message 3</div> -->
-            </div>
-            <span><a class="fa-solid fa-xmark" onclick='removeError(this)'></a></span>
-        </div>
-    </div>
-
+    <div id='error'></div>
+    
+    {#
     {% with messages = get_flashed_messages() %}
         {% if messages %}
         <ul class='flashed-message'>
@@ -36,6 +27,7 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
         </ul>
         {% endif %}
     {% endwith %}
+    #}
     
     <div id="switches">
         <div>
@@ -109,9 +101,15 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
         </div>
     </div>
 
+    {% include 'jinja.jinja-html' %}
     <script>
         $(document).ready(function() {
             document.getElementById('select-language-button_{% if language %}{{ language }}{% else %}en{% endif %}').click();
+
+            // var error_messages = {{ get_flashed_messages() | tojson | safe }};
+            // flashError(error_messages);
+            var error_messages = get_flashed();
+            flashFlashed();
         });
 
         // angular.element(document).ready(function() {

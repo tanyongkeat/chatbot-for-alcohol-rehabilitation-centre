@@ -199,7 +199,8 @@ def missed_new_intent():
     target = HistoryFull.query.get_or_404(target_id)
     intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
     intents = sorted(intents, key=lambda x: x[1])
-    return render_template('intents_add.html', current_page='intents', intents=intents, preset_sample_id=target_id, preset_training_sample=target.utterance)
+    return render_template('intents_add.html', current_page='intents', previous_page='missed', intents=intents, 
+                            preset_sample_id=target_id, preset_training_sample=target.utterance)
 
 
 
@@ -314,6 +315,7 @@ def add_sample():
 @login_required
 def intents_add():
     error = False
+    additional_jinja_vars = {}
     if request.method == 'POST':
         training_datas_args = [key for key in request.form if 'training_sample' in key]
         training_datas = [strip_tags(request.form[key]) for key in training_datas_args]
@@ -358,13 +360,18 @@ def intents_add():
         if 'preset_sample_id' in request.form:
             target_id = request.form['preset_sample_id']
             target = HistoryFull.query.get_or_404(target_id)
-            target_utterance = target.utterance
+            if 'training_sample_0' in training_datas_args:
+                target_utterance = strip_tags(request.form['training_sample_0'])
+            else:
+                target_utterance = target.utterance
             training_datas = [strip_tags(request.form[key]) for key in training_datas_args if key != 'training_sample_0']
         
-        return render_template('intents_add.html', current_page='intents', intents=intents, 
-                                form_data=form_data, training_datas=training_datas, preset_sample_id=target_id, 
-                                preset_training_sample=target_utterance)
-    return render_template('intents_add.html', current_page='intents', intents=intents)
+        additional_jinja_vars['form_data'] = form_data
+        additional_jinja_vars['training_datas'] = training_datas
+        additional_jinja_vars['preset_sample_id'] = target_id
+        additional_jinja_vars['preset_training_sample'] = target_utterance
+                                
+    return render_template('intents_add.html', current_page='intents', intents=intents, **additional_jinja_vars)
 
 @app.route('/delete_intent', methods=['POST'])
 @login_required
@@ -381,6 +388,10 @@ def testing():
     if request.method == 'POST':
         haha = request.form['title']
         return 'you just posted something mdfk ' + haha
+    try:
+        raise EmptyRequiredField('Haha')
+    except CustomError as ce:
+        flash(ce.description)
     return render_template('testing.html')
 
 
@@ -398,6 +409,10 @@ def handle_emptyRequiredField(e):
 @app.errorhandler(CustomError)
 def handle_customError(e):
     return jsonify({'error_description': e.description}), e.code
+
+@app.errorhandler(werkzeug.exceptions.BadRequestKeyError)
+def handle_badRequestKeyError(e):
+    return "Uh uh, don't try anything nasty"
     # raise CustomError(jsonify({'text': 'hello'})) # use this to return object
     # try:
     #     raise CustomError('which side will it be on? try catch or wsgi?')

@@ -1,0 +1,13 @@
+<script>
+    function get_training_datas() {
+        {% if training_datas %}
+            return {{ training_datas | tojson | safe }};
+        {% else %}
+            return [];
+        {% endif %}
+    }
+
+    function get_flashed() {
+        return {{ get_flashed_messages() | tojson | safe }};
+    }
+</script>

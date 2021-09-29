@@ -6,5 +6,6 @@ psql_data
 .idea
 .vscode
 app/__pycache__
+app/temp.py
 __pycache__
 note.txt

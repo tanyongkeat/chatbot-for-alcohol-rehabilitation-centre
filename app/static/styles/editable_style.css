@@ -33,6 +33,7 @@
     border-color: Transparent; 
     overflow: auto;
     outline: none;
+    word-break: break-word;
 }
 
 textarea.editable-content {
