@@ -9,9 +9,9 @@ from werkzeug.wrappers import Response
 
 from app import app, db, login_manager
 from app.intent import detect_intention
-from app.models import HistoryFull, Intent, TrainingData, ChatHistory, Admin
+from app.models import HistoryFull, Intent, TrainingData, ChatHistory, Admin, MAX_USER_INPUT_LEN, MAX_REPLY_LEN, MAX_EMAIL_LEN, MAX_INTENT_NAME_LEN
 from app.forms import LoginForm
-from app.util import create_training_data, create_intent, FIELD_EMPTY_MESSAGE, EmptyRequiredField, CustomError, strip_tags, sanitize
+from app.util import create_training_data, update_training_data, create_intent, FIELD_EMPTY_MESSAGE, EmptyRequiredField, CustomError, strip_tags, sanitize
 from sqlalchemy import func
 import json
 import re
@@ -37,8 +37,8 @@ def reply():
         if no_information_required:
             session['chat_id'] = 1
         else:
-            flask.abort(406) # importatnt
-    ut = sanitize(request.form['utterence'])
+            flask.abort(406) # important
+    ut = sanitize(request.form['utterence'])[:MAX_USER_INPUT_LEN]
     prediction = detect_intention(ut)
     predicted_intent_ids = [pre['intent_id'] for pre in prediction]
     obj = HistoryFull(
@@ -56,7 +56,9 @@ def reply():
 def capture():
     message_id = request.form['message_id']
     feedback = request.form['feedback']
-    history_full_instance = HistoryFull.query.get(message_id)
+    # TODO only limit to messages sent in current session
+    #      don't set duplicate captured messages
+    history_full_instance = HistoryFull.query.get_or_404(message_id)
     setattr(history_full_instance, feedback, True)
     db.session.commit()
     return jsonify({})
@@ -64,8 +66,8 @@ def capture():
 @app.route('/user_information', methods=['POST'])
 def user_information():
     if not 'chat_id' in session:
-        user_name = request.form['user_name'][:150]
-        user_email = request.form['user_email'][:320]
+        user_name = request.form['user_name'][:MAX_USER_INPUT_LEN]
+        user_email = request.form['user_email'][:MAX_EMAIL_LEN]
         email_pattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$"
         error = {}
 
@@ -159,11 +161,11 @@ def missed():
         target = HistoryFull.query.get_or_404(target_id)
         if job == 'update':
             if not data['modified_content']:
-                return jsonify({'code': 400})
-            else:
-                target.utterance = data['modified_content']
-                db.session.commit()
-                return jsonify({'code': 200})
+                # return jsonify({'code': 400})
+                raise EmptyRequiredField('The utterance')
+            target.utterance = data['modified_content']
+            db.session.commit()
+            return jsonify({'code': 200})
         elif job == 'delete':
             target.negative = False
             db.session.commit()
@@ -172,20 +174,19 @@ def missed():
             print(data)
             if (not data['intent']) or (data['intent']=='new intent'):
                 # return error code
-                return jsonify({'code': 400})
+                # return jsonify({'code': 400})
+                raise werkzeug.exceptions.BadRequestKeyError()
+
                 # intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
                 # intents = sorted(intents, key=lambda x: x[1])
                 # return render_template('intents_add.html', current_page='intents', intents=intents, preset_sample_id=target_id, preset_training_sample=target.utterance)
             intent_id = data['intent']
             new_training_data = create_training_data(target.utterance, intent_id)
-            if new_training_data:
-                db.session.add(new_training_data)
-                target.trained = True
-                db.session.commit()
-                # refresh_dataset()
-                return jsonify({'code': 200})
-            else:
-                return jsonify({'code': 400})
+
+            target.trained = True
+            db.session.commit()
+            # refresh_dataset()
+            return jsonify({'code': 200})
 
     captureds = HistoryFull.query.filter_by(negative=True, trained=False).order_by(HistoryFull.id).all()
     intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
@@ -255,15 +256,8 @@ def intents(intent_name):
                 flash(FIELD_EMPTY_MESSAGE)
         elif job == 'update':
             id = data['id']
-            if data['modified_content']:
-                temp = TrainingData.query.get(id)
-                # TODO find if the modified content is present
-                temp.user_message = data['modified_content']
-                db.session.commit()
-                return jsonify({'code': 200})
-            else:
-                # flash(FIELD_EMPTY_MESSAGE)
-                return jsonify({'code': 400})
+            new_training_data = update_training_data(id, data['modified_content'])
+            return jsonify({'code': 200})
         elif job == 'delete':
             id = data['id']
             temp = TrainingData.query.get(id)
@@ -297,11 +291,6 @@ def add_sample():
     data = json.loads(request.data.decode())
     print(data)
     training_data = create_training_data(data['user_message'], data['intent_id'])
-    if training_data:
-        db.session.add(training_data)
-    else:
-        return jsonify({'code': 400})
-    db.session.commit()
     return jsonify({'code': 200})
 
 
@@ -314,63 +303,63 @@ def add_sample():
 @app.route('/intents_add', methods=['GET', 'POST'])
 @login_required
 def intents_add():
-    error = False
     additional_jinja_vars = {}
+
     if request.method == 'POST':
-        training_datas_args = [key for key in request.form if 'training_sample' in key]
-        training_datas = [strip_tags(request.form[key]) for key in training_datas_args]
-        # if 
-        """
-            behavior:
-                - the form will be rejected if intent_name, reply_messages have issues
-                - if only training samples have issues, the form will be accepted and the training samples are removed with messages flashed
-        """
-        intent_name = request.form['intent_name']
-        reply_message_en = request.form['reply_message_en']
-        reply_message_my = request.form['reply_message_my']
-        intent = create_intent(intent_name=intent_name, reply_message_en=reply_message_en, reply_message_my=reply_message_my)
-        if intent:
-            db.session.add(intent)
-            db.session.commit()
+        try:
+            training_datas_args = [key for key in request.form if 'training_sample' in key]
+            training_datas = [strip_tags(request.form[key]) for key in training_datas_args]
+            # if 
+            """
+                behavior:
+                    - the form will be rejected if intent_name, reply_messages have issues
+                    - if only training samples have issues, the form will be accepted and the training samples are removed with messages flashed
+            """
+            intent_name = request.form['intent_name']
+            reply_message_en = request.form['reply_message_en']
+            reply_message_my = request.form['reply_message_my']
+            intent = create_intent(intent_name=intent_name, reply_message_en=reply_message_en, reply_message_my=reply_message_my)
             # TODO ajax to signify that a training sample is used
             for training_data in training_datas:
-                temp = create_training_data(training_data, intent.id)
-                if temp:
-                    db.session.add(temp)
+                try:
+                    temp = create_training_data(training_data, intent.id)
+                except CustomError as ce:
+                    flash(ce.description)
+                
             if 'preset_sample_id' in request.form:
                 temp = HistoryFull.query.get_or_404(request.form['preset_sample_id'])
                 temp.trained = True
             db.session.commit()
             # refresh_dataset()
             return redirect('intents_edit/'+intent_name)
-        error = True
 
+        except CustomError as ce:
+            flash(ce.description)
+
+            form_data = {
+                'intent_name': intent_name, 
+                'reply_message_en': reply_message_en, 
+                'reply_message_my': reply_message_my
+            }
+
+            target_id = None
+            target_utterance = None
+            if 'preset_sample_id' in request.form:
+                target_id = request.form['preset_sample_id']
+                target = HistoryFull.query.get_or_404(target_id)
+                if 'training_sample_0' in training_datas_args:
+                    target_utterance = strip_tags(request.form['training_sample_0'])
+                else:
+                    target_utterance = target.utterance
+                training_datas = [strip_tags(request.form[key]) for key in training_datas_args if key != 'training_sample_0']
+            
+            additional_jinja_vars['form_data'] = form_data
+            additional_jinja_vars['training_datas'] = training_datas
+            additional_jinja_vars['preset_sample_id'] = target_id
+            additional_jinja_vars['preset_training_sample'] = target_utterance
+    
     intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
     intents = sorted(intents, key=lambda x: x[1])
-
-    if error:
-        form_data = {
-            'intent_name': intent_name, 
-            'reply_message_en': reply_message_en, 
-            'reply_message_my': reply_message_my
-        }
-
-        target_id = None
-        target_utterance = None
-        if 'preset_sample_id' in request.form:
-            target_id = request.form['preset_sample_id']
-            target = HistoryFull.query.get_or_404(target_id)
-            if 'training_sample_0' in training_datas_args:
-                target_utterance = strip_tags(request.form['training_sample_0'])
-            else:
-                target_utterance = target.utterance
-            training_datas = [strip_tags(request.form[key]) for key in training_datas_args if key != 'training_sample_0']
-        
-        additional_jinja_vars['form_data'] = form_data
-        additional_jinja_vars['training_datas'] = training_datas
-        additional_jinja_vars['preset_sample_id'] = target_id
-        additional_jinja_vars['preset_training_sample'] = target_utterance
-                                
     return render_template('intents_add.html', current_page='intents', intents=intents, **additional_jinja_vars)
 
 @app.route('/delete_intent', methods=['POST'])
@@ -402,13 +391,9 @@ def testing():
 ###                    ###
 ##########################
 
-@app.errorhandler(EmptyRequiredField)
-def handle_emptyRequiredField(e):
-    return jsonify({'error_description': e.description}), e.code
-
 @app.errorhandler(CustomError)
 def handle_customError(e):
-    return jsonify({'error_description': e.description}), e.code
+    return jsonify({'error_description': [e.description]}), e.code
 
 @app.errorhandler(werkzeug.exceptions.BadRequestKeyError)
 def handle_badRequestKeyError(e):

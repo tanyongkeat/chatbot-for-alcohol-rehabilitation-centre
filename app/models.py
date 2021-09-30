@@ -13,6 +13,9 @@ def load_user(id):
 
 
 MAX_USER_INPUT_LEN = 150
+MAX_REPLY_LEN = 500
+MAX_EMAIL_LEN = 320
+MAX_INTENT_NAME_LEN = 50
 
 # @dataclass
 class Captured(db.Model):
@@ -51,7 +54,7 @@ class HistoryFull(db.Model):
 @dataclass
 class ChatHistory(db.Model):
     id:int = db.Column(db.Integer, primary_key=True)
-    user_email:str = db.Column(db.String(320)) # max email address character number is 320, setting nullable first to prevent stakeholder from changing their mind to suddenly respect the 'privacy' of the users
+    user_email:str = db.Column(db.String(MAX_EMAIL_LEN)) # max email address character number is 320, setting nullable first to prevent stakeholder from changing their mind to suddenly respect the 'privacy' of the users
     user_name:str = db.Column(db.String(MAX_USER_INPUT_LEN))
     history_full:HistoryFull = db.relationship('HistoryFull', backref='chat_history', cascade='all,delete')
 
@@ -69,9 +72,9 @@ class TrainingData(db.Model):
 @dataclass
 class Intent(db.Model):
     id:int = db.Column(db.Integer, primary_key=True)
-    intent_name:str = db.Column(db.String(50), nullable=False, unique=True)
-    reply_message_en:str = db.Column(db.String(500), nullable=False)
-    reply_message_my:str = db.Column(db.String(500), nullable=False)
+    intent_name:str = db.Column(db.String(MAX_INTENT_NAME_LEN), nullable=False, unique=True)
+    reply_message_en:str = db.Column(db.String(MAX_REPLY_LEN), nullable=False)
+    reply_message_my:str = db.Column(db.String(MAX_REPLY_LEN), nullable=False)
     training_data:TrainingData = db.relationship('TrainingData', backref='intent', cascade='all,delete')
     small_talk:bool = db.Column(db.Boolean, default=False)
     deployed:bool = db.Column(db.Boolean, default=True)

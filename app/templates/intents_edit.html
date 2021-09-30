@@ -198,7 +198,7 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
                         }, 
                     function(response)
                         {
-                            console.log(`toggle {field} error`);
+                            console.log(`toggle ${field} error`);
                             $scope.switches[field] = ori;
                         }
                 )
@@ -222,12 +222,7 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
                             console.log(response);
                             $scope.getIntentsEditData();
                         }, 
-                    function(response)
-                        {
-                            console.log('submitForm error');
-                            console.log(response);
-                            alert(response.data);
-                        }
+                    ajaxErrorHandle
                 );
             };
 
@@ -250,12 +245,7 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
                             console.log(response);
                             $scope.getIntentsEditData();
                         }, 
-                    function(response)
-                        {
-                            console.log('addSample error');
-                            console.log(response);
-                            alert(response.data);
-                        }
+                    ajaxErrorHandle
                 );
 
                 cancel_edit_space(event.target.id, category);

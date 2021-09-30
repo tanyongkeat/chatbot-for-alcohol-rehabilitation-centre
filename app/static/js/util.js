@@ -34,7 +34,7 @@ function removeError(node) {
 function flashError(error_list) {
     if (!error_list || error_list.length == 0) return;
 
-    document.getElementById('error').innerHTML = document.getElementById('error').innerHTML + `
+    document.getElementById('error').innerHTML = `
     <div>
         <span class="fa-solid fa-triangle-exclamation"></span>
         <div class='error-messages'>
@@ -53,6 +53,11 @@ function flashFlashed() {
     flashed = get_flashed();
     console.log(flashed);
     flashError(flashed);
+}
+
+function ajaxErrorHandle(response) {
+    console.log(response);
+    flashError(response.data.error_description);
 }
 
 
