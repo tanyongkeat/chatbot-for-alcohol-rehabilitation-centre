@@ -16,6 +16,11 @@ tqdm.pandas()
 model_on = True
 target_language = 'en'
 
+###########################################################################################################
+from malaya import deep_model
+lol = deep_model(quantized=True)
+print(lol.predict_proba(['moshi moshi', 'seleamat pagi', 'good morning']))
+###########################################################################################################
 
 def read_data():
     # dataset = query_db('select user_message, intent_id from training_data')
