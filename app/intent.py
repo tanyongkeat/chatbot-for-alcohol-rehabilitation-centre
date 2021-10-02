@@ -17,9 +17,9 @@ model_on = True
 target_language = 'en'
 
 ###########################################################################################################
-from malaya import deep_model
-lol = deep_model(quantized=True)
-print(lol.predict_proba(['moshi moshi', 'seleamat pagi', 'good morning']))
+# from malaya import deep_model
+# lol = deep_model(quantized=True)
+# print(lol.predict_proba(['moshi moshi', 'seleamat pagi', 'good morning']))
 ###########################################################################################################
 
 def read_data():
