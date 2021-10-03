@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block import %}
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/dashboard.css') }}">
+{% endblock %}
+
+{% block body %}
+    <h3>Dashboard</h3>
+    <h1>Chatbot performance</h1>
+    <div id='debug'></div>
+    <hr style='width:97%;'>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul class='flash-message'>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    {% endwith %}
+
+    <div id='dashboard_content'>
+        <div id='scon1' class='scon'>
+            <h3>Customer experience</h3>
+            <div id='con_percentage_thumbsdown_by_week' class='graph_container'>
+                <div id='percentage_thumbsdown_by_week' class='graph'></div>
+            </div>
+            <div id='scon1_line' class='graph_container pseudo'></div>
+            <div id='con_percentage_thumbsdown_by_intent' class='graph_container'>
+                <div id='percentage_thumbsdown_by_intent' class='graph'></div>
+            </div>
+        </div>
+    
+        <div id='scon2' class='scon'>
+            <h3>Popular questions ( past 7 days )</h3>
+            <div id='con_popular_questions' class='graph_container'>
+                <div id='popular_questions' class='graph'></div>
+            </div>
+        </div>
+    
+        <div id='scon3' class='scon'>
+            <h3>Number of users</h3>
+            <div id='con_number_of_users' class='graph_container'>
+                <div id='number_of_users' class='graph'></div>
+            </div>
+        </div>
+    </div>
+
+
+    {% include 'jinja.jinja-html' %}
+    <script type="text/javascript">
+        var config = {responsive: true, displaylogo: false};
+
+        var percentage_thumbsdown_by_week = get_percentage_thumbsdown_by_week();
+        Plotly.newPlot('percentage_thumbsdown_by_week', percentage_thumbsdown_by_week, config=config);
+
+        var percentage_thumbsdown_by_intent = get_percentage_thumbsdown_by_intent();
+        Plotly.newPlot('percentage_thumbsdown_by_intent', percentage_thumbsdown_by_intent, config=config);
+
+        var popular_questions = get_popular_questions();
+        Plotly.newPlot('popular_questions', popular_questions, config=config);
+
+        var number_of_users= get_number_of_users();
+        Plotly.newPlot('number_of_users', number_of_users, config=config);
+
+        window.addEventListener('resize', function() { 
+            Plotly.Plots.resize('percentage_thumbsdown_by_week');
+            Plotly.Plots.resize('percentage_thumbsdown_by_intent');
+            Plotly.Plots.resize('popular_questions');
+            Plotly.Plots.resize('number_of_users');
+        });
+    </script>
+{% endblock %}

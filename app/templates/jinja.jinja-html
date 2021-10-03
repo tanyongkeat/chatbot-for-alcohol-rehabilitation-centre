@@ -10,4 +10,28 @@
     function get_flashed() {
         return {{ get_flashed_messages() | tojson | safe }};
     }
+
+    {% if percentage_thumbsdown_by_week %}
+    function get_percentage_thumbsdown_by_week() {
+        return {{ percentage_thumbsdown_by_week | safe }}
+    }
+    {% endif %}
+
+    {% if percentage_thumbsdown_by_intent %}
+    function get_percentage_thumbsdown_by_intent() {
+        return {{ percentage_thumbsdown_by_intent | safe }}
+    }
+    {% endif %}
+
+    {% if popular_questions %}
+    function get_popular_questions() {
+        return {{ popular_questions | safe }}
+    }
+    {% endif %}
+
+    {% if number_of_users %}
+    function get_number_of_users() {
+        return {{ number_of_users | safe }}
+    }
+    {% endif %}
 </script>

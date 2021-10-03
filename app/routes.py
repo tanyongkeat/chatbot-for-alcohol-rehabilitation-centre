@@ -12,6 +12,7 @@ from app.intent import detect_intention
 from app.models import HistoryFull, Intent, TrainingData, ChatHistory, Admin, MAX_USER_INPUT_LEN, MAX_REPLY_LEN, MAX_EMAIL_LEN, MAX_INTENT_NAME_LEN
 from app.forms import LoginForm
 from app.util import create_training_data, update_training_data, create_intent, FIELD_EMPTY_MESSAGE, EmptyRequiredField, CustomError, strip_tags, sanitize
+from app.plot import percentage_thumbsdown_by_week, percentage_thumbsdown_by_intent, popular_questions, number_of_users
 from sqlalchemy import func
 import json
 import re
@@ -383,6 +384,20 @@ def testing():
         flash(ce.description)
     return render_template('testing.html')
 
+
+#########################
+###                   ###
+###     dashboard     ###
+###                   ###
+#########################
+
+@app.route('/dashboard', methods=['GET', 'POST'])
+def dashboard():
+    return render_template('dashboard.html', current_page='dashboard', 
+                           percentage_thumbsdown_by_week=percentage_thumbsdown_by_week(), 
+                           percentage_thumbsdown_by_intent=percentage_thumbsdown_by_intent(), 
+                           popular_questions=popular_questions(), 
+                           number_of_users=number_of_users())
 
 
 ##########################

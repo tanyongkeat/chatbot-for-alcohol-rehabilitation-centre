@@ -1,0 +1,85 @@
+/* background-color: lightseagreen; */
+
+#dashboard_content {
+    width: 97%;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.scon {
+    margin: 5px 10px 10px;
+    background-color: white;
+    border-radius: 15px;
+    padding: 15px;
+    min-width: 300px;
+    overflow: auto;
+    box-shadow:  0 0 13px 1px #c0c0c0;
+}
+
+.scon h3 {
+    font-weight: 900;
+    text-align: center;
+}
+
+#scon1 {
+    width: 100%;
+    text-align: center;
+}
+
+#scon2 {
+    flex: 7;
+}
+
+#scon3 {
+    flex: 13;
+}
+
+.graph_container {
+    height: 300px;
+    overflow-x: hidden;
+    overflow: auto;
+}
+
+#scon1 .graph_container {
+    display: inline-block;
+    text-align: justify;
+}
+
+#con_percentage_thumbsdown_by_week {
+    width: 60%;
+}
+
+#con_percentage_thumbsdown_by_intent {
+    width: 37%;
+}
+
+#scon1_line {
+    border-color: #e0e0e0;
+    border-style: solid;
+    border-width: 2px 0 0 2px;
+}
+
+@media screen and (max-width: 900px) {
+    #scon1 .graph_container {
+        width: 100%;
+    }
+
+    #scon1 #scon1_line {
+        height: 0;
+        width: 80%;
+        margin: 5px 0;
+    }
+}
+
+.graph{
+    width: 97%;
+    box-sizing: border-box;
+    margin: 0 auto;
+    height: 100%;
+}
+
+#percentage_thumbsdown_by_intent {
+    height: max-content;
+}

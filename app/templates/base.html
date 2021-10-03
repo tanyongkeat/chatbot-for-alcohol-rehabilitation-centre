@@ -20,7 +20,7 @@
         {% block import %}{% endblock %}
         <script type="text/javascript" src="{{ url_for('static', filename='js/util.js')}}"></script>
 
-        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -39,6 +39,7 @@
                 <hr style='width: 75%;'>
                 <a  class='panel-selection {% if current_page=="intents" %}panel-selection-selected{% endif %}' href='{{ url_for("intents_base") }}'><div>intents</div></a>
                 <a  class='panel-selection {% if current_page=="missed" %}panel-selection-selected{% endif %}' href='{{ url_for("missed") }}'><div>missed</div></a>
+                <a  class='panel-selection {% if current_page=="dashboard" %}panel-selection-selected{% endif %}' href='{{ url_for("dashboard") }}'><div>dashboard</div></a>
             </div>
             <div class='flex-item-panel-right'>
                 {% block body %}{% endblock body %}

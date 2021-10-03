@@ -116,6 +116,7 @@ h1:first-letter, h3:first-letter {
 }
 
 ::-webkit-scrollbar {
+    height: 3px;
     width: 3px;
 }
 
