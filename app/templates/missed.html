@@ -29,6 +29,14 @@
     <script>
         var appMissed = angular.module('appMissed', []);
 
+        function formatOption(optionElement) {
+            // if (!optionElement.id) { return optionElement.text; }
+            // var $state = $('<span><strong>' + optionElement.element.value + '</strong> ' + optionElement.text + '</span>');
+            // return $state;
+            if (optionElement.text == 'new intent') return $('<b>' + optionElement.element.value + '</b>');
+            return optionElement.text;
+        }
+
         appMissed.config(['$interpolateProvider', function($interpolateProvider) {
             $interpolateProvider.startSymbol('{a');
             $interpolateProvider.endSymbol('a}');
@@ -90,7 +98,11 @@
         appMissed.directive('jsSelect2', function ($timeout) {
             return {
                 link: function (scope, element, attrs) {
-                    jQuery(element).select2();
+                    jQuery(element).select2(
+                        {
+                            templateResult: formatOption
+                        }
+                    );
 
                     // scope.$watch(attrs.ngModel, function () {
                     //     $timeout(function () {
@@ -121,42 +133,39 @@
         // });
     </script>
 
-    <table ng-app="appMissed" ng-controller="ctrlMissed" ng-init='getMissedData();getMissedIntent();'>
-        <col class="column-one">
-        <col class="column-two">
-        <col class="column-three">
-        <tr>
-            <th>Utterances</th>
-            <th>Predicted</th>
-            <th></th>
-        </tr>
+    <div id='table' ng-app="appMissed" ng-controller="ctrlMissed" ng-init='getMissedData();getMissedIntent();'>
+        <div class='missed_row'>
+            <div class='column-one'>Utterances</div>
+            <div class='column-two'>Predicted</div>
+            <div class='column-three'></div>
+        </div>
         {% set category='utterance' %}
         {% set wrapped=True %}
         {% set data='data_missed' %}
         {% set text='utterance' %}
-        <tr ng-repeat="target in {{ data }}">
-            <td>
+        <div class='missed_row' ng-repeat="target in {{ data }}">
+            <div class='column-one'>
                 {% include 'editable.html' %}
-            </td>
-            <td>
-                <div>
-                    {% set job='retrain' %}
-                    <form method='POST' id='form-{{ job }}_{a target.id a}' ng-submit='submitForm(target, "{{ job }}")'>
-                        <!-- ng-submit='submitForm(target, {{ job }})' -->
-                        <input type="hidden" name="id" value="{a target.id a}">
-                        <input type="hidden" name="job" value="{{ job }}">
-                        <select data-js-select2="" name="intent" class='select2-select' placeholder="Select State" style="width:100%;">
-                            <option></option>
-                            <option>new intent</option>
-                            <!-- optimize -->
-                            <option ng-repeat="intent in intents" ng-if="target.predicted_intent_id_top == intent.id" value="{a intent.id a}" selected>{a intent.intent_name a}</option>
-                            <option ng-repeat="intent in intents | orderBy: 'intent_name'" ng-if="target.predicted_intent_id_top != intent.id" value="{a intent.id a}">{a intent.intent_name a}</option>
-                            <!-- <option ng-repeat="intent in intents" value="{a intent.id a}">{a intent.intent_name a}</option> -->
-                        </select>
-                    </form>
-                </div>
-            </td>
-            <td><div><input class='retrain-submit' type='submit' value='train' form='form-{{ job }}_{a target.id a}'></div></td>
+            </div>
+
+            <div class='column-two'>
+                {% set job='retrain' %}
+                <form method='POST' id='form-{{ job }}_{a target.id a}' ng-submit='submitForm(target, "{{ job }}")'>
+                    <!-- ng-submit='submitForm(target, {{ job }})' -->
+                    <input type="hidden" name="id" value="{a target.id a}">
+                    <input type="hidden" name="job" value="{{ job }}">
+                    <select data-js-select2="" name="intent" class='select2-select' placeholder="Select State" style="width:100%;">
+                        <option></option>
+                        <option>new intent</option>
+                        <!-- optimize -->
+                        <option ng-repeat="intent in intents" ng-if="target.predicted_intent_id_top == intent.id" value="{a intent.id a}" selected>{a intent.intent_name a}</option>
+                        <option ng-repeat="intent in intents | orderBy: 'intent_name'" ng-if="target.predicted_intent_id_top != intent.id" value="{a intent.id a}">{a intent.intent_name a}</option>
+                        <!-- <option ng-repeat="intent in intents" value="{a intent.id a}">{a intent.intent_name a}</option> -->
+                    </select>
+                </form>
+            </div>
+
+            <div class='column-three'><input class='retrain-submit' type='submit' value='train' form='form-{{ job }}_{a target.id a}'></div>
         </tr>
-    </table>
+    </div>
 {% endblock %}

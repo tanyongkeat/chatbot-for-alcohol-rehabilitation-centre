@@ -34,6 +34,7 @@ label {
 
 .editable {
     display: flex;
+    margin-left: 1px;
 }
 
 .save-button, .cancel-button {
