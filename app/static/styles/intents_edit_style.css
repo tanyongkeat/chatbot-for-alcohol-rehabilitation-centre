@@ -17,7 +17,7 @@
     background-color: white;
     border-radius: 0px 5px 5px 5px; 
     z-index: -1;
-    height: 70px;
+    min-height: 70px;
     box-shadow: 0px 0px 2px rgb(105, 105, 105);
     padding: 5px 10px;
     box-sizing: border-box;
@@ -47,6 +47,18 @@
     z-index: 0;
     box-shadow: 0px -1px 1px rgb(139, 139, 139), -1px -1px 1px rgb(139, 139, 139), 1px -1px 1px rgb(139, 139, 139);
     border-radius: 5px 5px 0px 0px;
+}
+
+@media screen and (max-width: 300px) {
+    /* .select-language-button {
+        width: 2ch;
+        word-break: break-all;
+    } */
+
+    .reply-message-language-section .edit-button {
+        position: initial;
+        float: right;
+    }
 }
 
 .select-language-button:target {

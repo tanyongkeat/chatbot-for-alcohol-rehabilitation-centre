@@ -46,8 +46,9 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
         <input type='submit' name='malay' value='malay'> -->
         {% set target = intent %}
         {% set category = 'reply-message' %}
-        {% set languages = ['my', 'en'] %}
-        <a href="#select-language-button_en" class='select-language-button' id='select-language-button_en' onclick="cancel_edit_space_reply_all('{{ category }}')">english</a><a href="#select-language-button_my" class='select-language-button' id='select-language-button_my' onclick="cancel_edit_space_reply_all('{{ category }}')">malay</a>
+        {% set languages = ['en', 'my'] %}
+        {% for lang in languages %}<a href="#select-language-button_{{ lang }}" class='select-language-button' id='select-language-button_{{ lang }}' 
+            onclick="cancel_edit_space_reply_all('{{ category }}')">{{ lang }}</a>{% endfor %}
         <div id='reply-messages'>
             {% for lang in languages %}
                 <div class='{{ category }}-language-section' id='{{ category }}-language-section_{{ lang }}'>
@@ -104,7 +105,7 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
     {% include 'jinja.jinja-html' %}
     <script>
         $(document).ready(function() {
-            document.getElementById('select-language-button_{% if language %}{{ language }}{% else %}en{% endif %}').click();
+            document.getElementById('select-language-button_{% if language %}{{ language }}{% else %}{% if primary_language %}{{primary_language}}{% else %}en{% endif %}{% endif %}').click();
 
             // var error_messages = {{ get_flashed_messages() | tojson | safe }};
             // flashError(error_messages);
