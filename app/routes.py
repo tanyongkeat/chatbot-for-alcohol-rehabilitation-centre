@@ -9,11 +9,15 @@ from werkzeug.wrappers import Response
 
 from app import app, db, login_manager
 from app.intent import detect_intention
-from app.models import HistoryFull, Intent, TrainingData, ChatHistory, Admin, MAX_USER_INPUT_LEN, MAX_REPLY_LEN, MAX_EMAIL_LEN, MAX_INTENT_NAME_LEN
+from app.models import HistoryFull, Intent, TrainingData, ChatHistory, Admin, Response,\
+    MAX_USER_INPUT_LEN, MAX_REPLY_LEN, MAX_EMAIL_LEN, MAX_INTENT_NAME_LEN
 from app.forms import LoginForm
-from app.util import create_training_data, update_training_data, create_intent, FIELD_EMPTY_MESSAGE, EmptyRequiredField, CustomError, strip_tags, sanitize
+from app.util import create_training_data, update_training_data, create_intent,\
+    FIELD_EMPTY_MESSAGE, EmptyRequiredField, CustomError, strip_tags, sanitize,\
+    get_selected_lang, get_primary_lang, create_response, update_response, refresh_response, compare_response
 from app.plot import percentage_thumbsdown_by_week, percentage_thumbsdown_by_intent, popular_questions, number_of_users
 from sqlalchemy import func
+from functools import cmp_to_key
 import json
 import re
 
@@ -240,6 +244,8 @@ def intents(intent_name):
     404 error for non-existance intents
     '''
     intent = Intent.query.filter_by(intent_name=intent_name).first_or_404()
+    responses = Response.query.filter(Response.intent_id==intent.id, Response.lang.in_(get_selected_lang())).all()
+    responses.sort(key=cmp_to_key(compare_response))
     lang = None
 
     if request.method == 'POST':
@@ -251,10 +257,11 @@ def intents(intent_name):
 
         if job == 'update_reply_message':
             lang = request.form['lang']
-            if request.form['modified_content']:
-                setattr(intent, 'reply_message_'+lang, request.form['modified_content'])
-            else:
-                flash(FIELD_EMPTY_MESSAGE)
+            text = request.form['modified_content']
+            try:
+                update_response(intent.id, 'text', lang, text)
+            except CustomError as ce:
+                flash(ce.description)
         elif job == 'update':
             id = data['id']
             new_training_data = update_training_data(id, data['modified_content'])
@@ -274,7 +281,8 @@ def intents(intent_name):
     intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
     intents = sorted(intents, key=lambda x: x[1])
     
-    return render_template('intents_edit.html', current_page='intents', intents=intents, intent=intent, language=lang)
+    return render_template('intents_edit.html', current_page='intents', intents=intents, intent=intent, responses=responses, 
+                           primary_lang=get_primary_lang(), language=lang)
 
 @app.route('/intents_edit/toggle', methods=['POST'])
 @login_required
@@ -317,9 +325,11 @@ def intents_add():
                     - if only training samples have issues, the form will be accepted and the training samples are removed with messages flashed
             """
             intent_name = request.form['intent_name']
-            reply_message_en = request.form['reply_message_en']
-            reply_message_my = request.form['reply_message_my']
-            intent = create_intent(intent_name=intent_name, reply_message_en=reply_message_en, reply_message_my=reply_message_my)
+            reply_message = request.form['reply_message']
+            # reply_message_en = request.form['reply_message_en']
+            # reply_message_my = request.form['reply_message_my']
+            intent = create_intent(intent_name=intent_name, reply_message_en='', reply_message_my='')
+            create_response(intent.id, reply_message, 'to be filled in')
             # TODO ajax to signify that a training sample is used
             for training_data in training_datas:
                 try:
@@ -339,8 +349,9 @@ def intents_add():
 
             form_data = {
                 'intent_name': intent_name, 
-                'reply_message_en': reply_message_en, 
-                'reply_message_my': reply_message_my
+                'reply_message': reply_message
+                # 'reply_message_en': reply_message_en, 
+                # 'reply_message_my': reply_message_my
             }
 
             target_id = None
@@ -361,7 +372,7 @@ def intents_add():
     
     intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
     intents = sorted(intents, key=lambda x: x[1])
-    return render_template('intents_add.html', current_page='intents', intents=intents, **additional_jinja_vars)
+    return render_template('intents_add.html', current_page='intents', intents=intents, primary_lang=get_primary_lang(), **additional_jinja_vars)
 
 @app.route('/delete_intent', methods=['POST'])
 @login_required

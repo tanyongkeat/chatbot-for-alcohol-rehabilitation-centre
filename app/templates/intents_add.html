@@ -35,10 +35,12 @@
         <input type='submit' name='malay' value='malay'>
     </div> -->
     <div id='reply-messages-adding'>
-        <label for='reply_message_en'>English</label>
+        <label for='reply_message'>Reply message <strong>{{ primary_lang }}</strong></label>
+        <textarea name="reply_message" form='add_form' required>{% if form_data %}{{ form_data.reply_message }}{% endif %}</textarea>
+        <!-- <label for='reply_message_en'>English</label>
         <textarea name="reply_message_en" form='add_form' required>{% if form_data %}{{ form_data.reply_message_en }}{% endif %}</textarea>
         <label for='reply_message_my'>Malay</label>
-        <textarea cols=100 rows=5 name="reply_message_my" form='add_form' required>{% if form_data %}{{ form_data.reply_message_my }}{% endif %}</textarea>
+        <textarea cols=100 rows=5 name="reply_message_my" form='add_form' required>{% if form_data %}{{ form_data.reply_message_my }}{% endif %}</textarea> -->
     </div>
 
 

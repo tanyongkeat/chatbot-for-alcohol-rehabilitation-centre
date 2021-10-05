@@ -47,25 +47,25 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
         {% set target = intent %}
         {% set category = 'reply-message' %}
         {% set languages = ['en', 'my'] %}
-        {% for lang in languages %}<a href="#select-language-button_{{ lang }}" class='select-language-button' id='select-language-button_{{ lang }}' 
-            onclick="cancel_edit_space_reply_all('{{ category }}')">{{ lang }}</a>{% endfor %}
+        {% for response in responses %}<a href="#select-language-button_{{ response.lang }}" class='select-language-button' id='select-language-button_{{ response.lang }}' 
+            onclick="cancel_edit_space_reply_all('{{ category }}')">{{ response.lang[:2] }}</a>{% endfor %}
         <div id='reply-messages'>
-            {% for lang in languages %}
-                <div class='{{ category }}-language-section' id='{{ category }}-language-section_{{ lang }}'>
-                    <div id='{{ category }}-display_{{ lang }}' class='{{ category }}-display'>
-                        <input id='edit-button_{{ lang }}' class='edit-button' type='submit' value='edit' onclick="show_edit_space_reply(this.id, '{{ category }}')">
-                        <span id='{{ category }}_{{ lang }}' class="editable-content">{{ intent["reply_message_"+lang] }}</span>
+            {% for response in responses %}
+                <div class='{{ category }}-language-section' id='{{ category }}-language-section_{{ response.lang }}'>
+                    <div id='{{ category }}-display_{{ response.lang }}' class='{{ category }}-display'>
+                        <span id='{{ category }}_{{ response.lang }}' class="editable-content">{{ response.text }}</span>
+                        <input id='edit-button_{{ response.lang }}' class='edit-button' type='submit' value='edit' onclick="show_edit_space_reply(this.id, '{{ category }}')">
                     </div>
-                    <div id='{{ category }}-edit_{{ lang }}' class='editable-edit' style='display:None;'>
+                    <div id='{{ category }}-edit_{{ response.lang }}' class='editable-edit' style='display:None;'>
                         <!-- <span class='utterance'>editting</span> -->
                         <form action="" method='POST'>
-                            <input type="hidden" name="lang" value="{{ lang }}">
+                            <input type="hidden" name="lang" value="{{ response.lang }}">
                             <input type="hidden" name="job" value="update_reply_message">
-                            <textarea style='height:60px;' class='editable-content' name='modified_content' id='{{ category }}-e_{{ lang }}' ori_value='{{ intent["reply_message_"+lang] }}' required>{{ intent["reply_message_"+lang] }}</textarea>
-                            <!-- <input id='save-button_{{ lang }}' class='save-button' type='submit' value='save'>
-                            <input id='cancel-button_{{ lang }}' class='cancel-button' type='submit' form='' value='cancel' onclick="cancel_edit_space_reply(this.id, '{{ category }}')"> -->
-                            <button id='save-button_{{ lang }}' class='save-button' type='submit'>save</button>
-                            <button id='cancel-button_{{ lang }}' class='cancel-button' type='submit' form='' onclick="cancel_edit_space_reply(this.id, '{{ category }}')">cancel</button>
+                            <textarea style='height:60px;' class='editable-content' name='modified_content' id='{{ category }}-e_{{ response.lang }}' ori_value='{{ response.text }}' required>{{ response.text }}</textarea>
+                            <!-- <input id='save-button_{{ response.lang }}' class='save-button' type='submit' value='save'>
+                            <input id='cancel-button_{{ response.lang }}' class='cancel-button' type='submit' form='' value='cancel' onclick="cancel_edit_space_reply(this.id, '{{ category }}')"> -->
+                            <button id='save-button_{{ response.lang }}' class='save-button' type='submit'>save</button>
+                            <button id='cancel-button_{{ response.lang }}' class='cancel-button' type='submit' form='' onclick="cancel_edit_space_reply(this.id, '{{ category }}')">cancel</button>
                         </form>
                     </div>
                 </div>
@@ -104,8 +104,32 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
 
     {% include 'jinja.jinja-html' %}
     <script>
+        function cascade_zindex(clicked_elem) {
+            buttons = document.getElementsByClassName(clicked_elem.className);
+            clicked_elem_index = 0;
+            for (i = 0; i < buttons.length; i++) {
+                if (buttons[i].id == clicked_elem.id) {
+                    clicked_elem_index = i;
+                    break;
+                }
+            }
+
+            for (i = 0; i < buttons.length; i++) {
+                if (i != clicked_elem_index) {
+                    buttons[i].style.zIndex = 50 - Math.abs(clicked_elem_index - i);
+                } else {
+                    buttons[i].style.zIndex = 51;
+                }
+            }
+        }
+
         $(document).ready(function() {
-            document.getElementById('select-language-button_{% if language %}{{ language }}{% else %}{% if primary_language %}{{primary_language}}{% else %}en{% endif %}{% endif %}').click();
+            buttons_text = document.getElementsByClassName('select-language-button');
+            for (i = 0; i < buttons_text.length; i++) {
+                buttons_text[i].addEventListener('click', function(event) {cascade_zindex(event.target);})
+            }
+
+            document.getElementById('select-language-button_{% if language %}{{ language }}{% else %}{% if primary_lang %}{{primary_lang}}{% else %}en{% endif %}{% endif %}').click();
 
             // var error_messages = {{ get_flashed_messages() | tojson | safe }};
             // flashError(error_messages);

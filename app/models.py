@@ -16,6 +16,7 @@ MAX_USER_INPUT_LEN = 150
 MAX_REPLY_LEN = 500
 MAX_EMAIL_LEN = 320
 MAX_INTENT_NAME_LEN = 50
+MAX_LANG_CODE_LEN = 10
 
 # @dataclass
 class Captured(db.Model):
@@ -70,11 +71,26 @@ class TrainingData(db.Model):
     encoding:str = db.Column(db.JSON, nullable=False)
 
 @dataclass
+class Response(db.Model):
+    id: int
+    intent_id: int
+    lang: str
+    text: str
+    selection: str
+
+    id = db.Column(db.Integer, primary_key=True)
+    intent_id = db.Column(db.Integer, db.ForeignKey('intent.id'), nullable=False)
+    lang = db.Column(db.String(MAX_LANG_CODE_LEN), nullable=False)
+    text = db.Column(db.String(MAX_REPLY_LEN), nullable=False)
+    selection = db.Column(db.String(MAX_USER_INPUT_LEN), nullable=False)
+
+@dataclass
 class Intent(db.Model):
     id:int = db.Column(db.Integer, primary_key=True)
     intent_name:str = db.Column(db.String(MAX_INTENT_NAME_LEN), nullable=False, unique=True)
     reply_message_en:str = db.Column(db.String(MAX_REPLY_LEN), nullable=False)
     reply_message_my:str = db.Column(db.String(MAX_REPLY_LEN), nullable=False)
     training_data:TrainingData = db.relationship('TrainingData', backref='intent', cascade='all,delete')
+    response:Response = db.relationship('Response', backref='intent', cascade='all,delete')
     small_talk:bool = db.Column(db.Boolean, default=False)
     deployed:bool = db.Column(db.Boolean, default=True)

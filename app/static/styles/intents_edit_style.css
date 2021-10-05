@@ -7,7 +7,7 @@
 #reply-messages {
     height: 90px;
     position: relative;
-    z-index: 1;
+    z-index: 50;
     width: 85%;
 }
 
@@ -24,8 +24,10 @@
 }
 
 #select-language-button_en:target ~ div #reply-message-language-section_en, 
-#select-language-button_my:target ~ div #reply-message-language-section_my  {
-    z-index: 1;
+#select-language-button_ms:target ~ div #reply-message-language-section_ms, 
+#select-language-button_ta:target ~ div #reply-message-language-section_ta, 
+#select-language-button_zh-cn:target ~ div #reply-message-language-section_zh-cn  {
+    z-index: 99;
 }
 
 .reply-message-language-section .edit-button {
@@ -49,7 +51,12 @@
     border-radius: 5px 5px 0px 0px;
 }
 
-@media screen and (max-width: 300px) {
+.select-language-button:target {
+    font-weight: bold;
+    z-index: 51;
+}
+
+@media screen and (max-width: 330px) {
     /* .select-language-button {
         width: 2ch;
         word-break: break-all;
@@ -61,10 +68,7 @@
     }
 }
 
-.select-language-button:target {
-    font-weight: bold;
-    z-index: 2;
-}
+
 
 .select-language-button:focus, .select-language-button:active {
     outline: 0;
