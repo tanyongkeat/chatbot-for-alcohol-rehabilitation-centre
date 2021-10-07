@@ -94,3 +94,9 @@ class Intent(db.Model):
     response:Response = db.relationship('Response', backref='intent', cascade='all,delete')
     small_talk:bool = db.Column(db.Boolean, default=False)
     deployed:bool = db.Column(db.Boolean, default=True)
+
+@dataclass
+class Setting(db.Model):
+    id:int = db.Column(db.Integer, primary_key=True)
+    primary_lang:str = db.Column(db.String(MAX_LANG_CODE_LEN))
+    selected_lang:str = db.Column(db.JSON, nullable=False)

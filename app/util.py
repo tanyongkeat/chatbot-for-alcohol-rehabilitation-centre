@@ -3,7 +3,7 @@ import psycopg2
 import pandas as pd
 import json
 import werkzeug
-from app.models import Intent, TrainingData, Response, db, MAX_USER_INPUT_LEN, MAX_REPLY_LEN, MAX_EMAIL_LEN, MAX_INTENT_NAME_LEN
+from app.models import Intent, TrainingData, Response, Setting, db, MAX_USER_INPUT_LEN, MAX_REPLY_LEN, MAX_EMAIL_LEN, MAX_INTENT_NAME_LEN
 from app.intent import model
 from sqlalchemy import func
 import flask
@@ -54,18 +54,74 @@ def query_db(sql):
     conn.close()
     return data
 
+# primary_lang = 'en'
+# selected_lang = ['en', 'ms', 'zh-cn', 'ta']
+OUTDATED_FLAG = '7423SFTT-=TJYK=-5269FTSN=='
 
 def get_primary_lang():
-    return 'en'
+    return Setting.query.get(1).primary_lang
+
+def update_primary_lang(new_primary_lang):
+    if not new_primary_lang:
+        raise CustomError('The primary language field cannot be left blank')
+
+    if new_primary_lang not in get_langs():
+        raise CustomError('The language specified is not supported')
+
+    old_primary_lang = get_primary_lang()
+    selected_lang_temp = [item for item in get_selected_lang()] # don't change it here
+
+    # global primary_lang
+    # primary_lang = new_primary_lang
+    Setting.query.get(1).primary_lang = new_primary_lang
+
+    if new_primary_lang not in selected_lang_temp:
+        print('it is not here')
+        selected_lang_temp.append(new_primary_lang)
+        update_selected_lang(selected_lang_temp, old_primary_lang)
+    
+    db.session.commit()
 
 def get_selected_lang():
-    return ['en', 'ms', 'zh-cn', 'ta']
+    return json.loads(Setting.query.get(1).selected_lang)
+
+def update_selected_lang(new_selected_lang, old_primary_lang):
+    old_selected_lang = get_selected_lang()
+    if set(old_selected_lang) == set(new_selected_lang):
+        print('we got the same thing')
+        return
+
+    if not new_selected_lang:
+        raise CustomError('At least one language must be selected')
+
+    langs = get_langs()
+    for nsl in new_selected_lang:
+        if nsl not in langs:
+            raise CustomError('The language specified is not supported')
+
+    added_selected_lang = list(set(new_selected_lang) - set(old_selected_lang))
+
+    if added_selected_lang:
+        print('translating for ', added_selected_lang)
+        responses = Response.query.distinct(Response.intent_id).all()
+        for response in responses:
+            refresh_response(response.intent_id, ['text', 'selection'], old_primary_lang, dest_lang=added_selected_lang)
+
+    # global selected_lang
+    # selected_lang = new_selected_lang
+    # print(get_selected_lang())
+    primary_lang = get_primary_lang()
+    if primary_lang not in new_selected_lang:
+        new_selected_lang.append(primary_lang)
+    Setting.query.get(1).selected_lang = json.dumps(new_selected_lang)
+    db.session.commit()
+
 
 from googletrans import Translator
 translator = Translator()
 
 def get_langs():
-    return ['zh-cn', 'ms', 'ta', 'en']
+    return ['en', 'ms', 'ta', 'zh-cn']
 
 def translate(text, dest):
     return translator.translate(text, dest=dest).text
@@ -132,6 +188,7 @@ def update_training_data(training_data_id, user_message):
 
 def create_response(intent_id, text, selection):
     primary_lang = get_primary_lang()
+    selected_lang = get_selected_lang()
 
     if Response.query.filter_by(intent_id=intent_id).first():
         raise CustomError('Responses for the intent already exists')
@@ -146,9 +203,12 @@ def create_response(intent_id, text, selection):
     selection = ' '.join(intent.intent_name.split('_'))
     print(text, selection)
     for lang in get_langs():
-        if lang == primary_lang or lang not in get_selected_lang():
+        if lang == primary_lang:
             translated_text = text
             translated_selection = selection
+        elif lang not in selected_lang:
+            translated_text = OUTDATED_FLAG
+            translated_selection = OUTDATED_FLAG
         else:
             try:
                 translated_text = translate(text, dest=lang)[:MAX_REPLY_LEN]
@@ -169,6 +229,7 @@ def update_response(intent_id, field, lang, value):
         raise EmptyRequiredField('The reply messages')
 
     primary_lang = get_primary_lang()
+    selected_lang = get_selected_lang()
 
     response = Response.query.filter_by(intent_id=intent_id, lang=lang).first()
     if not response:
@@ -182,6 +243,11 @@ def update_response(intent_id, field, lang, value):
     if lang == primary_lang:
         other_lang_responses = Response.query.filter(Response.intent_id==intent_id, Response.lang!=lang).all()
         for other_lang_response in other_lang_responses:
+            if not other_lang_response.lang in selected_lang:
+                setattr(other_lang_response, field, OUTDATED_FLAG)
+                print('skipping', other_lang_response.lang)
+                continue
+            
             try:
                 translated_value = translate(value, dest=other_lang_response.lang)[:lens[field]]
             except:
@@ -191,15 +257,31 @@ def update_response(intent_id, field, lang, value):
     
     db.session.commit()
 
-def refresh_response(intent_id, field):
-    primary_lang = get_primary_lang()
+def refresh_response(intent_id, fields, src_lang, dest_lang=None):
+    # primary_lang = get_primary_lang()
 
-    primary_response = Response.query.filter_by(intent_id=intent_id, lang=primary_lang).first()
+    primary_response = Response.query.filter_by(intent_id=intent_id, lang=src_lang).first()
     
-    other_lang_responses = Response.query.filter(Response.intent_id==intent_id, Response.lang!=primary_lang).all()
+    if not dest_lang:
+        filter_con = Response.lang!=src_lang
+    else:
+        filter_con = Response.lang.in_(dest_lang)
+    
+    other_lang_responses = Response.query.filter(Response.intent_id==intent_id, filter_con).all()
     for other_lang_response in other_lang_responses:
-        translated_value = translate(getattr(primary_response, field), dest=other_lang_response.lang)[:lens[field]]
-        setattr(other_lang_response, field, translated_value)
+        for field in fields:
+            if getattr(other_lang_response, field) != OUTDATED_FLAG:
+                print(other_lang_response.intent.intent_name)
+                print(other_lang_response.lang, getattr(other_lang_response, field), 'is not outdated')
+                continue
+            print(other_lang_response.lang, 'is outdated')
+            try:
+                translated_value = translate(getattr(primary_response, field), dest=other_lang_response.lang)[:lens[field]]
+                setattr(other_lang_response, field, translated_value)
+            except:
+                db.session.rollback()
+                raise CustomError('Google API error')
+            setattr(other_lang_response, field, translated_value)
 
 
 ######################

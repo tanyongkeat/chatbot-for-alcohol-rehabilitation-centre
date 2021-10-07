@@ -3,8 +3,9 @@ import pandas as pd
 import scipy
 from app import db
 # from app.util import query_db
-from app.models import TrainingData, Intent
+from app.models import TrainingData, Intent, Response
 from sklearn.metrics.pairwise import cosine_similarity
+from googletrans import Translator
 import json
 # import matplotlib.pyplot as plt
 # import seaborn as sns
@@ -15,6 +16,8 @@ tqdm.pandas()
 
 model_on = True
 target_language = 'en'
+
+translator = Translator()
 
 ###########################################################################################################
 # from malaya import deep_model
@@ -36,8 +39,8 @@ def read_data():
     reply = pd.read_sql_query(
         sql = Intent.query.with_entities(
             Intent.id, 
-            Intent.reply_message_en, 
-            Intent.reply_message_my, 
+            # Intent.reply_message_en, 
+            # Intent.reply_message_my, 
             Intent.small_talk, 
             Intent.deployed, 
             Intent.intent_name.label('intention')
@@ -72,9 +75,20 @@ def detect_intention2(user_input, target_language):
 
     embedding = model.encode([user_input])
     cos_sim = cosine_similarity(embedding, dataset[range(768)].values)[0]
+    dataset['lang'] = target_language
 
-    df_temp = dataset[['user_message', 'intention', 'reply_message_'+target_language, 'small_talk', 'intent_id']]
-    df_temp.rename({'reply_message_'+target_language: 'reply_message'}, axis=1, inplace=True)
+    df_temp = dataset[['user_message', 'intention', 'small_talk', 'intent_id', 'lang']]
+    # df_temp.rename({'reply_message_'+target_language: 'reply_message'}, axis=1, inplace=True)
+    response = pd.read_sql_query(
+        sql = Response.query.with_entities(
+            Response.intent_id, 
+            Response.text.label('reply_message'), 
+            Response.selection
+        ).filter_by(lang=target_language).statement, 
+        con = db.session.bind
+    )
+    df_temp = df_temp.merge(response, how='inner', on='intent_id')
+
     df_temp['cos_sim'] = cos_sim
 
     df_temp = df_temp.groupby('intent_id').apply(sort_intent)

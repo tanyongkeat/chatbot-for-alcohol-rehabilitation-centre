@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <h3>App</h3>
+    <h1>Setting</h1>
+    <hr style='width:97%;'>
+
+    <div id="error"></div>
+
+    {#
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul class='flash-message'>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    {% endwith %}
+    #}
+
+    <form method="POST">
+        <select data-js-select2="" name="select_1" id='select_1' class='select2-select' style='width: 30%;' disabled>
+            {% for lang in langs %}
+                <option value='{{ lang }}' {% if lang == primary_lang %}selected{% endif %}>{{ lang }}</option>
+            {% endfor %}
+        </select>
+
+        <select data-js-select2="" name="select_2" id='select_2' class='select2-select' style='width: 30%;' multiple>
+            {% for lang in langs %}
+                <option value='{{ lang }}' 
+                    {% if lang == primary_lang %}thanos='thanos'{% endif %}
+                    {% if lang in selected_lang %}selected{% endif %}>{{ lang }}</option>
+            {% endfor %}
+        </select>
+
+        <input type="submit">
+    </form>
+
+    {% include 'jinja.jinja-html' %}
+    <script>
+        $(document).ready(function() {
+            var error_messages = get_flashed();
+            flashFlashed();
+        });
+
+        $(".select2-select").ready(function() {
+
+            document.getElementById('select_1').addEventListener('input', function(event) {
+                var new_val = this.value;
+
+                var select_2_options = document.getElementById('select_2').options
+
+                for (i = 0; i < select_2_options.length; i++) {
+                    if (select_2_options[i].value == new_val) {
+                        select_2_options[i].selected = true;
+                        select_2_options[i].setAttribute('thanos', 'thanos');
+                    } else {
+                        select_2_options[i].setAttribute('thanos', '');
+                    }
+                }
+
+                $('#select_2').trigger('change');
+            })
+
+            $('#select_2').select2({
+                closeOnSelect: false, 
+                tags: true, 
+                templateSelection : function (tag, container){
+                        // here we are finding option element of tag and
+                    // if it has property 'locked' we will add class 'locked-tag' 
+                    // to be able to style element in select
+                    console.log(tag);
+                    console.log(container);
+                    var $option = $('#select_2 option[value="'+tag.id+'"]');
+                    if ($option.attr('thanos')){
+                        $(container).addClass('locked-tag');
+                        tag.locked = true; 
+                    }
+                    return tag.text;
+                },
+            })
+            .on('select2:unselecting', function(e){
+                    // before removing tag we check option element of tag and 
+                // if it has property 'locked' we will create error to prevent all select2 functionality
+                if ($(e.params.args.data.element).attr('locked')) {
+                    e.select2.pleaseStop();
+                }
+            });
+
+            document.getElementById('select_1').disabled = false;
+
+            // $('#select_1').on('select2:opening select2:closing', function(event) {
+            //     var $searchfield = $(this).parent().find('.select2-search__field');
+            //     $searchfield.prop('disabled', true);
+            // });
+        });
+    </script>
+
+    <style>
+        .select2-results__option--selected {
+            display: none;
+        }
+
+        #select2-select_2-container .locked-tag .select2-selection__choice__remove{
+            display: none;
+        }
+
+        #select2-select_2-container .locked-tag {
+            padding-left: 5px;
+            background-color: whitesmoke;
+        }
+    </style>
+
+{% endblock %}

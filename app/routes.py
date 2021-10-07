@@ -14,7 +14,8 @@ from app.models import HistoryFull, Intent, TrainingData, ChatHistory, Admin, Re
 from app.forms import LoginForm
 from app.util import create_training_data, update_training_data, create_intent,\
     FIELD_EMPTY_MESSAGE, EmptyRequiredField, CustomError, strip_tags, sanitize,\
-    get_selected_lang, get_primary_lang, create_response, update_response, refresh_response, compare_response
+    get_selected_lang, update_selected_lang, get_primary_lang, update_primary_lang, get_langs,\
+    create_response, update_response, refresh_response, compare_response
 from app.plot import percentage_thumbsdown_by_week, percentage_thumbsdown_by_intent, popular_questions, number_of_users
 from sqlalchemy import func
 from functools import cmp_to_key
@@ -387,12 +388,13 @@ def delete_intent():
 @app.route('/testing', methods=['GET', 'POST'])
 def testing():
     if request.method == 'POST':
-        haha = request.form['title']
-        return 'you just posted something mdfk ' + haha
-    try:
-        raise EmptyRequiredField('Haha')
-    except CustomError as ce:
-        flash(ce.description)
+        haha = request.form.getlist('select_2')
+        print(haha)
+        return 'you just posted something mdfk ' + str(haha)
+    # try:
+    #     raise EmptyRequiredField('Haha')
+    # except CustomError as ce:
+    #     flash(ce.description)
     return render_template('testing.html')
 
 
@@ -409,6 +411,34 @@ def dashboard():
                            percentage_thumbsdown_by_intent=percentage_thumbsdown_by_intent(), 
                            popular_questions=popular_questions(), 
                            number_of_users=number_of_users())
+
+
+
+#########################
+###                   ###
+###     dashboard     ###
+###                   ###
+#########################
+
+@app.route('/setting', methods=['GET', 'POST'])
+def setting():
+    old_primary_lang = get_primary_lang()
+    
+    if request.method == 'POST':
+        try:
+            new_primary_lang = request.form['select_1']
+            update_primary_lang(new_primary_lang)
+            old_primary_lang = get_primary_lang()
+            
+            new_selected_lang = request.form.getlist('select_2')
+            update_selected_lang(new_selected_lang, old_primary_lang)
+        except CustomError as ce:
+            flash(ce.description)
+    
+    langs = get_langs()
+    selected_lang = get_selected_lang()
+    return render_template('setting.html', primary_lang=old_primary_lang, langs=langs, selected_lang=selected_lang)
+
 
 
 ##########################

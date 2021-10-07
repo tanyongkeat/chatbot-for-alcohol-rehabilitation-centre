@@ -1,18 +1,101 @@
 <html>
     <head>
         <title>testing mdfk</title>
-        <script type="text/javascript" src="{{ url_for('static', filename='js/util.js')}}"></script>
+
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        
     </head>
     <body>
         <!-- <form action="/testing" method='POST'>
             Hello: <input type='text' name='title' id='title' required>
             <input type='submit' name=''>
         </form> -->
-        <div id='error'></div>
+        <form method="POST">
+            <select data-js-select2="" name="select_1" id='select_1' class='select2-select' style='width: 30%;' disabled>
+                <option value='1'>1</option>
+                <option value='2'>2</option>
+                <option value='3'>3</option>
+            </select>
 
-        {% include 'jinja.jinja-html' %}
+            <select data-js-select2="" name="select_2" id='select_2' class='select2-select' style='width: 30%;' multiple>
+                <option value='1' thanos='thanos' selected>1</option>
+                <option value='2'>2</option>
+                <option value='3'>3</option>
+            </select>
+
+            <input type="submit">
+        </form>
+
         <script>
-            flashFlashed();
+            $(".select2-select").ready(function() {
+
+                document.getElementById('select_1').addEventListener('input', function(event) {
+                    var new_val = this.value;
+
+                    var select_2_options = document.getElementById('select_2').options
+
+                    for (i = 0; i < select_2_options.length; i++) {
+                        if (select_2_options[i].value == new_val) {
+                            select_2_options[i].selected = true;
+                            select_2_options[i].setAttribute('thanos', 'thanos');
+                        } else {
+                            select_2_options[i].setAttribute('thanos', '');
+                        }
+                    }
+
+                    $('#select_2').trigger('change');
+                })
+
+                $('#select_2').select2({
+                    closeOnSelect: false, 
+                    tags: true, 
+                    templateSelection : function (tag, container){
+                            // here we are finding option element of tag and
+                        // if it has property 'locked' we will add class 'locked-tag' 
+                        // to be able to style element in select
+                        console.log(tag);
+                        console.log(container);
+                        var $option = $('#select_2 option[value="'+tag.id+'"]');
+                        if ($option.attr('thanos')){
+                            $(container).addClass('locked-tag');
+                            tag.locked = true; 
+                        }
+                        return tag.text;
+                    },
+                })
+                .on('select2:unselecting', function(e){
+                        // before removing tag we check option element of tag and 
+                    // if it has property 'locked' we will create error to prevent all select2 functionality
+                    if ($(e.params.args.data.element).attr('locked')) {
+                        e.select2.pleaseStop();
+                    }
+                });
+
+                document.getElementById('select_1').disabled = false;
+
+                // $('#select_1').on('select2:opening select2:closing', function(event) {
+                //     var $searchfield = $(this).parent().find('.select2-search__field');
+                //     $searchfield.prop('disabled', true);
+                // });
+            });
         </script>
+
+        <style>
+            .select2-results__option--selected {
+                display: none;
+            }
+
+            #select2-select_2-container .locked-tag .select2-selection__choice__remove{
+                display: none;
+            }
+
+            #select2-select_2-container .locked-tag {
+                padding-left: 5px;
+            }
+        </style>
+        
     </body>
 </html>
