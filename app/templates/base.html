@@ -28,18 +28,41 @@
         
 		<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway" />
         
-		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<!-- <link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet"> -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 	</head>
     <body>
         <div class='flex-container-panel'>
             <div class='flex-item-panel-left'>
                 <div id='icon0'><img src="{{ url_for('static', filename='img/flask.png') }}" alt=""></div>
                 <hr style='width: 75%;'>
-                <a  class='panel-selection {% if current_page=="intents" %}panel-selection-selected{% endif %}' href='{{ url_for("intents_base") }}'><div>intents</div></a>
-                <a  class='panel-selection {% if current_page=="missed" %}panel-selection-selected{% endif %}' href='{{ url_for("missed") }}'><div>missed</div></a>
-                <a  class='panel-selection {% if current_page=="dashboard" %}panel-selection-selected{% endif %}' href='{{ url_for("dashboard") }}'><div>dashboard</div></a>
+                <a  class='panel-selection {% if current_page=="dashboard" %}panel-selection-selected{% endif %}' href='{{ url_for("dashboard") }}'>
+                    <!-- <i class="fas fa-tachometer-alt"></i> -->
+                    <span></span>
+                    <i class="fas fa-chart-bar"></i>
+                    <div>Dashboard</div>
+                </a>
+                <a  class='panel-selection {% if current_page=="intents" %}panel-selection-selected{% endif %}' href='{{ url_for("intents_base") }}'>
+                    <span></span>
+                    <i class="fas fa-cubes"></i>
+                    <!-- <i class="fas fa-project-diagram"></i> -->
+                    <div>Intents</div>
+                </a>
+                <a  class='panel-selection {% if current_page=="missed" %}panel-selection-selected{% endif %}' href='{{ url_for("missed") }}'>
+                    <span></span>
+                    <i class="fas fa-question-circle"></i>
+                    <!-- <i class="fas fa-inbox"></i> -->
+                    <div>Missed</div>
+                </a>
+                <a  class='panel-selection {% if current_page=="setting" %}panel-selection-selected{% endif %}' href='{{ url_for("setting") }}'>
+                    <span></span>
+                    <i class="fas fa-cogs"></i>
+                    <div>Setting</div>
+                </a>
             </div>
             <div class='flex-item-panel-right'>
                 {% block body %}{% endblock body %}

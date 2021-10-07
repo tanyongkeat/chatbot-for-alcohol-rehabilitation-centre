@@ -146,7 +146,9 @@ h1:first-letter, h3:first-letter {
 }
   
 .flex-item-panel-left {
-    flex: 10%;
+    /* flex: 10%; */
+    flex-grow: 0;
+    flex-shrink: 0;
     max-height: 100%;
     overflow-y: hidden;
     /* background-color: rgb(235, 255, 255); */
@@ -158,7 +160,9 @@ h1:first-letter, h3:first-letter {
 }
   
 .flex-item-panel-right {
-    flex: 90%;
+    /* flex: 90%; */
+    flex-grow: 1;
+    flex-shrink: 1;
     max-height: 100%;
     overflow-y: auto;
 }
@@ -170,7 +174,7 @@ div#icon0 {
 }
 
 div#icon0 img {
-    width: 90%;
+    width: 0;
     height: 50px;
     /* object-fit: cover; */
     margin: auto;
@@ -180,32 +184,70 @@ div#icon0 img {
 a.panel-selection {
     text-decoration: none;
     position: relative;
-    display: block;
-    height: 30px;
+    display: flex;
+    align-items: center;
+    height: 35px;
     width: 100%;
     text-align: center;
     color: #5D5F61;
-    font-weight: 700;
+    font-size: 1.05rem;
+    font-weight: 800;
     box-sizing: border-box;
+    padding-right: 10px;
+}
+
+a.panel-selection:hover {
+    background-color: rgb(247, 247, 247);
+    color: #393a3a;
 }
 
 a.panel-selection-selected {
     background-color: #F2F7FC;
     color: #045FC7;
-    font-weight: 900;
+}
+
+a.panel-selection-selected:hover {
+    color: #045FC7;
+}
+
+a.panel-selection span {
+    display: block;
+    height: 100%;
+    width: 3px;
+    box-sizing: border-box;
+}
+
+a.panel-selection-selected span {
     border-left-color: #045FC7;
     border-left-width: 3px;
     border-left-style: solid;
 }
 
+a.panel-selection i {
+    margin: auto 5px auto 15px;
+    width: 19px;
+}
+
 a.panel-selection div {
-    width: 100%;
+    /* width: 100%; */
     margin: 0;
-    position: absolute;
+    box-sizing: border-box;
+    width: 0;
+    overflow-x: hidden;
+    transition-duration: 0.1s;
+    /* position: absolute;
     top: 50%;
     left: 40%;
     -ms-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%); */
+}
+
+.flex-item-panel-left:hover a.panel-selection div {
+    margin-right: 60px;
+    width: auto;
+    transition: all;
+    transition-duration: 0.3s;
+    transition-timing-function: linear;
 }
 
 input {

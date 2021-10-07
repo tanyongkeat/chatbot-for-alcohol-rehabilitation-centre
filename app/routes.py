@@ -437,7 +437,7 @@ def setting():
     
     langs = get_langs()
     selected_lang = get_selected_lang()
-    return render_template('setting.html', primary_lang=old_primary_lang, langs=langs, selected_lang=selected_lang)
+    return render_template('setting.html', current_page='setting', primary_lang=old_primary_lang, langs=langs, selected_lang=selected_lang)
 
 
 

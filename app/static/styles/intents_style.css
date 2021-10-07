@@ -13,6 +13,7 @@ body {
   
 .flex-item-left {
     flex: 20%;
+    min-width: 190px;
     max-height: 100%;
     overflow-y: auto;
     /* background-color: rgb(235, 255, 255); */
@@ -21,6 +22,15 @@ body {
     box-sizing: border-box;
     /* border-right: 1px solid black; */
     box-shadow: 2px 0 5px #888888;
+}
+
+@media screen and (max-width: 650px) {
+    .flex-item-left {
+        flex: 0;
+        width: 0;
+        min-width: 0;
+        margin: 0;
+    }
 }
   
 .flex-item-right {
