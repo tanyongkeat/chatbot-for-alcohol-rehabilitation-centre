@@ -46,7 +46,7 @@ class HistoryFull(db.Model):
     utterance_original:str = db.Column(db.String(MAX_USER_INPUT_LEN))
     utterance:str = db.Column(db.String(MAX_USER_INPUT_LEN))
     predicted_intent_id_top:int = db.Column(db.Integer, nullable=False)
-    predicted_intent_id:str = db.Column(db.String(10), nullable=False)
+    predicted_intent_id:str = db.Column(db.String(50), nullable=False)
     timestamp:datetime = db.Column(db.DateTime, default=datetime.utcnow)
     positive:bool = db.Column(db.Boolean, default=False)
     negative:bool = db.Column(db.Boolean, default=False)
@@ -94,6 +94,7 @@ class Intent(db.Model):
     response:Response = db.relationship('Response', backref='intent', cascade='all,delete')
     small_talk:bool = db.Column(db.Boolean, default=False)
     deployed:bool = db.Column(db.Boolean, default=True)
+    system:bool = db.Column(db.Boolean, default=False)
 
 @dataclass
 class Setting(db.Model):

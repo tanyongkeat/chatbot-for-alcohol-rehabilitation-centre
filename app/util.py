@@ -127,11 +127,24 @@ def translate(text, dest):
     return translator.translate(text, dest=dest).text
     
 def detect_lang(text):
-    return translator.detect(text).lang
+    lang = translator.detect(text).lang.lower()
+    print('detected', lang)
+    if lang not in lang_mapping or lang not in get_selected_lang():
+        return get_primary_lang()
+    return lang_mapping[lang]
 
 lens = {
     'selection': MAX_USER_INPUT_LEN, 
     'text': MAX_REPLY_LEN
+}
+
+lang_mapping = {
+    'zh-cn': 'zh-cn', 
+    'zh-tw': 'zh-cn', 
+    'ms': 'ms', 
+    'id': 'ms', 
+    'en': 'en', 
+    'ta': 'ta'
 }
 
 
@@ -154,6 +167,10 @@ def create_intent(intent_name, reply_message_en, reply_message_my):
     db.session.commit()
     return intent
 
+def get_ordered_intent():
+    intents = Intent.query.with_entities(Intent.id, Intent.intent_name, Intent.system).distinct().all()
+    return sorted(intents, key=lambda x: (-int(x[2]), x[1]))
+
 def create_training_data(user_message, intent_id):
     if not user_message:
         raise EmptyRequiredField('The training sample field')
@@ -162,6 +179,8 @@ def create_training_data(user_message, intent_id):
     intent = Intent.query.get(intent_id)
     if not intent:
         raise CustomError('Cannot find intent')
+    if intent.system:
+        raise CustomError('Operation not allowed')
     
     same_sample = TrainingData.query.filter(func.lower(TrainingData.user_message) == func.lower(user_message)).first()
     if same_sample:

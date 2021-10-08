@@ -1,10 +1,51 @@
 var message_counter = 0;
-apology_text = "I am sorry that it wasn\'t helpful.";
-appreciation_text = "I am happy to help!";
-error_message = "Sorry, something is not right."
+var primary_lang = '{{ primary_lang }}';
+var used_lang = primary_lang;
 
-contact_admin = 'None, contact admin';
-selection_responses = {[contact_admin]: 'You can email testing@gmail.com for more info'};
+// apology_text = {
+//     'en': "I am sorry that it wasn\'t helpful.", 
+//     'ms': "apology_text ms", 
+//     'zh-cn': "apology_text zh-cn", 
+//     'ta': "apology_text ta"
+// };
+// appreciation_text = {
+//     'en': "I am happy to help!", 
+//     'ms': "app_t ms", 
+//     'zh-cn': "app_t zh-cn", 
+//     'ta': "app_t ta"
+// };
+// confirmation_text = {
+//     'en': "Sorry, I am still learning and not that capable yet, are you asking about one of these? Or you can rephrase your question.", 
+//     'ms': "confirmation text ms", 
+//     'zh-cn': "confirmation text zh-cn", 
+//     'ta': "confirmation text ta"
+// };
+// contact_information_text = {
+//     'en': "You can email testing@gmail.com for more info or try to rephrase your question to help me understand it better.", 
+//     'ms': "contact info text ms", 
+//     'zh-cn': "contact info text zh-cn", 
+//     'ta': "contact info text ta"
+// };
+// error_message = {
+//     'en': "Sorry, something is not right.", 
+//     'ms': "error message ms", 
+//     'zh-cn': "error message zh-cn", 
+//     'ta': "error message ta"
+// };
+// contact_admin = {
+//     'en': 'None, contact admin', 
+//     'ms': 'contact admin ms', 
+//     'zh-cn': 'contact admin zh-cn', 
+//     'ta': 'contact admin ta'
+// }
+
+apology_text = get_apology_text();
+appreciation_text = get_appreciation_text();
+confirmation_text = get_confirmation_text();
+contact_information_text = get_contact_information_text();
+error_message = get_error_message();
+contact_admin = get_contact_admin();
+selection_responses = {[contact_admin]: 'You can email testing@gmail.com for more info'}; // not used
 
 
 
@@ -95,6 +136,7 @@ function reply(utterence, target, current_message_counter) {
         thumbsupId = "thumbsdown_" + current_message_counter;
         userMessageId = "userText_" + current_message_counter;
         document.getElementById(userMessageId).setAttribute('message_id', response_all['id']);
+        used_lang = response_all['lang'];
         
         response = response_all['prediction'];
         if (response.length == 1) {
@@ -121,8 +163,8 @@ function reply(utterence, target, current_message_counter) {
         } else {
             selectionBox = document.createElement('div');
             selectionBox.className = 'selection-box';
-            target.innerHTML = `<span><span>${"Sorry, I am still learning and not that capable yet, are you asking about one of these? Or you can rephrase your question."}</span></span>`;
-            response[response.length] = {'reply': selection_responses[contact_admin], 'nearest_message': contact_admin};
+            target.innerHTML = `<span><span>${confirmation_text[used_lang]}</span></span>`;
+            response[response.length] = {'reply': selection_responses[contact_admin], 'nearest_message': contact_admin[used_lang]};
             var selection;
             var selections = [];
             for (i = 0; i < response.length; i++){
@@ -159,8 +201,9 @@ function reply(utterence, target, current_message_counter) {
 
         }
 
-    }).fail(function() {
-        target.querySelector('span span').innerHTML = error_message;
+    }).fail(function(response) {
+        console.log(response);
+        target.querySelector('span span').innerHTML = error_message[used_lang];
     });
 }
 
@@ -203,9 +246,9 @@ function getPredictedWrongMessage(id, feedback) {
 
     var apology;
     if (feedback=='negative') {
-        apology = sendMessage(apology_text, 'bot', 'none');
+        apology = sendMessage(apology_text[used_lang], 'bot', 'none');
     } else {
-        apology = sendMessage(appreciation_text, 'bot', 'none');
+        apology = sendMessage(appreciation_text[used_lang], 'bot', 'none');
     }
 
     $.post('/capture', {
@@ -224,7 +267,7 @@ function getPredictedWrongMessage(id, feedback) {
         }
         to_remove.parentNode.removeChild(to_remove);
         if (feedback=='negative') {
-            sendMessage('You can email testing@gmail.com for more info or try to rephrase your question to help me understand it better.', 'bot', 'none')
+            sendMessage(contact_information_text[used_lang], 'bot', 'none')
         }
     }).fail(function() {
         apology.innerHTML = "<span><span>I am sorry, something is wrong. Feedback is not captured.</span></span>"

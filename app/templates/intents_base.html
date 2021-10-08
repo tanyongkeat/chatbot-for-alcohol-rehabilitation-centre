@@ -28,8 +28,11 @@
                                 <span></span><a href='/intents_edit/{{ intent.intent_name }}'>{{ intent.intent_name }}</a>
                             {% endif %}
                             <form action='/delete_intent' method='POST'>
-                                <input type="hidden" name='intent_id' value={{ intent.id }}>
-                                <input type='submit' name='intent_delete_button' class='intent-delete-button' value='x'>
+                                {% if intent.system %}
+                                {% else %}
+                                    <input type="hidden" name='intent_id' value={{ intent.id }}>
+                                    <input type='submit' name='intent_delete_button' class='intent-delete-button' value='x'>
+                                {% endif %}
                             </form>
                         </div>
                         <hr>

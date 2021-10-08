@@ -5,7 +5,6 @@ from app import db
 # from app.util import query_db
 from app.models import TrainingData, Intent, Response
 from sklearn.metrics.pairwise import cosine_similarity
-from googletrans import Translator
 import json
 # import matplotlib.pyplot as plt
 # import seaborn as sns
@@ -17,7 +16,12 @@ tqdm.pandas()
 model_on = True
 target_language = 'en'
 
-translator = Translator()
+if model_on:
+    from sentence_transformers import SentenceTransformer
+    model = SentenceTransformer('paraphrase-xlm-r-multilingual-v1')
+    # dataset = read_data()
+
+from app.util import translate, detect_lang
 
 ###########################################################################################################
 # from malaya import deep_model
@@ -44,7 +48,7 @@ def read_data():
             Intent.small_talk, 
             Intent.deployed, 
             Intent.intent_name.label('intention')
-        ).filter_by(deployed=True).statement, 
+        ).filter_by(deployed=True, system=False).statement, 
         con = db.session.bind
     )
     dataset = reply.merge(dataset, how='inner', left_on='id', right_on='intent_id')
@@ -59,12 +63,6 @@ def read_data():
 #     global dataset
 #     dataset = read_data()
 #     print('done')
-
-
-if model_on:
-    from sentence_transformers import SentenceTransformer
-    model = SentenceTransformer('paraphrase-xlm-r-multilingual-v1')
-    # dataset = read_data()
 
 
 def detect_intention2(user_input, target_language):
@@ -95,7 +93,7 @@ def detect_intention2(user_input, target_language):
 
     df_temp = df_temp.sort_values('cos_sim', ascending=False)
 
-    return_col = ['reply_message', 'cos_sim', 'intention', 'intent_id']
+    return_col = ['reply_message', 'cos_sim', 'selection', 'intent_id']
 
     if df_temp.iloc[:3].small_talk.mean() > 0.5:
         return [df_temp.iloc[0][return_col].tolist()]
@@ -116,8 +114,10 @@ def detect_intention(user_input):
             ('reply_message_3', 2, 'nearest_message_3', 1)]
         if len(user_input) == 1:
             pre = [pre[0]]
+        target_language = 'en'
     else:
-        pre = detect_intention2(user_input, target_language)
+        target_language = detect_lang(user_input)
+        pre = detect_intention2(user_input, target_language=target_language)
     pre = [{'reply': p[0], 'cosine_similarity': float(p[1]), 'nearest_message': p[2].replace('_', ' '), 'intent_id': int(p[3])} for p in pre]
 
-    return pre
+    return pre, target_language

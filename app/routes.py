@@ -12,7 +12,7 @@ from app.intent import detect_intention
 from app.models import HistoryFull, Intent, TrainingData, ChatHistory, Admin, Response,\
     MAX_USER_INPUT_LEN, MAX_REPLY_LEN, MAX_EMAIL_LEN, MAX_INTENT_NAME_LEN
 from app.forms import LoginForm
-from app.util import create_training_data, update_training_data, create_intent,\
+from app.util import create_training_data, update_training_data, create_intent, get_ordered_intent,\
     FIELD_EMPTY_MESSAGE, EmptyRequiredField, CustomError, strip_tags, sanitize,\
     get_selected_lang, update_selected_lang, get_primary_lang, update_primary_lang, get_langs,\
     create_response, update_response, refresh_response, compare_response
@@ -35,7 +35,30 @@ def index():
     if no_information_required or 'chat_id' in session:
         registered = True
 
-    return render_template('user.html', registered=registered)
+    opening_text = Intent.query.filter_by(intent_name='opening text').first()
+    opening_text = dict(map(lambda x: (x.lang, x.text), opening_text.response))
+
+    apology_text = Intent.query.filter_by(intent_name='thumbsdown text').first()
+    apology_text = dict(map(lambda x: (x.lang, x.text), apology_text.response))
+
+    appreciation_text = Intent.query.filter_by(intent_name='thumbsup text').first()
+    appreciation_text = dict(map(lambda x: (x.lang, x.text), appreciation_text.response))
+
+    confirmation_text = Intent.query.filter_by(intent_name='confirmation text').first()
+    confirmation_text = dict(map(lambda x: (x.lang, x.text), confirmation_text.response))
+
+    contact_information_text = Intent.query.filter_by(intent_name='admin contact').first()
+    contact_information_text = dict(map(lambda x: (x.lang, x.text), contact_information_text.response))
+
+    error_message = Intent.query.filter_by(intent_name='error message').first()
+    error_message = dict(map(lambda x: (x.lang, x.text), error_message.response))
+
+    contact_admin = Intent.query.filter_by(intent_name='not in selection').first()
+    contact_admin = dict(map(lambda x: (x.lang, x.text), contact_admin.response))
+
+    return render_template('user.html', registered=registered, primary_lang=get_primary_lang(), opening_text=opening_text, 
+                           apology_text=apology_text, appreciation_text=appreciation_text, confirmation_text=confirmation_text, 
+                           contact_information_text=contact_information_text, error_message=error_message, contact_admin=contact_admin)
 
 @app.route('/reply', methods=['POST'])
 def reply():
@@ -45,7 +68,7 @@ def reply():
         else:
             flask.abort(406) # important
     ut = sanitize(request.form['utterence'])[:MAX_USER_INPUT_LEN]
-    prediction = detect_intention(ut)
+    prediction, lang = detect_intention(ut)
     predicted_intent_ids = [pre['intent_id'] for pre in prediction]
     obj = HistoryFull(
         chat_id=session['chat_id'], 
@@ -56,7 +79,7 @@ def reply():
     )
     db.session.add(obj)
     db.session.commit()
-    return jsonify({'id': obj.id, 'prediction': prediction})
+    return jsonify({'id': obj.id, 'prediction': prediction, 'lang': lang})
 
 @app.route('/capture', methods=['POST'])
 def capture():
@@ -96,7 +119,11 @@ def user_information():
         session['user_name'] = user_name
         session['user_email'] = user_email
 
-    return jsonify({'code': 200, 'user_name': user_name, 'user_email': user_email, 'chatbox': render_template('user_chatbox.html')})
+        opening_text = Intent.query.filter_by(intent_name='opening text').first()
+        opening_text = dict(map(lambda x: (x.lang, x.text), opening_text.response))
+
+    return jsonify({'code': 200, 'user_name': user_name, 'user_email': user_email, 
+                    'chatbox': render_template('user_chatbox.html', opening_text=opening_text, primary_lang=get_primary_lang())})
 
 
 ######################
@@ -143,7 +170,7 @@ def view_missed():
 
 @app.route('/view_missed_intent', methods=['POST'])
 def view_missed_intent():
-    intents = Intent.query.distinct().all()
+    intents = Intent.query.filter_by(system=False).distinct().all()
     # intents = sorted(intents, key=lambda x: x[1])
     with app.app_context():
         return jsonify({'data': intents})
@@ -195,18 +222,14 @@ def missed():
             return jsonify({'code': 200})
 
     captureds = HistoryFull.query.filter_by(negative=True, trained=False).order_by(HistoryFull.id).all()
-    intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
-    intents = sorted(intents, key=lambda x: x[1])
-    return render_template('missed.html', current_page='missed', captureds=captureds, intents=intents)
+    return render_template('missed.html', current_page='missed', captureds=captureds, intents=get_ordered_intent())
 
 @app.route('/missed_new_intent', methods=['POST'])
 @login_required
 def missed_new_intent():
     target_id = request.form['id']
     target = HistoryFull.query.get_or_404(target_id)
-    intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
-    intents = sorted(intents, key=lambda x: x[1])
-    return render_template('intents_add.html', current_page='intents', previous_page='missed', intents=intents, 
+    return render_template('intents_add.html', current_page='intents', previous_page='missed', intents=get_ordered_intent(), primary_lang=get_primary_lang(), 
                             preset_sample_id=target_id, preset_training_sample=target.utterance)
 
 
@@ -233,9 +256,7 @@ def view_intents_edit():
 @app.route('/intents_edit')
 @login_required
 def intents_base():
-    intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
-    intents = sorted(intents, key=lambda x: x[1])
-    return render_template('intents_base.html', current_page='intents', intents=intents)
+    return render_template('intents_base.html', current_page='intents', intents=get_ordered_intent())
 
 @app.route('/intents_edit/<intent_name>', methods=['GET', 'POST'])
 @login_required
@@ -279,10 +300,8 @@ def intents(intent_name):
         #         db.session.add(training_data)
         db.session.commit()
         # refresh_dataset()
-    intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
-    intents = sorted(intents, key=lambda x: x[1])
     
-    return render_template('intents_edit.html', current_page='intents', intents=intents, intent=intent, responses=responses, 
+    return render_template('intents_edit.html', current_page='intents', intents=get_ordered_intent(), intent=intent, responses=responses, 
                            primary_lang=get_primary_lang(), language=lang)
 
 @app.route('/intents_edit/toggle', methods=['POST'])
@@ -371,9 +390,7 @@ def intents_add():
             additional_jinja_vars['preset_sample_id'] = target_id
             additional_jinja_vars['preset_training_sample'] = target_utterance
     
-    intents = Intent.query.with_entities(Intent.id, Intent.intent_name).distinct().all()
-    intents = sorted(intents, key=lambda x: x[1])
-    return render_template('intents_add.html', current_page='intents', intents=intents, primary_lang=get_primary_lang(), **additional_jinja_vars)
+    return render_template('intents_add.html', current_page='intents', intents=get_ordered_intent(), primary_lang=get_primary_lang(), **additional_jinja_vars)
 
 @app.route('/delete_intent', methods=['POST'])
 @login_required

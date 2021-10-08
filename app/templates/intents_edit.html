@@ -29,16 +29,18 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
     {% endwith %}
     #}
     
-    <div id="switches">
-        <div>
-            <div>Deployed</div>
-            <md-switch ng-model="switches.deployed" aria-label="deployed_switch" ng-change="toggle({{ intent.id }}, 'deployed');"></md-switch>
+    {% if not intent.system %}
+        <div id="switches">
+            <div>
+                <div>Deployed</div>
+                <md-switch ng-model="switches.deployed" aria-label="deployed_switch" ng-change="toggle({{ intent.id }}, 'deployed');"></md-switch>
+            </div>
+            <div>
+                <div>Casual</div>
+                <md-switch ng-model="switches.small_talk" aria-label="casual_switch" ng-change="toggle({{ intent.id }}, 'small_talk');"></md-switch>
+            </div>
         </div>
-        <div>
-            <div>Casual</div>
-            <md-switch ng-model="switches.small_talk" aria-label="casual_switch" ng-change="toggle({{ intent.id }}, 'small_talk');"></md-switch>
-        </div>
-    </div>
+    {% endif %}
     
     <h2>Chatbot response</h2>
     <div id='reply-messages-container'>
@@ -73,34 +75,36 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
         </div>
     </div>
 
-    <h2>Training samples</h2>
-    <div id='training-samples'>
-        {% set category='user-message' %}
-        {% set wrapped=False %}
-        {% set data='data_intents_edit' %}
-        {% set text='user_message' %}
-        {% include 'editable.html' %}
+    {% if not intent.system %}
+        <h2>Training samples</h2>
+        <div id='training-samples'>
+            {% set category='user-message' %}
+            {% set wrapped=False %}
+            {% set data='data_intents_edit' %}
+            {% set text='user_message' %}
+            {% include 'editable.html' %}
 
-        {% set category = 'add-intent' %}
-        {% set placeholder = 69 %}
-        <div class='editable' id='add-intent-box' style='padding: 0 10px;'>
-            <!-- <div>hello</div> -->
-            <input id='{{ category }}-display_{{ placeholder }}' class='add-button' type='submit' value='+' onclick="show_edit_space(this.id, '{{ category }}')">
-            <div id='{{ category }}-edit_{{ placeholder }}' class='editable-edit' style='display: none; padding: 5px 0'>
-                <form action='' method='POST'>
-                    <!-- <input type="hidden" name="job" value="add_sample"> -->
-                    <textarea class='editable-content' cols=2 name='user_message' id='{{ category }}-e_{{ placeholder }}' 
-                        ng-model='add_intent_form.user_message' ori_value='' required></textarea>
-                    <!-- <input id='cancel-button_{{ placeholder }}' class='cancel-button' type='submit' value='cancel' form='' onclick="cancel_edit_space(this.id, '{{ category }}')">
-                    <input id='save-button_{{ placeholder }}' class='save-button' type='submit' value='save'> -->
-                    <button id='save-button_{{ placeholder }}' class='save-button' type='submit' form='' 
-                        ng-click="addSample($event, '{{ category }}');">save</button>
-                    <button id='cancel-button_{{ placeholder }}' class='cancel-button' type='submit' form='' 
-                        onclick="cancel_edit_space(this.id, '{{ category }}')">cancel</button>
-                </form>
+            {% set category = 'add-intent' %}
+            {% set placeholder = 69 %}
+            <div class='editable' id='add-intent-box' style='padding: 0 10px;'>
+                <!-- <div>hello</div> -->
+                <input id='{{ category }}-display_{{ placeholder }}' class='add-button' type='submit' value='+' onclick="show_edit_space(this.id, '{{ category }}')">
+                <div id='{{ category }}-edit_{{ placeholder }}' class='editable-edit' style='display: none; padding: 5px 0'>
+                    <form action='' method='POST'>
+                        <!-- <input type="hidden" name="job" value="add_sample"> -->
+                        <textarea class='editable-content' cols=2 name='user_message' id='{{ category }}-e_{{ placeholder }}' 
+                            ng-model='add_intent_form.user_message' ori_value='' required></textarea>
+                        <!-- <input id='cancel-button_{{ placeholder }}' class='cancel-button' type='submit' value='cancel' form='' onclick="cancel_edit_space(this.id, '{{ category }}')">
+                        <input id='save-button_{{ placeholder }}' class='save-button' type='submit' value='save'> -->
+                        <button id='save-button_{{ placeholder }}' class='save-button' type='submit' form='' 
+                            ng-click="addSample($event, '{{ category }}');">save</button>
+                        <button id='cancel-button_{{ placeholder }}' class='cancel-button' type='submit' form='' 
+                            onclick="cancel_edit_space(this.id, '{{ category }}')">cancel</button>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
+    {% endif %}
 
     {% include 'jinja.jinja-html' %}
     <script>

@@ -34,4 +34,40 @@
         return {{ number_of_users | safe }}
     }
     {% endif %}
+
+    {% if apology_text %}
+    function get_apology_text() {
+        return {{ apology_text | tojson | safe }}
+    }
+    {% endif %}
+
+    {% if appreciation_text %}
+    function get_appreciation_text() {
+        return {{ appreciation_text | tojson | safe }}
+    }
+    {% endif %}
+
+    {% if confirmation_text %}
+    function get_confirmation_text() {
+        return {{ confirmation_text | tojson | safe }}
+    }
+    {% endif %}
+
+    {% if contact_information_text %}
+    function get_contact_information_text() {
+        return {{ contact_information_text | tojson | safe }}
+    }
+    {% endif %}
+
+    {% if error_message %}
+    function get_error_message() {
+        return {{ error_message | tojson | safe }}
+    }
+    {% endif %}
+
+    {% if contact_admin %}
+    function get_contact_admin() {
+        return {{ contact_admin | tojson | safe }}
+    }
+    {% endif %}
 </script>

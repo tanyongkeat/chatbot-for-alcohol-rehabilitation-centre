@@ -246,7 +246,7 @@ a.panel-selection div {
     margin-right: 60px;
     width: auto;
     transition: all;
-    transition-duration: 0.3s;
+    transition-duration: 0.1s;
     transition-timing-function: linear;
 }
 
