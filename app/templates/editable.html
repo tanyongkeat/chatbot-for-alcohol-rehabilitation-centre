@@ -18,7 +18,7 @@
         <form id='form-{{ job }}_{a target.id a}' method='POST' style='display:flex;' ng-submit=''>
             <input type="hidden" name="id" value="{a target.id a}">
             <input type="hidden" name="job" value="{{ job }}">
-            <textarea id='{{ category }}-e_{a target.id a}' name='modified_content' rows=3 class='editable-content' ori_value='{a target.{{ text }} a}' required>{a target.{{ text }} a}</textarea>
+            <textarea id='{{ category }}-e_{a target.id a}' name='modified_content' rows=3 maxlength="{{ MAX_USER_INPUT_LEN }}" class='editable-content' ori_value='{a target.{{ text }} a}' required>{a target.{{ text }} a}</textarea>
             <!-- <input id='cancel-button_{a target.id a}' class='cancel-button' type='submit' value='cancel' form='' onclick="cancel_edit_space(this.id, '{{ category }}')">
             <input ng-click="submitForm(target, '{{ job }}')" id='save-button_{a target.id a}' class='save-button' type='submit' value='save'> -->
             <button ng-click="submitForm(target, '{{ job }}')" id='save-button_{a target.id a}' class='save-button' type='submit'>save</button>

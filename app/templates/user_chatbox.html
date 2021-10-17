@@ -17,7 +17,7 @@
 </div>
 
 <div id="userInput">
-    <textarea id="textInput" name="msg" placeholder="Enter your message here..." rows="1" maxlength="150" oninput='autoResize(this)'></textarea>
+    <textarea id="textInput" name="msg" placeholder="Enter your message here..." rows="1" maxlength="{{ MAX_USER_INPUT_LEN }}" oninput='autoResize(this)'></textarea>
     <button id='buttonInput' type='submit'><span class='fa fa-paper-plane fa-lg'></span></button>
     <!-- <input id="buttonInput" type="image" src="https://img.icons8.com/ios-glyphs/23/3030ff/filled-sent.png"> -->
 </div>

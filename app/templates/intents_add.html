@@ -12,7 +12,7 @@
         {% endif %}
     </form>
     <h3>adding</h3>
-    <h1><input id='intent-name-input' name='intent_name' type='text' form='add_form' {% if form_data %}value='{{ form_data.intent_name }}'{% endif %} required></h1>
+    <h1><input id='intent-name-input' name='intent_name' type='text' form='add_form' maxlength="{{ MAX_INTENT_NAME_LEN }}" if form_data %}value='{{ form_data.intent_name }}'{% endif %} required></h1>
     <hr>
     <div id='debug'></div>
     <div id='error'></div>
@@ -36,7 +36,7 @@
     </div> -->
     <div id='reply-messages-adding'>
         <label for='reply_message'>Reply message <strong>{{ primary_lang }}</strong></label>
-        <textarea name="reply_message" form='add_form' required>{% if form_data %}{{ form_data.reply_message }}{% endif %}</textarea>
+        <textarea name="reply_message" form='add_form' maxlength="{{ MAX_REPLY_LEN }}" required>{% if form_data %}{{ form_data.reply_message }}{% endif %}</textarea>
         <!-- <label for='reply_message_en'>English</label>
         <textarea name="reply_message_en" form='add_form' required>{% if form_data %}{{ form_data.reply_message_en }}{% endif %}</textarea>
         <label for='reply_message_my'>Malay</label>
@@ -48,7 +48,7 @@
     <div id='training-samples-add' class='itents-add-elem'>
         {% if preset_training_sample %}
             <div class='editable' id='training-sample-box_0'>
-                <input class='editable-content' type="text" name='training_sample_0' form='add_form' value='{{ preset_training_sample }}'>
+                <input class='editable-content' type="text" maxlength="{{ MAX_USER_INPUT_LEN }}" name='training_sample_0' form='add_form' value='{{ preset_training_sample }}'>
             </div>
         {% endif %}
     </div>
@@ -92,6 +92,7 @@
             training_sample.className = 'editable-content';
             training_sample.required = true;
             training_sample.value = training_sample_text;
+            training_sample.maxLength = parseInt('{{ MAX_USER_INPUT_LEN }}')
             
             var delete_button = document.createElement('button');
             delete_button.type = 'submit';

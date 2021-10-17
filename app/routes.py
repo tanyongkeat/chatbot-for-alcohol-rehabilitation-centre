@@ -123,7 +123,8 @@ def user_information():
         opening_text = dict(map(lambda x: (x.lang, x.text), opening_text.response))
 
     return jsonify({'code': 200, 'user_name': user_name, 'user_email': user_email, 
-                    'chatbox': render_template('user_chatbox.html', opening_text=opening_text, primary_lang=get_primary_lang())})
+                    'chatbox': render_template('user_chatbox.html', opening_text=opening_text, primary_lang=get_primary_lang(), 
+                                               MAX_USER_INPUT_LEN=MAX_USER_INPUT_LEN)})
 
 
 ######################
@@ -222,7 +223,7 @@ def missed():
             return jsonify({'code': 200})
 
     captureds = HistoryFull.query.filter_by(negative=True, trained=False).order_by(HistoryFull.id).all()
-    return render_template('missed.html', current_page='missed', captureds=captureds, intents=get_ordered_intent())
+    return render_template('missed.html', current_page='missed', captureds=captureds, intents=get_ordered_intent(), MAX_USER_INPUT_LEN=MAX_USER_INPUT_LEN)
 
 @app.route('/missed_new_intent', methods=['POST'])
 @login_required
@@ -302,7 +303,7 @@ def intents(intent_name):
         # refresh_dataset()
     
     return render_template('intents_edit.html', current_page='intents', intents=get_ordered_intent(), intent=intent, responses=responses, 
-                           primary_lang=get_primary_lang(), language=lang)
+                           primary_lang=get_primary_lang(), language=lang, MAX_USER_INPUT_LEN=MAX_USER_INPUT_LEN, MAX_REPLY_LEN=MAX_REPLY_LEN)
 
 @app.route('/intents_edit/toggle', methods=['POST'])
 @login_required
@@ -390,7 +391,9 @@ def intents_add():
             additional_jinja_vars['preset_sample_id'] = target_id
             additional_jinja_vars['preset_training_sample'] = target_utterance
     
-    return render_template('intents_add.html', current_page='intents', intents=get_ordered_intent(), primary_lang=get_primary_lang(), **additional_jinja_vars)
+    return render_template('intents_add.html', current_page='intents', intents=get_ordered_intent(), primary_lang=get_primary_lang(), 
+                           MAX_USER_INPUT_LEN=MAX_USER_INPUT_LEN, MAX_REPLY_LEN=MAX_REPLY_LEN, MAX_INTENT_NAME_LEN=MAX_INTENT_NAME_LEN, 
+                           **additional_jinja_vars)
 
 @app.route('/delete_intent', methods=['POST'])
 @login_required

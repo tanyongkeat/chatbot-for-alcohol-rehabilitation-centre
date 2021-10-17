@@ -242,12 +242,14 @@ a.panel-selection div {
     transform: translate(-50%, -50%); */
 }
 
-.flex-item-panel-left:hover a.panel-selection div {
-    margin-right: 60px;
-    width: auto;
-    transition: all;
-    transition-duration: 0.1s;
-    transition-timing-function: linear;
+@media (hover: hover) {
+    .flex-item-panel-left:hover a.panel-selection div {
+        margin-right: 60px;
+        width: auto;
+        transition: all;
+        transition-duration: 0.1s;
+        transition-timing-function: linear;
+    }
 }
 
 input {
