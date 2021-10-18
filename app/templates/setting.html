@@ -19,22 +19,28 @@
     {% endwith %}
     #}
 
-    <form method="POST">
-        <select data-js-select2="" name="select_1" id='select_1' class='select2-select' style='width: 30%;' disabled>
-            {% for lang in langs %}
-                <option value='{{ lang }}' {% if lang == primary_lang %}selected{% endif %}>{{ lang }}</option>
-            {% endfor %}
-        </select>
+    <form id='setting-form' method="POST">
+        <div class='setting-option'>
+            <label for="select_1">Primary Language</label>
+            <select data-js-select2="" name="select_1" id='select_1' class='select2-select' style='width: 30%;' disabled>
+                {% for lang in langs %}
+                    <option value='{{ lang }}' {% if lang == primary_lang %}selected{% endif %}>{{ lang }}</option>
+                {% endfor %}
+            </select>
+        </div>
 
-        <select data-js-select2="" name="select_2" id='select_2' class='select2-select' style='width: 30%;' multiple>
-            {% for lang in langs %}
-                <option value='{{ lang }}' 
-                    {% if lang == primary_lang %}thanos='thanos'{% endif %}
-                    {% if lang in selected_lang %}selected{% endif %}>{{ lang }}</option>
-            {% endfor %}
-        </select>
+        <div class='setting-option'>
+            <label for="select_2">Supported languages</label>
+            <select data-js-select2="" name="select_2" id='select_2' class='select2-select' style='width: 30%;' multiple>
+                {% for lang in langs %}
+                    <option value='{{ lang }}' 
+                        {% if lang == primary_lang %}thanos='thanos'{% endif %}
+                        {% if lang in selected_lang %}selected{% endif %}>{{ lang }}</option>
+                {% endfor %}
+            </select>
+        </div>
 
-        <input type="submit">
+        <input type="submit" class='save-button' name='Save' value='Save'>
     </form>
 
     {% include 'jinja.jinja-html' %}
@@ -110,6 +116,46 @@
             padding-left: 5px;
             background-color: whitesmoke;
         }
+
+        #setting-form {
+            margin-left: auto;
+            margin-right: auto;
+            width: 95%;
+        }
+
+        .setting-option {
+            display: flex;
+            align-items: center;
+            min-height: 35px;
+            margin-bottom: 10px;
+        }
+
+        .setting-option label {
+            width: 30%;
+            min-width: 100px;
+        }
+
+        .select2, select {
+            /* height: 100%; */
+            width: 300px;
+        }
+
+        .save-button {
+            border-style: none;
+            border-width: 0;
+            border-radius: 5px;
+            outline: none;
+            background-color: #045FC7;
+            color: white;
+            font-size: 0.9rem;
+            padding: 5px 10px;
+        }
+
+        .save-button:hover {
+            background-color: #368df0;
+        }
+
+        
     </style>
 
 {% endblock %}
