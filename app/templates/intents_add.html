@@ -12,7 +12,7 @@
         {% endif %}
     </form>
     <h3>adding</h3>
-    <h1><input id='intent-name-input' name='intent_name' type='text' form='add_form' maxlength="{{ MAX_INTENT_NAME_LEN }}" if form_data %}value='{{ form_data.intent_name }}'{% endif %} required></h1>
+    <h1><input id='intent-name-input' name='intent_name' type='text' form='add_form' maxlength="{{ MAX_INTENT_NAME_LEN }}" {% if form_data %}value='{{ form_data.intent_name }}'{% endif %} required></h1>
     <hr>
     <div id='debug'></div>
     <div id='error'></div>

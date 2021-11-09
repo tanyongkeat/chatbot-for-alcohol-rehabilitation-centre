@@ -1,5 +1,5 @@
 body {
-    background-color: #EDF0F4;
+    /* background-color: #EDF0F4; */
     font-family: 'Nunito', sans-serif, Raleway;
 }
 
@@ -33,11 +33,11 @@ h1, h2, h3 {
 }
 
 h1 {
-    margin: 3px auto 10px;
+    margin: -10px auto 10px;
 }
 
 h3 {
-    margin: 10px auto 3px;
+    margin: 10px auto 2px;
     color: #474A4C;
 }
 
@@ -54,12 +54,12 @@ h1:first-letter, h3:first-letter {
     display: block;
     width: 100%;
     text-align: center;
-    font-size: 1.3em !important;
+    font-size: 1.3em;
 }
 
 .add-button:hover {
     /* border: 1px solid black; */
-    box-shadow: 0 0 0 1px black inset;
+    /* box-shadow: 0 0 0 1px black inset; */
     font-weight: bold;
 }
 
@@ -244,7 +244,8 @@ a.panel-selection div {
 
 @media (hover: hover) {
     .flex-item-panel-left:hover a.panel-selection div {
-        margin-right: 60px;
+        /* margin-right: 60px; */
+        margin-right: 15px;
         width: auto;
         transition: all;
         transition-duration: 0.1s;

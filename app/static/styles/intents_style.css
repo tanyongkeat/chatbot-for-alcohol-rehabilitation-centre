@@ -17,11 +17,13 @@ body {
     max-height: 100%;
     overflow-y: auto;
     /* background-color: rgb(235, 255, 255); */
-    background-color: #F2F7FC;
+    /* background-color: #F2F7FC; */
     /* background-color: white; */
     box-sizing: border-box;
     /* border-right: 1px solid black; */
     box-shadow: 2px 0 5px #888888;
+    display: flex;
+    flex-direction: column;
 }
 
 @media screen and (max-width: 650px) {
@@ -44,6 +46,8 @@ body {
     font-size: 15px;
     border-radius: 3px;
     outline: none;
+    flex-grow: 0;
+    flex-shrink: 0;
 }
 
 #intent-search-bar {
@@ -54,6 +58,9 @@ body {
     border-color: #999999;
     background-repeat: no-repeat;
     text-indent: 20px;
+    display: block;
+    width: 83%;
+    margin: 5px auto;
 }
 
 #intent-search-bar:focus {
@@ -65,7 +72,13 @@ body {
 #intent-item-list {
     padding: 5px;
     padding-left: 10px;
+    overflow-y: scroll;
+    padding-bottom: 50px;
 }
+
+/* .intent-item-wrapper {
+    margin-bottom: 5px;
+} */
 
 .intent-item {
     display: flex;
@@ -76,6 +89,13 @@ body {
     flex: 1;
     color: black;
     font-size: 15px;
+    text-align: center;
+}
+
+.intent-item span i {
+    line-height: 100%;
+    font-size: 11px;
+    vertical-align: middle;
 }
 
 .intent-item a {
@@ -89,6 +109,11 @@ body {
     font-size: 15px;
 }
 
+.intent-item a b {
+    line-height: 100%;
+    vertical-align: middle;
+}
+
 .intent-item a:hover {
     font-weight: bold;
 }
@@ -97,16 +122,33 @@ body {
     flex: 1;
 }
 
-.intent-item form input:hover {
-    color: red;
-}
-
-/* .intent-delete-button:hover {
+/* .intent-item form input:hover {
     color: red;
 } */
 
-#intent-search-bar {
-    display: block;
-    width: 90%;
-    margin: 5px auto;
+.intent-item form button {
+    font-size: 0.8rem;
+    line-height: 100%;
+    vertical-align: middle;
+}
+
+#intent-item-list .add-button {
+    --r: 0.5rem;
+    width: calc(var(--r) * 2);
+    height: calc(var(--r) * 2);
+    line-height: calc(var(--r) * 2);
+    border-radius: var(--r);
+    font-size: 1rem;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 0 0 0.7px black inset;
+    text-align: center;
+}
+
+.intent-delete-button:hover {
+    color: red;
+}
+
+#intent-item-list hr {
+    width: 85%;
 }
