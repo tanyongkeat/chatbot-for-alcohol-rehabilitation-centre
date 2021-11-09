@@ -133,7 +133,8 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
                 buttons_text[i].addEventListener('click', function(event) {cascade_zindex(event.target);})
             }
 
-            document.getElementById('select-language-button_{% if language %}{{ language }}{% else %}{% if primary_lang %}{{primary_lang}}{% else %}en{% endif %}{% endif %}').click();
+            var toClick = 'select-language-button_{% if language %}{{ language }}{% else %}{% if primary_lang %}{{ primary_lang }}{% else %}en{% endif %}{% endif %}';
+            document.getElementById(toClick).click();
 
             // var error_messages = {{ get_flashed_messages() | tojson | safe }};
             // flashError(error_messages);

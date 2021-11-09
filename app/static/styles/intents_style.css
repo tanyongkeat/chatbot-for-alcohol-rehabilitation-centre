@@ -14,6 +14,7 @@ body {
 .flex-item-left {
     flex: 20%;
     min-width: 190px;
+    max-width: 250px;
     max-height: 100%;
     overflow-y: auto;
     /* background-color: rgb(235, 255, 255); */
@@ -74,11 +75,20 @@ body {
     padding-left: 10px;
     overflow-y: scroll;
     padding-bottom: 50px;
+    scrollbar-width: none;
 }
 
 /* .intent-item-wrapper {
     margin-bottom: 5px;
 } */
+
+#intent-item-list::-webkit-scrollbar-thumb {
+    visibility: hidden;
+}
+
+#intent-item-list:active::-webkit-scrollbar-thumb {
+    visibility: visible; /* originally intended to make scrollbar only visible when scrolling, but it doesn't have any effect */
+}
 
 .intent-item {
     display: flex;
