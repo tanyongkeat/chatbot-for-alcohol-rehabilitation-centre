@@ -7,5 +7,7 @@ psql_data
 .vscode
 app/__pycache__
 app/temp.py
+app/templates/lol.html
+app/templates/temp.html
 __pycache__
 note.txt

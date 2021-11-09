@@ -1,17 +1,17 @@
-#reply-messages-container, #switches {
+.responses-container, #switches {
     width: 95%;
     margin-left: auto;
     margin-right: auto;
 }
 
-#reply-messages {
+.responses {
     height: 90px;
     position: relative;
     z-index: 50;
     width: 85%;
 }
 
-.reply-message-language-section {
+.response-language-section {
     position: absolute;
     width: 100%;
     background-color: white;
@@ -23,14 +23,14 @@
     box-sizing: border-box;
 }
 
-#select-language-button_en:target ~ div #reply-message-language-section_en, 
-#select-language-button_ms:target ~ div #reply-message-language-section_ms, 
-#select-language-button_ta:target ~ div #reply-message-language-section_ta, 
-#select-language-button_zh-cn:target ~ div #reply-message-language-section_zh-cn  {
+/* #reply-message-select-language-button_en:target ~ div #reply-message-language-section_en, 
+#reply-message-select-language-button_ms:target ~ div #reply-message-language-section_ms, 
+#reply-message-select-language-button_ta:target ~ div #reply-message-language-section_ta, 
+#reply-message-select-language-button_zh-cn:target ~ div #reply-message-language-section_zh-cn  {
     z-index: 99;
-}
+} */
 
-.reply-message-language-section .edit-button {
+.response-language-section .edit-button {
     position: absolute;
     right: 0px;
     top: -23px;
@@ -38,7 +38,7 @@
     background-color: transparent;
 }
 
-.select-language-button {
+.response-select-language-button {
     position: relative;
     background-color: white;
     color: black;
@@ -51,10 +51,10 @@
     border-radius: 5px 5px 0px 0px;
 }
 
-.select-language-button:target {
+/* .response-select-language-button:target {
     font-weight: bold;
     z-index: 51;
-}
+} */
 
 @media screen and (max-width: 330px) {
     /* .select-language-button {
@@ -62,7 +62,7 @@
         word-break: break-all;
     } */
 
-    .reply-message-language-section .edit-button {
+    .response-language-section .edit-button {
         position: initial;
         float: right;
     }
@@ -70,7 +70,7 @@
 
 
 
-.select-language-button:focus, .select-language-button:active {
+.response-select-language-button:focus, .response-select-language-button:active {
     outline: 0;
     border: none;
 }
@@ -85,7 +85,7 @@
     float: none;
 }
 
-.reply-message-display .editable-content {
+.response-display .editable-content {
     min-width: 0;
     max-width: 100%;
     width: 100%;

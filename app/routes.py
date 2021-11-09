@@ -278,11 +278,18 @@ def intents(intent_name):
         else: # form submission
             job = request.form['job']
 
-        if job == 'update_reply_message':
+        if job == 'update_reply-message':
             lang = request.form['lang']
             text = request.form['modified_content']
             try:
                 update_response(intent.id, 'text', lang, text)
+            except CustomError as ce:
+                flash(ce.description)
+        if job == 'update_selection-text':
+            lang = request.form['lang']
+            text = request.form['modified_content']
+            try:
+                update_response(intent.id, 'selection', lang, text)
             except CustomError as ce:
                 flash(ce.description)
         elif job == 'update':

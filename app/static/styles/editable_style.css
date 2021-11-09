@@ -55,7 +55,7 @@ input[class*='button']:hover, button[class*='button']:hover {
 }
 
 .editable form, 
-#reply-messages form {
+.responses form {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
@@ -63,13 +63,13 @@ input[class*='button']:hover, button[class*='button']:hover {
 
 /* changed .editable form button/etc to only .editable button, change back if there is any bug */
 .editable button, 
-#reply-messages button {
+.responses button {
     flex-grow: 0;
     flex-shrink: 0;
 }
 
 .editable textarea, .editable .editable-content, 
-#reply-messages form textarea, #reply-messages form .editable-content {
+.responses form textarea, .responses form .editable-content {
     flex-grow: 1;
     flex-shrink: 1;
     margin-right: 10px;
@@ -78,17 +78,17 @@ input[class*='button']:hover, button[class*='button']:hover {
 @media all and (max-width: 700px) {
     .editable form, 
     .itents-add-elem .editable, 
-    #reply-messages form {
+    .responses form {
         flex-wrap: wrap;
     }
 
     .editable textarea, .editable .editable-content, 
-    #reply-messages form textarea, #reply-messages form .editable-content {
+    .responses form textarea, .responses form .editable-content {
         width: 100%;
     }
 
     .editable button:first-of-type, 
-    #reply-messages form button:first-of-type {
+    .responses form button:first-of-type {
         margin-left: auto;
     }
 }
