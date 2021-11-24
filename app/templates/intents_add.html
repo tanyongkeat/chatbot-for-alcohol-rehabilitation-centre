@@ -12,8 +12,9 @@
         {% endif %}
     </form>
     <h3>adding</h3>
-    <h1><input id='intent-name-input' name='intent_name' type='text' form='add_form' maxlength="{{ MAX_INTENT_NAME_LEN }}" {% if form_data %}value='{{ form_data.intent_name }}'{% endif %} required></h1>
-    <hr>
+    <h1><input id='intent-name-input' name='intent_name' type='text' form='add_form' maxlength="{{ MAX_INTENT_NAME_LEN }}" placeholder="Enter new intent name"
+        autocomplete="off" {% if form_data %}value='{{ form_data.intent_name }}'{% endif %}></h1>
+    <hr style='width: 97%;'>
     <div id='debug'></div>
     <div id='error'></div>
 
@@ -36,7 +37,7 @@
     </div> -->
     <div id='reply-messages-adding'>
         <label for='reply_message'>Reply message <strong>{{ primary_lang }}</strong></label>
-        <textarea name="reply_message" form='add_form' maxlength="{{ MAX_REPLY_LEN }}" required>{% if form_data %}{{ form_data.reply_message }}{% endif %}</textarea>
+        <textarea name="reply_message" form='add_form' maxlength="{{ MAX_REPLY_LEN }}">{% if form_data %}{{ form_data.reply_message }}{% endif %}</textarea>
         <!-- <label for='reply_message_en'>English</label>
         <textarea name="reply_message_en" form='add_form' required>{% if form_data %}{{ form_data.reply_message_en }}{% endif %}</textarea>
         <label for='reply_message_my'>Malay</label>
@@ -55,11 +56,11 @@
     <input type='submit' value='+' class='add-button' onclick='add_training_samples()'>
 
     <div>
-        <input class='save-button' name='save' type="submit" form='add_form' value='save'> 
+        <input class='save-button' name='save' type="submit" form='add_form' value='SAVE'> 
         {% if previous_page == 'missed' %}
-            <a class='cancel-button' href='/missed'>cancel</a>
+            <a class='cancel-button' href='/missed'>CANCEL</a>
         {% else %}
-            <a class='cancel-button' href='/intents_edit'>cancel</a>
+            <a class='cancel-button' href='/intents_edit'>CANCEL</a>
         {% endif %}
     </div>
 

@@ -1,3 +1,7 @@
+.flex-item-right {
+    --shadow-color: rgb(184, 184, 184);
+}
+
 .responses-container, #switches {
     width: 95%;
     margin-left: auto;
@@ -8,7 +12,7 @@
     height: 90px;
     position: relative;
     z-index: 50;
-    width: 85%;
+    /* width: 85%; */
 }
 
 .response-language-section {
@@ -18,9 +22,23 @@
     border-radius: 0px 5px 5px 5px; 
     z-index: -1;
     min-height: 70px;
-    box-shadow: 0px 0px 2px rgb(105, 105, 105);
+    box-shadow: 0px 0px 2px var(--shadow-color);
     padding: 5px 10px;
     box-sizing: border-box;
+}
+
+.editable {
+    width: 100%;
+}
+
+@media screen and (min-width: 1300px) {
+    .responses {
+        width: 85%;
+    }
+
+    .editable {
+        width: 85%;
+    }
 }
 
 /* #reply-message-select-language-button_en:target ~ div #reply-message-language-section_en, 
@@ -47,7 +65,7 @@
     padding: 5px 10px;
     margin: 0px;
     z-index: 0;
-    box-shadow: 0px -1px 1px rgb(139, 139, 139), -1px -1px 1px rgb(139, 139, 139), 1px -1px 1px rgb(139, 139, 139);
+    box-shadow: 0px -1px 1px var(--shadow-color), -1px -1px 1px var(--shadow-color), 1px -1px 1px var(--shadow-color);
     border-radius: 5px 5px 0px 0px;
 }
 
