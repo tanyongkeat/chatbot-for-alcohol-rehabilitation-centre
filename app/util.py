@@ -124,6 +124,7 @@ def get_langs():
     return ['en', 'ms', 'ta', 'zh-cn']
 
 def translate(text, dest):
+    print('translating:--:', text)
     return translator.translate(text, dest=dest).text
     
 def detect_lang(text):

@@ -87,6 +87,10 @@ input[class*='button']:hover, button[class*='button']:hover {
         width: 100%;
     }
 
+    .response-language-section .save-button, .response-language-section .cancel-button {
+        margin-top: 5px;
+    }
+
     .editable button:first-of-type, 
     .responses form button:first-of-type {
         margin-left: auto;

@@ -33,7 +33,7 @@ h1, h2, h3 {
 }
 
 h1 {
-    margin: -10px auto 10px;
+    margin: -10px auto 11px;
 }
 
 h3 {
@@ -246,6 +246,7 @@ a.panel-selection div {
     .flex-item-panel-left:hover a.panel-selection div {
         /* margin-right: 60px; */
         margin-right: 15px;
+        margin-left: 5px;
         width: auto;
         transition: all;
         transition-duration: 0.1s;

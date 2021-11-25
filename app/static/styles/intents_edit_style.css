@@ -1,5 +1,5 @@
 .flex-item-right {
-    --shadow-color: rgb(184, 184, 184);
+    --shadow-color: rgb(185, 185, 185);
 }
 
 .responses-container, #switches {
@@ -21,7 +21,7 @@
     background-color: white;
     border-radius: 0px 5px 5px 5px; 
     z-index: -1;
-    min-height: 70px;
+    height: 70px;
     box-shadow: 0px 0px 2px var(--shadow-color);
     padding: 5px 10px;
     box-sizing: border-box;
@@ -81,11 +81,11 @@
     } */
 
     .response-language-section .edit-button {
-        position: initial;
-        float: right;
+        position: absolute;
+        top: 72px;
+        right: 10px;
     }
 }
-
 
 
 .response-select-language-button:focus, .response-select-language-button:active {
@@ -101,6 +101,10 @@
 
 .add-button {
     float: none;
+}
+
+.flex-item-right  .add-button {
+    margin-bottom: 30px;
 }
 
 .response-display .editable-content {
