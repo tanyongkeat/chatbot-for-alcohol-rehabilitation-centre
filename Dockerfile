@@ -9,6 +9,7 @@ RUN python3 -c "from sentence_transformers import SentenceTransformer; import gc
 
 # RUN apt-get install -y g++ && pip3 install plotly youtokentome malaya
 RUN apt-get install -y g++ && pip3 install plotly googletrans==4.0.0-rc1
+# RUN pip3 install notebook
 
 COPY . /app
 

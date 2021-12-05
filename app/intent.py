@@ -21,7 +21,7 @@ if model_on:
     model = SentenceTransformer('paraphrase-xlm-r-multilingual-v1')
     # dataset = read_data()
 
-from app.util import translate, detect_lang
+from app.util import translate, detect_lang, get_primary_lang
 
 ###########################################################################################################
 # from malaya import deep_model
@@ -29,7 +29,7 @@ from app.util import translate, detect_lang
 # print(lol.predict_proba(['moshi moshi', 'seleamat pagi', 'good morning']))
 ###########################################################################################################
 
-def read_data():
+def read_data(target_language):
     # dataset = query_db('select user_message, intent_id from training_data')
     dataset = pd.read_sql_query(
         sql = TrainingData.query.with_entities(
@@ -39,6 +39,19 @@ def read_data():
         ).statement, 
         con = db.session.bind
     )
+
+    primary_lang = get_primary_lang()
+    dataset2 = pd.read_sql_query(
+        sql = Response.query.with_entities(
+            Response.selection.label('user_message'), 
+            Response.intent_id, 
+            Response.selection_encoding.label('encoding')
+        ).filter(Response.lang.in_([primary_lang, target_language])).statement, 
+        con = db.session.bind
+    )
+
+    dataset = dataset.append(dataset2)
+    dataset.reset_index(inplace=True, drop=True)
     # reply = query_db('select id, reply_message, small_talk, intent_name as intention from intent')
     reply = pd.read_sql_query(
         sql = Intent.query.with_entities(
@@ -66,7 +79,7 @@ def read_data():
 
 
 def detect_intention2(user_input, target_language):
-    dataset = read_data()
+    dataset = read_data(target_language=target_language)
 
     def sort_intent(df):
         return df.sort_values('cos_sim', ascending=False).iloc[0]

@@ -19,12 +19,18 @@ from app.util import create_training_data, update_training_data, create_intent, 
 from app.plot import percentage_thumbsdown_by_week, percentage_thumbsdown_by_intent, popular_questions, number_of_users
 from sqlalchemy import func
 from functools import cmp_to_key
+from datetime import timedelta
 import json
 import re
 
 
 
 no_information_required = False
+
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
+    app.permanent_session_lifetime = timedelta(minutes=3)
 
 
 @app.route('/')
@@ -441,11 +447,11 @@ def dashboard():
 
 
 
-#########################
-###                   ###
-###     dashboard     ###
-###                   ###
-#########################
+#######################
+###                 ###
+###     setting     ###
+###                 ###
+#######################
 
 @app.route('/setting', methods=['GET', 'POST'])
 def setting():

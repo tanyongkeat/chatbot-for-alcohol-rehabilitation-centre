@@ -83,6 +83,7 @@ class Response(db.Model):
     lang = db.Column(db.String(MAX_LANG_CODE_LEN), nullable=False)
     text = db.Column(db.String(MAX_REPLY_LEN), nullable=False)
     selection = db.Column(db.String(MAX_USER_INPUT_LEN), nullable=False)
+    selection_encoding:str = db.Column(db.JSON, nullable=False)
 
 @dataclass
 class Intent(db.Model):

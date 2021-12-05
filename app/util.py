@@ -206,6 +206,15 @@ def update_training_data(training_data_id, user_message):
     db.session.commit()
     return new_training_data
 
+def model_encode(text):
+    return json.dumps(model.encode(text).tolist())
+
+def encode_response_selection(response, outdated=False):
+    if not outdated:
+        response.selection_encoding = model_encode(response.selection)
+    else:
+        response.selection_encoding = OUTDATED_FLAG
+
 def create_response(intent_id, text, selection):
     primary_lang = get_primary_lang()
     selected_lang = get_selected_lang()
@@ -226,13 +235,16 @@ def create_response(intent_id, text, selection):
         if lang == primary_lang:
             translated_text = text
             translated_selection = selection
+            translated_selection_encoding = model_encode(translated_selection)
         elif lang not in selected_lang:
             translated_text = OUTDATED_FLAG
             translated_selection = OUTDATED_FLAG
+            translated_selection_encoding = OUTDATED_FLAG
         else:
             try:
                 translated_text = translate(text, dest=lang)[:MAX_REPLY_LEN]
                 translated_selection = translate(selection, dest=lang)[:MAX_USER_INPUT_LEN]
+                translated_selection_encoding = model_encode(translated_selection)
             except:
                 db.session.rollback()
                 raise CustomError('Google API error')
@@ -240,7 +252,7 @@ def create_response(intent_id, text, selection):
         print(translated_text, translated_selection)
         
         db.session.add(Response(intent_id=intent_id, lang=lang, 
-                                text=translated_text, selection=translated_selection))
+                                text=translated_text, selection=translated_selection, selection_encoding=translated_selection))
         
     db.session.commit()
 
@@ -259,12 +271,16 @@ def update_response(intent_id, field, lang, value):
         return
 #     if not responses
     setattr(response, field, value[:lens[field]])
+    if field == 'selection':
+        encode_response_selection(response)
     
     if lang == primary_lang:
         other_lang_responses = Response.query.filter(Response.intent_id==intent_id, Response.lang!=lang).all()
         for other_lang_response in other_lang_responses:
             if not other_lang_response.lang in selected_lang:
                 setattr(other_lang_response, field, OUTDATED_FLAG)
+                if field == 'selection':
+                    encode_response_selection(other_lang_response, outdated=True)
                 print('skipping', other_lang_response.lang)
                 continue
             
@@ -274,6 +290,8 @@ def update_response(intent_id, field, lang, value):
                 db.session.rollback()
                 raise CustomError('Google API error')
             setattr(other_lang_response, field, translated_value)
+            if field == 'selection':
+                encode_response_selection(other_lang_response)
     
     db.session.commit()
 
@@ -297,11 +315,15 @@ def refresh_response(intent_id, fields, src_lang, dest_lang=None):
             print(other_lang_response.lang, 'is outdated')
             try:
                 translated_value = translate(getattr(primary_response, field), dest=other_lang_response.lang)[:lens[field]]
-                setattr(other_lang_response, field, translated_value)
+                # setattr(other_lang_response, field, translated_value)
+                # if field == 'selection':
+                #     encode_response_selection(other_lang_response)
             except:
                 db.session.rollback()
                 raise CustomError('Google API error')
             setattr(other_lang_response, field, translated_value)
+            if field == 'selection':
+                encode_response_selection(other_lang_response)
 
 
 ######################
