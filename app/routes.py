@@ -74,7 +74,7 @@ def reply():
         else:
             flask.abort(406) # important
     ut = sanitize(request.form['utterence'])[:MAX_USER_INPUT_LEN]
-    prediction, lang = detect_intention(ut)
+    prediction, lang = detect_intention(ut, request.form['is_selection']=='true')
     predicted_intent_ids = [pre['intent_id'] for pre in prediction]
     print(request.form)
     obj = HistoryFull(

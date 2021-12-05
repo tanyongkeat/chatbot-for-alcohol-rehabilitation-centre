@@ -21,7 +21,7 @@ if model_on:
     model = SentenceTransformer('paraphrase-xlm-r-multilingual-v1')
     # dataset = read_data()
 
-from app.util import translate, detect_lang, get_primary_lang
+from app.util import translate, detect_lang, get_primary_lang, get_langs
 
 ###########################################################################################################
 # from malaya import deep_model
@@ -29,7 +29,7 @@ from app.util import translate, detect_lang, get_primary_lang
 # print(lol.predict_proba(['moshi moshi', 'seleamat pagi', 'good morning']))
 ###########################################################################################################
 
-def read_data(target_language):
+def read_data(target_language, is_selection):
     # dataset = query_db('select user_message, intent_id from training_data')
     dataset = pd.read_sql_query(
         sql = TrainingData.query.with_entities(
@@ -39,20 +39,26 @@ def read_data(target_language):
         ).statement, 
         con = db.session.bind
     )
-
+    
     primary_lang = get_primary_lang()
+    filter_con = Response.lang.in_([primary_lang, target_language])
+    if is_selection:
+        filter_con = Response.lang.in_(get_langs())
     dataset2 = pd.read_sql_query(
         sql = Response.query.with_entities(
             Response.selection.label('user_message'), 
             Response.intent_id, 
             Response.selection_encoding.label('encoding')
-        ).filter(Response.lang.in_([primary_lang, target_language])).statement, 
+        ).filter(filter_con).statement, 
         con = db.session.bind
     )
 
     dataset = dataset.append(dataset2)
     dataset.reset_index(inplace=True, drop=True)
     # reply = query_db('select id, reply_message, small_talk, intent_name as intention from intent')
+    filter_con = (Intent.deployed==True) & (Intent.system==False)
+    if is_selection:
+        filter_con = Intent.system==False
     reply = pd.read_sql_query(
         sql = Intent.query.with_entities(
             Intent.id, 
@@ -61,7 +67,7 @@ def read_data(target_language):
             Intent.small_talk, 
             Intent.deployed, 
             Intent.intent_name.label('intention')
-        ).filter_by(deployed=True, system=False).statement, 
+        ).filter(filter_con).statement, 
         con = db.session.bind
     )
     dataset = reply.merge(dataset, how='inner', left_on='id', right_on='intent_id')
@@ -78,8 +84,8 @@ def read_data(target_language):
 #     print('done')
 
 
-def detect_intention2(user_input, target_language):
-    dataset = read_data(target_language=target_language)
+def detect_intention2(user_input, target_language, is_selection):
+    dataset = read_data(target_language=target_language, is_selection=is_selection)
 
     def sort_intent(df):
         return df.sort_values('cos_sim', ascending=False).iloc[0]
@@ -120,7 +126,7 @@ def detect_intention2(user_input, target_language):
         return [df_temp.iloc[0][return_col].tolist()]
 
 
-def detect_intention(user_input):
+def detect_intention(user_input, is_selection):
     if not model_on:
         pre = [('reply_message_1', 0, 'nearest_message_1', 1), 
             ('reply_message_2', 1, 'nearest_message_2', 1), 
@@ -130,7 +136,7 @@ def detect_intention(user_input):
         target_language = 'en'
     else:
         target_language = detect_lang(user_input)
-        pre = detect_intention2(user_input, target_language=target_language)
+        pre = detect_intention2(user_input, target_language=target_language, is_selection=is_selection)
     pre = [{'reply': p[0], 'cosine_similarity': float(p[1]), 'nearest_message': p[2].replace('_', ' '), 'intent_id': int(p[3])} for p in pre]
 
     return pre, target_language

@@ -126,9 +126,15 @@ function getBotResponse(raw_text='') {
     reply(raw_text, botTextObj, current_message_counter, is_selection);
 }
 
-function selection_clicked(obj) {
+var haha;
+function selection_clicked(obj, is_selection=false) {
+    haha = obj;
     var selection_text = obj.innerText;
     // sendMessage(selection_responses[selection_text], 'bot', '');
+    if (is_selection) {
+        var sibling_nodes = obj.parentNode.parentNode.childNodes;
+        sibling_nodes.forEach(clearAllEvent);
+    }
     getBotResponse(selection_text);
 }
 
@@ -227,7 +233,7 @@ function reply(utterence, target, current_message_counter, is_selection) {
             if (!is_selection) loop_i = selections.length-1;
             for (i = 0; i < loop_i; i++) {
                 var item = selections[i];
-                item.firstChild.addEventListener('click', event => selection_clicked(event.target));
+                item.firstChild.addEventListener('click', event => selection_clicked(event.target, is_selection));
             }
 
         }
@@ -236,6 +242,12 @@ function reply(utterence, target, current_message_counter, is_selection) {
         console.log(response);
         target.querySelector('span span').innerHTML = error_message[used_lang];
     });
+}
+
+function clearAllEvent(old_element) {
+    var new_element = old_element.cloneNode(true);
+    new_element.classList.add('no-event');
+    old_element.parentNode.replaceChild(new_element, old_element);
 }
 
 function scroll(id) {

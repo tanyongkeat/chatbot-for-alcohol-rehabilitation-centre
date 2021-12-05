@@ -1,3 +1,7 @@
+html {
+    --grey-option: #dad8d8;
+}
+
 .hidden {
     transform: scaleX(0) scaleY(0);
     transform-origin: 100% 100%;
@@ -262,6 +266,17 @@ all and (max-height: 480px) {
 .selection.rejected span:hover {
     border-color: lightsalmon;
     color: lightsalmon;
+}
+
+.no-event span {
+    border-color: var(--grey-option);
+    color: var(--grey-option);
+}
+
+.no-event span:hover {
+    border-color: var(--grey-option);
+    color: var(--grey-option);
+    cursor: default;
 }
 
 .botText button[class^='thumbs'] {
