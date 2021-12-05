@@ -85,6 +85,18 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
         </div>
     {% endfor %}
 
+    <form id='children-form' method="POST" action=''>
+        <label for="children">Next Level Selections</label>
+        <input type="hidden" name="job" value="update_children">
+        <select data-js-select2="" name="children" id='children' class='select2-select' multiple>
+            {% for intent in intents %}
+                <option value='{{ intent.id }}' {% if intent.id in children_ids %}selected{% endif %}>{{ intent.intent_name }}</option>
+            {% endfor %}
+        </select>
+
+        <button id='children-form-submit' type="submit" class='save-button'>save</button>
+    </form>
+
     {% if not intent.system %}
         <h2>Training samples</h2>
         <div id='training-samples'>
@@ -156,6 +168,10 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
             document.getElementById('reply-message-select-language-button_' + langToClick).click();
             var selection_text_button = document.getElementById('selection-text-select-language-button_' + langToClick)
             if (selection_text_button) selection_text_button.click();
+
+            $('#children').select2({
+                closeOnSelect: false
+            })
 
             // var error_messages = {{ get_flashed_messages() | tojson | safe }};
             // flashError(error_messages);

@@ -51,6 +51,7 @@ class HistoryFull(db.Model):
     positive:bool = db.Column(db.Boolean, default=False)
     negative:bool = db.Column(db.Boolean, default=False)
     trained:bool = db.Column(db.Boolean, default=False)
+    is_selection:bool = db.Column(db.Boolean, nullable=False, default=False)
 
 @dataclass
 class ChatHistory(db.Model):
@@ -96,6 +97,7 @@ class Intent(db.Model):
     small_talk:bool = db.Column(db.Boolean, default=False)
     deployed:bool = db.Column(db.Boolean, default=True)
     system:bool = db.Column(db.Boolean, default=False)
+    children:str = db.Column(db.JSON)
 
 @dataclass
 class Setting(db.Model):

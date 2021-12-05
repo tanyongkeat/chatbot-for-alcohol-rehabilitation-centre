@@ -30,7 +30,7 @@ no_information_required = False
 @app.before_request
 def make_session_permanent():
     session.permanent = True
-    app.permanent_session_lifetime = timedelta(minutes=3)
+    app.permanent_session_lifetime = timedelta(minutes=60)
 
 
 @app.route('/')
@@ -76,16 +76,29 @@ def reply():
     ut = sanitize(request.form['utterence'])[:MAX_USER_INPUT_LEN]
     prediction, lang = detect_intention(ut)
     predicted_intent_ids = [pre['intent_id'] for pre in prediction]
+    print(request.form)
     obj = HistoryFull(
         chat_id=session['chat_id'], 
         utterance_original=ut, 
         utterance=ut, 
         predicted_intent_id_top=int(predicted_intent_ids[0]), 
-        predicted_intent_id=','.join([str(id) for id in predicted_intent_ids])
+        predicted_intent_id=','.join([str(id) for id in predicted_intent_ids]), 
+        is_selection=request.form['is_selection']=='true'
     )
     db.session.add(obj)
     db.session.commit()
-    return jsonify({'id': obj.id, 'prediction': prediction, 'lang': lang})
+
+    selections = []
+    if len(prediction) > 1:
+        selections, prediction = prediction, selections
+    elif len(prediction) == 1:
+        predicted_intent = Intent.query.get(prediction[0]['intent_id'])
+        children_ids = json.loads(predicted_intent.children)
+        if len(children_ids) > 0:
+            children = Response.query.filter(Response.intent_id.in_(children_ids), Response.lang==lang)
+            selections = [{'reply': c.text, 'cosine_similarity': float(0), 'nearest_message': c.selection, 'intent_id': int(c.intent_id)} for c in children]
+
+    return jsonify({'id': obj.id, 'prediction': prediction, 'selections': selections, 'lang': lang})
 
 @app.route('/capture', methods=['POST'])
 def capture():
@@ -177,7 +190,7 @@ def view_missed():
 
 @app.route('/view_missed_intent', methods=['POST'])
 def view_missed_intent():
-    intents = Intent.query.filter_by(system=False).distinct().all()
+    intents = Intent.query.filter_by(system=False).all()
     # intents = sorted(intents, key=lambda x: x[1])
     with app.app_context():
         return jsonify({'data': intents})
@@ -298,6 +311,11 @@ def intents(intent_name):
                 update_response(intent.id, 'selection', lang, text)
             except CustomError as ce:
                 flash(ce.description)
+        elif job == 'update_children':
+            new_children = request.form.getlist('children')
+            print(new_children)
+            new_children = [int(i) for i in new_children]
+            intent.children = json.dumps(new_children)
         elif job == 'update':
             id = data['id']
             new_training_data = update_training_data(id, data['modified_content'])
@@ -316,7 +334,8 @@ def intents(intent_name):
         # refresh_dataset()
     
     return render_template('intents_edit.html', current_page='intents', intents=get_ordered_intent(), intent=intent, responses=responses, 
-                           primary_lang=get_primary_lang(), language=lang, MAX_USER_INPUT_LEN=MAX_USER_INPUT_LEN, MAX_REPLY_LEN=MAX_REPLY_LEN)
+                           primary_lang=get_primary_lang(), language=lang, children_ids=json.loads(intent.children), 
+                           MAX_USER_INPUT_LEN=MAX_USER_INPUT_LEN, MAX_REPLY_LEN=MAX_REPLY_LEN)
 
 @app.route('/intents_edit/toggle', methods=['POST'])
 @login_required

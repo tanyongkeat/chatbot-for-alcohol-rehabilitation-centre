@@ -93,6 +93,34 @@
     border: none;
 }
 
+#children-form {
+    display: block;
+    width: 95%;
+    margin: 0 auto 50px;
+}
+
+#children-form label {
+    display: block;
+    font-weight: 600;
+}
+
+#children-form .select2-container {
+    display: inline-block;
+    box-shadow: 0px 0px 2px var(--shadow-color);
+    width: 39% !important;
+    font-size: 0.85rem;
+}
+
+@media screen and (max-width: 350px) {
+    #children-form .select2-container {
+        width: 100% !important;
+    }
+}
+
+.select2-results__option {
+    font-size: 0.85rem;
+}
+
 #training-samples {
     width: 95%;
     margin-left: auto;

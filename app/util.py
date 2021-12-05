@@ -129,8 +129,8 @@ def translate(text, dest):
     
 def detect_lang(text):
     lang = translator.detect(text).lang.lower()
-    print('detected', lang)
-    if lang not in lang_mapping or lang not in get_selected_lang():
+    print('detected -', lang, '-')
+    if lang not in lang_mapping or lang_mapping[lang] not in get_selected_lang():
         return get_primary_lang()
     return lang_mapping[lang]
 
@@ -163,7 +163,7 @@ def create_intent(intent_name, reply_message_en, reply_message_my):
     if same_sample:
         raise CustomError('The intent name already exists')
 
-    intent = Intent(intent_name=intent_name, reply_message_en=reply_message_en, reply_message_my=reply_message_my)
+    intent = Intent(intent_name=intent_name, reply_message_en=reply_message_en, reply_message_my=reply_message_my, children=json.dumps([]))
     db.session.add(intent)
     db.session.commit()
     return intent

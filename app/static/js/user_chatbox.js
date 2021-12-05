@@ -104,33 +104,38 @@ function sanitize(string) {
     return document.createElement('div').appendChild(document.createTextNode(string)).parentNode.innerHTML;
 }
 
-function getBotResponse() {
+function getBotResponse(raw_text='') {
+    var is_selection = raw_text.length != 0
+
     var current_message_counter = message_counter;
     message_counter += 1;
-
-    var raw_text = $("#textInput").val();
-    raw_text = sanitize(raw_text);
-    $("#textInput").val("");
-
-    document.getElementById('hack').innerHTML = "";
-    autoResize(document.getElementById('textInput'));
+    if (!is_selection) {
+        var raw_text = $("#textInput").val();
+        raw_text = sanitize(raw_text);
+        $("#textInput").val("");
+    
+        document.getElementById('hack').innerHTML = "";
+        autoResize(document.getElementById('textInput'));
+    }
 
     sendMessage(raw_text, 'user', current_message_counter);
     // https://img.icons8.com/office/23/fa314a/dots-loading--v3.png
     // static/img/loading.gif
     // var botTextObj = sendMessage('<img src="https://img.icons8.com/office/23/fa314a/dots-loading--v3.png"/>', 'bot', current_message_counter);
     var botTextObj = sendMessage('<div class="loader"><span></span><span></span><span></span></div>', 'bot', current_message_counter);
-    reply(raw_text, botTextObj, current_message_counter);
+    reply(raw_text, botTextObj, current_message_counter, is_selection);
 }
 
 function selection_clicked(obj) {
     var selection_text = obj.innerText;
-    sendMessage(selection_responses[selection_text], 'bot', '');
+    // sendMessage(selection_responses[selection_text], 'bot', '');
+    getBotResponse(selection_text);
 }
 
-function reply(utterence, target, current_message_counter) {
+function reply(utterence, target, current_message_counter, is_selection) {
     $.post('/reply', {
-        'utterence': utterence
+        'utterence': utterence, 
+        'is_selection': is_selection
     }).done(function(response_all) {
         thumbsdownId = "thumbsdown_" + current_message_counter;
         thumbsupId = "thumbsdown_" + current_message_counter;
@@ -139,16 +144,15 @@ function reply(utterence, target, current_message_counter) {
         used_lang = response_all['lang'];
         
         response = response_all['prediction'];
-        if (response.length == 1) {
+        returned_selections = response_all['selections'];
+        if (returned_selections.length == 0) {
             var thumbsdown_icon = 'thumbsdown fa fa-thumbs-down fa-lg';
             var thumbsup_icon = 'thumbsup fa fa-thumbs-up fa-lg';
 
-            target.innerHTML = 
-            `
-            <span>
-                <span>
-                    ${response[0]['reply']}
-                </span>
+            var thumbs_container = ''
+            if (!is_selection) {
+                thumbs_container = 
+                `
                 <div class='thumbs_container'>
                     <!-- <input class="thumbsdown" id="${thumbsdownId}" type="image" alt='thumbs down' src="https://img.icons8.com/material-sharp/15/fa314a/thumbs-down.png" onclick="getPredictedWrongMessage(this.id, 'negative')"> -->
                     <!-- <input class="thumbsup" id="${thumbsupId}" type="image" alt='thumbs up' src="https://img.icons8.com/material-rounded/15/26e07f/thumb-up.png" onclick="getPredictedWrongMessage(this.id, 'positive')"> -->
@@ -157,14 +161,33 @@ function reply(utterence, target, current_message_counter) {
                     <button class="${thumbsup_icon}" id="${thumbsupId}" type="button" 
                         onclick="sendMessage('&#128077;', 'user', '');getPredictedWrongMessage(this.id, 'positive')">                    
                 </div>
+                `
+            }
+
+            target.innerHTML = 
+            `
+            <span>
+                <span>
+                    ${response[0]['reply']}
+                </span>
+                ${thumbs_container}
             </span>
             `;
             scroll(target);
         } else {
             selectionBox = document.createElement('div');
             selectionBox.className = 'selection-box';
-            target.innerHTML = `<span><span>${confirmation_text[used_lang]}</span></span>`;
-            response[response.length] = {'reply': selection_responses[contact_admin], 'nearest_message': contact_admin[used_lang]};
+
+            // it is not necessary to preload confirmation_text, we can return it as response, but this is done earlier, so...
+            var prompt_message = confirmation_text[used_lang];
+            if (response.length != 0) prompt_message = response[0]['reply'];
+            target.innerHTML = `<span><span>${prompt_message}</span></span>`;
+
+            response = returned_selections; // lazy to change name
+            if (!is_selection) {
+                response[response.length] = {'reply': selection_responses[contact_admin], 'nearest_message': contact_admin[used_lang]};
+            }
+
             var selection;
             var selections = [];
             for (i = 0; i < response.length; i++){
@@ -178,23 +201,31 @@ function reply(utterence, target, current_message_counter) {
             
             target.append(selectionBox);
 
-            selection.classList.toggle('rejected');
-            selection.id = 'contactAdminSelection_' + current_message_counter;
+            if (!is_selection) {
+                selection.classList.toggle('rejected');
+                selection.id = 'contactAdminSelection_' + current_message_counter;
+                selection.firstChild.addEventListener('click', event => sendMessage(event.target.innerHTML, 'user', ''));
+            }
+
             scroll(selection);
 
-            selections.forEach(item => {
-                item.firstChild.addEventListener('click', event => sendMessage(event.target.innerHTML, 'user', ''));
-            });
+            // selections.forEach(item => {
+            //     item.firstChild.addEventListener('click', event => sendMessage(event.target.innerHTML, 'user', ''));
+            // });
 
-            selection.firstChild.onclick = function() {
-                getPredictedWrongMessage(this.parentNode.id, 'negative');
-            };
+            if (!is_selection) {
+                selection.firstChild.onclick = function() {
+                    getPredictedWrongMessage(this.parentNode.id, 'negative');
+                };
+            }
 
 
             // selections.forEach(item => { ####previously used
             // 	item.addEventListener('click', event => selection_clicked(event.target));
             // });
-            for (i = 0; i < selections.length-1; i++) {
+            var loop_i = selections.length;
+            if (!is_selection) loop_i = selections.length-1;
+            for (i = 0; i < loop_i; i++) {
                 var item = selections[i];
                 item.firstChild.addEventListener('click', event => selection_clicked(event.target));
             }
