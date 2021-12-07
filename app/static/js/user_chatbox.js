@@ -186,7 +186,8 @@ function reply(utterence, target, current_message_counter, is_selection) {
 
             // it is not necessary to preload confirmation_text, we can return it as response, but this is done earlier, so...
             var prompt_message = confirmation_text[used_lang];
-            if (response.length != 0) prompt_message = response[0]['reply'];
+            var confusion = response.length == 0;
+            if (!confusion) prompt_message = response[0]['reply'];
             target.innerHTML = `<span><span>${prompt_message}</span></span>`;
 
             response = returned_selections; // lazy to change name
@@ -233,7 +234,7 @@ function reply(utterence, target, current_message_counter, is_selection) {
             if (!is_selection) loop_i = selections.length-1;
             for (i = 0; i < loop_i; i++) {
                 var item = selections[i];
-                item.firstChild.addEventListener('click', event => selection_clicked(event.target, is_selection));
+                item.firstChild.addEventListener('click', event => selection_clicked(event.target, is_selection||!confusion));
             }
 
         }
@@ -241,6 +242,7 @@ function reply(utterence, target, current_message_counter, is_selection) {
     }).fail(function(response) {
         console.log(response);
         target.querySelector('span span').innerHTML = error_message[used_lang];
+        scroll(target);
     });
 }
 

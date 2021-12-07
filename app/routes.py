@@ -98,6 +98,7 @@ def reply():
             children = Response.query.filter(Response.intent_id.in_(children_ids), Response.lang==lang)
             selections = [{'reply': c.text, 'cosine_similarity': float(0), 'nearest_message': c.selection, 'intent_id': int(c.intent_id)} for c in children]
 
+    session['last_selections'] = [selection['intent_id'] for selection in selections]
     return jsonify({'id': obj.id, 'prediction': prediction, 'selections': selections, 'lang': lang})
 
 @app.route('/capture', methods=['POST'])
@@ -137,6 +138,7 @@ def user_information():
         session['chat_id'] = obj.id
         session['user_name'] = user_name
         session['user_email'] = user_email
+        session['last_selections'] = []
 
         opening_text = Intent.query.filter_by(intent_name='opening text').first()
         opening_text = dict(map(lambda x: (x.lang, x.text), opening_text.response))

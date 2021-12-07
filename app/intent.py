@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import scipy
 from app import db
+from flask import session
 # from app.util import query_db
 from app.models import TrainingData, Intent, Response
 from sklearn.metrics.pairwise import cosine_similarity
@@ -56,7 +57,7 @@ def read_data(target_language, is_selection):
     dataset = dataset.append(dataset2)
     dataset.reset_index(inplace=True, drop=True)
     # reply = query_db('select id, reply_message, small_talk, intent_name as intention from intent')
-    filter_con = (Intent.deployed==True) & (Intent.system==False)
+    filter_con = ((Intent.deployed==True) | (Intent.id.in_(session['last_selections']))) & (Intent.system==False)
     if is_selection:
         filter_con = Intent.system==False
     reply = pd.read_sql_query(

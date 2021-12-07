@@ -268,12 +268,12 @@ all and (max-height: 480px) {
     color: lightsalmon;
 }
 
-.no-event span {
+.selection.no-event span {
     border-color: var(--grey-option);
     color: var(--grey-option);
 }
 
-.no-event span:hover {
+.selection.no-event span:hover {
     border-color: var(--grey-option);
     color: var(--grey-option);
     cursor: default;
