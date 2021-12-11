@@ -52,7 +52,8 @@ only screen and (min-device-pixel-ratio : 2) {
 
 #chatsection, #chatcircle {
     position: fixed;
-    bottom: 5%;
+    --ori-bottom: 5%;
+    bottom: var(--ori-bottom);
     right: 5%;
     transition: all;
     transition-duration: 0.7s;
@@ -363,4 +364,8 @@ all and (max-height: 480px) {
     opacity: 0.1;
     transform: scale(1);
   }
+}
+
+.pushup {
+    bottom: calc(var(--ori-bottom) + var(--footer-height)) !important;
 }
