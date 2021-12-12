@@ -28,6 +28,7 @@ h3 {
 
 #content {
     height: 200%;
+    --scrollFraction: 0;
 }
 
 footer {
@@ -64,7 +65,7 @@ footer img {
     /* width: 250px;
     height: 213px; */
     position: fixed;
-    --ori-bottom: 50%;
+    --ori-bottom: 55%;
     bottom: var(--ori-bottom);
     left: 0;
     transform: translate(0, 50%);
@@ -142,6 +143,33 @@ footer img {
     background-color: #f2f215;
 }
 
+#D3Cube div img {
+    display: block;
+    /* width: 100%; */
+    height: 90%;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#D3Cube #side4 img {
+    left: 50%;
+    transform: translate(-45%, -50%);
+}
+
+#D3Cube #side5 img {
+    width: 100%;
+}
+
+#D3Cube #side4 img, #introduction div:first-child {
+    opacity: calc(1 - var(--scrollFraction));
+}
+
+#D3Cube #side5 img, #introduction div:nth-child(2) {
+    width: 100%;
+    opacity: var(--scrollFraction);
+}
+
 /* #D3Cube {
     -webkit-animation: cubeRotation 5s infinite;
     animation: cubeRotation 5s infinite;
@@ -155,4 +183,27 @@ footer img {
     0%   {  transform: rotateX(-22deg) rotateY(-38deg) rotateZ(0deg);   }
     50%   { transform: rotateX(-22deg) rotateY(-238deg) rotateZ(0deg);  }
     100%   {    transform: rotateX(-22deg) rotateY(-398deg) rotateZ(0deg);  }
+}
+
+#introduction {
+    position: fixed;
+    width: 50%;
+    height: 100%;
+    left: 50%;
+    --ori-bottom: 0%;
+    bottom: var(--ori-bottom);
+    transition: bottom;
+    transition-duration: 0.7s;
+    transition-delay: 0;
+}
+
+#introduction div {
+    margin: 30% 50px 0;
+    position: absolute;
+}
+
+#introduction h1, #introduction h2 {
+    margin: 0;
+    text-align: left;
+    width: auto;
 }

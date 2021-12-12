@@ -34,9 +34,27 @@
 					<div id="side1"></div>
 					<div id="side2"></div>
 					<div id="side3"></div>
-					<div id="side4"></div>
-					<div id="side5"></div>
+					<div id="side4"><a href="https://hoag.moh.gov.my/"><img src="{{ url_for('static',filename='img/hoag_logo.png') }}" alt="HOAG"></a></div>
+					<div id="side5"><a href="https://umcas.um.edu.my/"><img src="{{ url_for('static',filename='img/um_logo.png') }}" alt="UMCAS"></a></div>
 					<div id="side6"></div>
+				</div>
+			</div>
+
+			<div id="introduction">
+				<div>
+					<h1>HOAG</h1>
+					<h2>Hospital Orang Asli Gombak</h2>
+					<p>
+						Hospital Orang Asli Gombak
+					</p>
+				</div>
+
+				<div>
+					<h1>UMCAS</h1>
+					<h2>University Malaya Center of Addiction Science</h2>
+					<p>
+						University Malaya Center of Addiction Science
+					</p>
 				</div>
 			</div>
 		</div>
@@ -66,7 +84,8 @@
 			const chatcircle = document.getElementById('chatcircle');
 			const box = document.getElementById('D3Cube');
 			const box_wrapper = document.getElementById('wrapD3Cube');
-			const fixed_items = [box_wrapper, chatsection, chatcircle];
+			const introduction = document.getElementById('introduction')
+			const fixed_items = [box_wrapper, introduction, chatsection, chatcircle];
 
 			function set_cube_length() {
 				var width = window.innerWidth/2.3;
@@ -78,10 +97,12 @@
 			window.addEventListener('scroll', () => {  
 				const scrollTop = html.scrollTop;
 				const maxScrollTop = content.scrollHeight - window.innerHeight;
-				const scrollFraction = scrollTop / maxScrollTop * 1.3;
-				const angle = Math.min(90, Math.floor(scrollFraction * 90));
+				var scrollFraction = scrollTop / maxScrollTop * 1.3;
+				scrollFraction = Math.min(scrollFraction, 1);
+				const angle = Math.floor(scrollFraction * 90);
 
 				box.style.setProperty('--rotation', angle+'deg');
+				content.style.setProperty('--scrollFraction', scrollFraction);
 
 				if (scrollFraction >= 1) {
 					fixed_items.forEach((item) => {
