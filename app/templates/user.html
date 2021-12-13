@@ -34,8 +34,8 @@
 					<div id="side1"></div>
 					<div id="side2"></div>
 					<div id="side3"></div>
-					<div id="side4"><a href="https://hoag.moh.gov.my/"><img src="{{ url_for('static',filename='img/hoag_logo.png') }}" alt="HOAG"></a></div>
-					<div id="side5"><a href="https://umcas.um.edu.my/"><img src="{{ url_for('static',filename='img/um_logo.png') }}" alt="UMCAS"></a></div>
+					<div id="side4"><a href="https://hoag.moh.gov.my/" target="_blank"><img src="{{ url_for('static',filename='img/hoag_logo.png') }}" alt="HOAG"></a></div>
+					<div id="side5"><a href="https://umcas.um.edu.my/" target="_blank"><img src="{{ url_for('static',filename='img/um_logo.png') }}" alt="UMCAS"></a></div>
 					<div id="side6"></div>
 				</div>
 			</div>
@@ -45,7 +45,7 @@
 					<h1>HOAG</h1>
 					<h2>Hospital Orang Asli Gombak</h2>
 					<p>
-						Hospital Orang Asli Gombak
+						Hospital Orang Asli Gombak.
 					</p>
 				</div>
 
@@ -64,7 +64,7 @@
 			<img src="{{ url_for('static', filename='img/exabytes_logo_1.svg') }}" alt="Exabytes" width='160px'>
 		</footer>
 
-		<div id='chatsection'>
+		<div id='chatsection' class='hidden'>
 			{% if registered %}
 				{% include 'user_chatbox.html' %}
 			{% else %}
@@ -72,7 +72,7 @@
 			{% endif %}
 		</div>
 
-		<div id='chatcircle' class='hidden' onclick='document.getElementById("chatsection").classList.remove("hidden"); this.classList.add("hidden");'>
+		<div id='chatcircle' onclick='document.getElementById("chatsection").classList.remove("hidden"); this.classList.add("hidden");'>
 			<span class="fa fa-comments fa-3x" aria-hidden="true"></span>
 		</div>
 
@@ -98,13 +98,14 @@
 				const scrollTop = html.scrollTop;
 				const maxScrollTop = content.scrollHeight - window.innerHeight;
 				var scrollFraction = scrollTop / maxScrollTop * 1.3;
+				var scrollFractionOld = scrollFraction;
 				scrollFraction = Math.min(scrollFraction, 1);
 				const angle = Math.floor(scrollFraction * 90);
 
 				box.style.setProperty('--rotation', angle+'deg');
 				content.style.setProperty('--scrollFraction', scrollFraction);
 
-				if (scrollFraction >= 1) {
+				if (scrollFractionOld >= 1.25) {
 					fixed_items.forEach((item) => {
 						item.classList.add('pushup');
 					})
