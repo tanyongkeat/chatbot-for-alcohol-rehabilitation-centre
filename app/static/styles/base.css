@@ -79,9 +79,9 @@ h1:first-letter, h3:first-letter {
     width: 100%;
     display: flex;
     align-items: center;
-    border-color: red;
+    /* border-color: red;
     border-style: solid;
-    border-width: 1px;
+    border-width: 1px; */
     border-radius: 5px;
     color: red;
     background: rgb(255, 219, 219);
@@ -157,6 +157,7 @@ h1:first-letter, h3:first-letter {
     z-index: 5;
     /* border-right: 1px solid black; */
     box-shadow: 2px 0 3px #999999;
+    position: relative;
 }
   
 .flex-item-panel-right {
@@ -194,6 +195,15 @@ a.panel-selection {
     font-weight: 800;
     box-sizing: border-box;
     padding-right: 10px;
+}
+
+a.panel-selection:last-child {
+    position: absolute;
+    bottom: 10px;
+}
+
+a.panel-selection:last-child:hover {
+    color: rgb(255, 75, 75);
 }
 
 a.panel-selection:hover {
@@ -235,6 +245,9 @@ a.panel-selection div {
     width: 0;
     overflow-x: hidden;
     transition-duration: 0.1s;
+    transition-delay: 0.1s;
+    text-align: left;
+    white-space: nowrap;
     /* position: absolute;
     top: 50%;
     left: 40%;
@@ -247,9 +260,10 @@ a.panel-selection div {
         /* margin-right: 60px; */
         margin-right: 15px;
         margin-left: 5px;
-        width: auto;
-        transition: all;
+        width: 90px;
+        transition: width, margin;
         transition-duration: 0.1s;
+        transition-delay: 0.3s;
         transition-timing-function: linear;
     }
 }

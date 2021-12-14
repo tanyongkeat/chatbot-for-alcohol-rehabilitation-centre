@@ -148,16 +148,48 @@ body {
 }
 
 #intent-item-list .add-button {
-    --r: 0.5rem;
+    /* --r: 0.5rem;
     width: calc(var(--r) * 2);
     height: calc(var(--r) * 2);
     line-height: calc(var(--r) * 2);
-    border-radius: var(--r);
+    border-radius: var(--r); */
+    --dark-grey: rgb(70, 70, 70);
+    --light-grey: rgb(122, 122, 122);
     font-size: 1rem;
     margin-left: auto;
     margin-right: auto;
-    box-shadow: 0 0 0 0.7px black inset;
+    color: var(--light-grey);
+    /* box-shadow: 0 0 0 0.7px black inset; */
     text-align: center;
+}
+
+#intent-item-list .add-button:hover {
+    color: var(--dark-grey);
+}
+
+#intent-item-list .add-button::after {
+    content: "new intent";
+    display: inline-block;
+    box-sizing: border-box;
+    background-color: var(--dark-grey);
+    color: white;
+    border-radius: 3px;
+    transition: width, padding, opacity;
+    transition-duration: 0.5s;
+    transition-delay: 0.3s;
+    width: 0;
+    opacity: 0;
+    white-space: nowrap;
+    overflow-x: hidden;
+    position: absolute;
+    transform: translateX(-55%);
+    font-size: 0.9rem;
+}
+
+#intent-item-list .add-button:hover::after {
+    width: 90px;
+    font-weight: 400;
+    opacity: 1;
 }
 
 .intent-delete-button:hover {

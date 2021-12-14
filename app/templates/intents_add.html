@@ -10,6 +10,9 @@
         {% if preset_sample_id %}
             <input type='hidden' name='preset_sample_id' value={{ preset_sample_id }}>
         {% endif %}
+        {% if parent_id %}
+            <input type='hidden' name='parent_id' value={{ parent_id }}>
+        {% endif %}
     </form>
     <h3>adding</h3>
     <h1><input id='intent-name-input' name='intent_name' type='text' form='add_form' maxlength="{{ MAX_INTENT_NAME_LEN }}" placeholder="Enter new intent name"
@@ -53,7 +56,7 @@
             </div>
         {% endif %}
     </div>
-    <input type='submit' value='+' class='add-button' onclick='add_training_samples()'>
+    <input type='submit' value='+' class='add-button editable' onclick='add_training_samples()'>
 
     <div>
         <input class='save-button' name='save' type="submit" form='add_form' value='SAVE'> 

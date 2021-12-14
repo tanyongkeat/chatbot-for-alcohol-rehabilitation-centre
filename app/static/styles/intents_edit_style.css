@@ -41,6 +41,12 @@
     }
 }
 
+@media screen and (max-width: 1300px) {
+    #error {
+        width: 95%;
+    }
+}
+
 /* #reply-message-select-language-button_en:target ~ div #reply-message-language-section_en, 
 #reply-message-select-language-button_ms:target ~ div #reply-message-language-section_ms, 
 #reply-message-select-language-button_ta:target ~ div #reply-message-language-section_ta, 
@@ -111,7 +117,15 @@
     font-size: 0.85rem;
 }
 
-@media screen and (max-width: 350px) {
+#children-form .save-button::before {
+    display: inline-block;
+    position: relative;
+    height: 100%;
+    line-height: 100%;
+    vertical-align: baseline;
+}
+
+@media screen and (max-width: 555px) {
     #children-form .select2-container {
         width: 100% !important;
     }
@@ -120,6 +134,21 @@
 .select2-results__option {
     font-size: 0.85rem;
 }
+
+#create-child-form-submit {
+    color: rgb(70, 70, 70);
+}
+
+#create-child-form-submit:hover {
+    color: rgb(122, 122, 122);
+}
+
+#create-child-form-submit::before {
+    font-weight: 600;
+    content: "\f055";
+}
+
+
 
 #training-samples {
     width: 95%;

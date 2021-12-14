@@ -61,8 +61,10 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
                     <div class='{{ category }}-language-section response-language-section' id='{{ category }}-language-section_{{ response.lang }}'>
                         <div id='{{ category }}-display_{{ response.lang }}' class='{{ category }}-display response-display'>
                             <span id='{{ category }}_{{ response.lang }}' class="editable-content">{{ response[category_field] }}</span>
-                            <input id='edit-button_{{ response.lang }}' class='edit-button' type='submit' 
-                                value='edit' onclick="show_edit_space_reply(this.id, '{{ category }}')">
+                            <button id='edit-button_{{ response.lang }}' class='edit-button' type='submit' 
+                                form='' onclick="show_edit_space_reply(this.id, '{{ category }}')">edit</button>
+                            <!-- <input id='edit-button_{{ response.lang }}' class='edit-button' type='submit' 
+                                value='edit' onclick="show_edit_space_reply(this.id, '{{ category }}')"> -->
                         </div>
                         <div id='{{ category }}-edit_{{ response.lang }}' class='editable-edit' style='display:None;'>
                             <!-- <span class='utterance'>editting</span> -->
@@ -85,6 +87,10 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
         </div>
     {% endfor %}
 
+    <form id='create-child-form' method="POST" action="/intents_edit/create_child">
+        <input type="hidden" name="parent_id" value="{{ intent.id }}">
+    </form>
+
     <form id='children-form' method="POST" action=''>
         <label for="children">Next Level Selections</label>
         <input type="hidden" name="job" value="update_children">
@@ -94,7 +100,8 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
             {% endfor %}
         </select>
 
-        <button id='children-form-submit' type="submit" class='save-button'>save</button>
+        <button id='children-form-submit' type="submit" class='save-button'>save changes</button>
+        <button id='create-child-form-submit' type='submit' class='create-child-button edit-button' form="create-child-form">create selection and add</button>
     </form>
 
     {% if not intent.system %}

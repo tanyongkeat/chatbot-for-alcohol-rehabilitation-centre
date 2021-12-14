@@ -183,9 +183,10 @@ def create_training_data(user_message, intent_id):
     if intent.system:
         raise CustomError('Operation not allowed')
     
-    same_sample = TrainingData.query.filter(func.lower(TrainingData.user_message) == func.lower(user_message)).first()
-    if same_sample:
-        raise CustomError('Sample <em>' + user_message + '</em> exists in <em>' + same_sample.intent.intent_name + '</em>')
+    same_sample = TrainingData.query.filter(func.lower(TrainingData.user_message) == func.lower(user_message)).all()
+    for ss in same_sample:
+        if ss.intent_id != intent_id:
+            raise CustomError('Sample <em>' + user_message + '</em> exists in <em>' + ss.intent.intent_name + '</em>')
     
     training_data = TrainingData(user_message=user_message, intent_id=intent_id, encoding=json.dumps(model.encode(user_message).tolist()))
     db.session.add(training_data)

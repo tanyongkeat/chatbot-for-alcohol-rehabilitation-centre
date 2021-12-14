@@ -128,9 +128,9 @@ button::before {
     font-size: 0.75rem;
 }
 
-.editable-edit .save-button::before {
+.editable-edit .save-button::before, #children-form .save-button::before {
     font-family: "Font Awesome 6 Free";
-    font-weight: 400;
+    font-weight: 900;
     content: "\f0c7";
 }
 

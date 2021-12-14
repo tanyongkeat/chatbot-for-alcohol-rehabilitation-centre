@@ -357,6 +357,15 @@ def add_sample():
     training_data = create_training_data(data['user_message'], data['intent_id'])
     return jsonify({'code': 200})
 
+@app.route('/intents_edit/create_child', methods=['POST'])
+@login_required
+def intents_edit_create_child():
+    parent_id = request.form['parent_id']
+    target = HistoryFull.query.get_or_404(parent_id)
+    return render_template('intents_add.html', current_page='intents', intents=get_ordered_intent(), primary_lang=get_primary_lang(), 
+                            MAX_USER_INPUT_LEN=MAX_USER_INPUT_LEN, MAX_REPLY_LEN=MAX_REPLY_LEN, MAX_INTENT_NAME_LEN=MAX_INTENT_NAME_LEN, 
+                            parent_id=parent_id)
+
 
 #######################
 ###                 ###
@@ -395,6 +404,14 @@ def intents_add():
             if 'preset_sample_id' in request.form:
                 temp = HistoryFull.query.get_or_404(request.form['preset_sample_id'])
                 temp.trained = True
+            
+            if 'parent_id' in request.form:
+                temp = Intent.query.get_or_404(request.form['parent_id'])
+                old_children = json.loads(temp.children)
+                old_children.append(intent.id)
+                print(old_children, intent.id)
+                temp.children = json.dumps(old_children)
+
             db.session.commit()
             # refresh_dataset()
             return redirect('intents_edit/'+intent_name)
@@ -432,10 +449,21 @@ def intents_add():
 @app.route('/delete_intent', methods=['POST'])
 @login_required
 def delete_intent():
+    referrer = request.referrer
     intent_id = request.form['intent_id']
     temp = Intent.query.get(intent_id)
     db.session.delete(temp)
     db.session.commit()
+
+    print(referrer)
+    print(url_parse(referrer).host)
+    print(temp.intent_name in referrer)
+    if referrer\
+        and (url_parse(referrer).host in ["rehabot.my", "localhost"])\
+        and ('intents_edit' in referrer)\
+        and (temp.intent_name not in referrer):
+        return redirect(referrer)
+
     # refresh_dataset()
     return redirect('/intents_edit')
 
