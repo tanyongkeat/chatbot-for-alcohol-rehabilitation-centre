@@ -32,10 +32,32 @@ body {
 
 @media screen and (max-width: 650px) {
     .flex-item-left {
+        flex: 1;
+        position: absolute;
+        width: 100%;
+        max-width: 100%;
+        background: white;
+        z-index: 1;
+        transition: width, opacity;
+        transition-duration: 0.5s;
+        white-space: nowrap;
+    }
+
+    .flex-item-right {
+        position: absolute;
+        z-index: 0;
+    }
+
+    .flex-item-left-hidden {
         flex: 0;
         width: 0;
         min-width: 0;
         margin: 0;
+        opacity: 0;
+    }
+
+    div#icon0 button {
+        display: inline-block;
     }
 }
   

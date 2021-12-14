@@ -9,7 +9,7 @@
 
 {% block body %}
     <div class='flex-container'>
-        <div class='flex-item-left'>
+        <div class='flex-item-left {% if intent %}flex-item-left-hidden{% endif %}'> <!--  flex-item-left-hidden -->
             <input id='intent-search-bar' type='text' placeholder=''>
             <div id='intent-item-list'>
                 {% if intent %}

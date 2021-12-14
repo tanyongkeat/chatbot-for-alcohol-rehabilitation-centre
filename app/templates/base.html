@@ -41,7 +41,19 @@
     <body>
         <div class='flex-container-panel'>
             <div class='flex-item-panel-left'>
-                <div id='icon0'><img src="{{ url_for('static', filename='img/flask.png') }}" alt=""></div>
+                <script>
+                    function minimize_button(elem) {
+                        const left_panel = document.getElementsByClassName('flex-item-left')[0];
+                        if (elem.classList.contains('minimized')) {
+                            elem.classList.remove('minimized');
+                            left_panel.classList.remove('flex-item-left-hidden');
+                        } else {
+                            elem.classList.add('minimized');
+                            left_panel.classList.add('flex-item-left-hidden');
+                        }
+                    }
+                </script>
+                <div id='icon0'><button class="{% if intent %}minimized{% endif %}" onclick="minimize_button(this);"><i class="fas fa-chevron-left"></i></button><img src="{{ url_for('static', filename='img/flask.png') }}" alt=""></div>
                 <hr style='width: 75%;'>
                 <a  class='panel-selection {% if current_page=="dashboard" %}panel-selection-selected{% endif %}' href='{{ url_for("dashboard") }}'>
                     <!-- <i class="fas fa-tachometer-alt"></i> -->

@@ -179,7 +179,20 @@ div#icon0 img {
     height: 50px;
     /* object-fit: cover; */
     margin: auto;
-    display: block;
+    display: none;
+}
+
+div#icon0 button {
+    outline: none;
+    border: none;
+    display: none;
+    transition: all;
+    transition-duration: 0.5s;
+}
+
+div#icon0 button.minimized {
+    transform: rotate(180deg);
+    transform-origin: 50% 50%;
 }
 
 a.panel-selection {
