@@ -4,7 +4,7 @@ html {
 }
 
 body {
-    font-family: 'Nunito', sans-serif, Raleway, Garamond;
+    font-family: 'Poppins', 'Nunito', sans-serif, Raleway, Garamond;
     background-color: white;
     margin: 0;
     padding: 0;
@@ -117,13 +117,13 @@ footer img {
     transform: rotateY(-90deg) translateX(0px) translateY(0px) translateZ(var(--z-translate));
     -moz-transform: rotateY(-90deg) translateX(0px) translateY(0px) translateZ(var(--z-translate));
     -webkit-transform: rotateY(-90deg) translateX(0px) translateY(0px) translateZ(var(--z-translate));
-    background-color: #ffaf1c;
+    background-color: #26e07f;
 }
 #side3 {
     transform: translateX(0px) translateY(0px) translateZ(var(--z-translate));
     -moz-transform: translateX(0px) translateY(0px) translateZ(var(--z-translate));
     -webkit-transform: translateX(0px) translateY(0px) translateZ(var(--z-translate));
-    background-color: #26e07f;
+    background-color: rgb(160, 160, 160);
 }
 #side4 {
     transform: rotateY(90deg) translateX(0px) translateY(0px) translateZ(var(--z-translate));
@@ -224,6 +224,12 @@ footer img {
     letter-spacing: 3px;
 }
 
+#introduction h2 {
+    color: grey;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
 #introduction p {
     max-width: 80%;
 }
@@ -265,7 +271,7 @@ all and (max-height: 480px) {
         width: 116%;
         max-width: 116%;
         left: -41%;
-        top: 19%;
+        top: 21%;
     }
 
     #wrapD3Cube {
