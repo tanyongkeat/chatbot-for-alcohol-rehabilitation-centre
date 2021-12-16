@@ -33,16 +33,33 @@
 
 			<div id="wrapD3Cube">
 				<div id="D3Cube">
-					<div id="side1"></div>
+					<div class="right box-surface" id="side3"></div>
+					<div class="back box-surface" id="side4"><a href="https://umcas.um.edu.my/" target="_blank"><img src="{{ url_for('static',filename='img/um_logo.png') }}" alt="UMCAS"></a></div> <!--umcas-->
+					<div class="bottom box-surface" id="side6">
+						<div class="front box-surface" id="side2">
+							<div class="top box-surface" id="side1"></div>
+						</div>
+					</div>
+					<div class="left box-surface" id="side5"><a href="https://hoag.moh.gov.my/" target="_blank"><img src="{{ url_for('static',filename='img/hoag_logo_cropped.png') }}" alt="HOAG"></a></div> <!--hoag-->
+
+					<!-- <div id="side1" class=""></div>
 					<div id="side2"></div>
 					<div id="side3"></div>
 					<div id="side4"><a href="https://umcas.um.edu.my/" target="_blank"><img src="{{ url_for('static',filename='img/um_logo.png') }}" alt="UMCAS"></a></div>
 					<div id="side5"><a href="https://hoag.moh.gov.my/" target="_blank"><img src="{{ url_for('static',filename='img/hoag_logo.png') }}" alt="HOAG"></a></div>
-					<div id="side6"></div>
+					<div id="side6"></div> -->
 				</div>
 			</div>
 
 			<div id="introduction">
+				<div>
+					<h1>REHABOT</h1>
+					<h2>Your Alcohol Rehabilitation Companion</h2>
+					<p>
+						Rehabot is an adaptive multilingual chatbot built to assist Malaysians in their alcohol rehabilitation journey. It is a product of the collaboration between University Malaya Center of Addiction Science (UMCAS) and Hospital Orang Asli Gombak (HOAG).  
+					</p>
+				</div>
+
 				<div>
 					<h1>UMCAS</h1>
 					<h2>University Malaya Center of Addiction Science</h2>
@@ -93,19 +110,26 @@
 				var width = window.innerWidth/2.3;
 				var height = window.innerHeight * 0.7; 
 				box.style.setProperty('--cube-length', Math.min(width, height)+'px');
+				// box.style.setProperty('--cube-length', '30px');
 			};
 			set_cube_length();
 
-			window.addEventListener('scroll', () => {  
+			window.addEventListener('scroll', () => {
+				const part = [0.4, 0.6]
 				const scrollTop = html.scrollTop;
 				const maxScrollTop = content.scrollHeight - window.innerHeight;
 				var scrollFraction = scrollTop / maxScrollTop * 1.3;
 				var scrollFractionOld = scrollFraction;
 				scrollFraction = Math.min(scrollFraction, 1);
-				const angle = Math.floor(scrollFraction * 90);
+				// const angle = Math.floor(scrollFraction * 90);
+				const scrollFraction1 = Math.min(1, scrollFraction/part[0]);
+				content.style.setProperty('--scrollFraction1', scrollFraction1);
 
-				box.style.setProperty('--rotation', angle+'deg');
-				content.style.setProperty('--scrollFraction', scrollFraction);
+				const scrollFraction2 = Math.max(0, (scrollFraction-part[0])/part[1]);
+				const angle = Math.floor(scrollFraction2 * 90);
+
+				box.style.setProperty('--rotation2', angle+'deg');
+				content.style.setProperty('--scrollFraction2', scrollFraction2);
 
 				if (scrollFractionOld >= 1.25) {
 					fixed_items.forEach((item) => {
