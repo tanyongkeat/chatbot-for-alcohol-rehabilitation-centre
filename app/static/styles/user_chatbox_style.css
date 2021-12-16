@@ -12,7 +12,7 @@ html {
     /* -webkit-text-size-adjust: 120%; */
     height: 455px;
     width: 277px;
-    font-family: 'Nunito', sans-serif, Raleway;
+    font-family: 'Poppins', 'Nunito', sans-serif, Raleway;
     font-weight: 400;
     font-size: 0.8125rem;
     /* border-style: solid;
@@ -35,7 +35,7 @@ html {
 only screen and (-webkit-min-device-pixel-ratio : 2),
 only screen and (min-device-pixel-ratio : 2) {
     html { 
-        font-size: 1.2rem;
+        font-size: 1.1rem;
     }
 }
 

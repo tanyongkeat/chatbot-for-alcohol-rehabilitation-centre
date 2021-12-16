@@ -46,7 +46,7 @@ input[class*='button'], button[class*='button'] {
     /* float: right; */
     font-weight: 600;
     text-decoration: none;
-    font-size: 13.3333px;
+    font-size: 0.8125rem;
     text-align: center;
 }
 

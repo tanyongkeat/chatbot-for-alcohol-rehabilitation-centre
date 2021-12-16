@@ -71,7 +71,7 @@ body {
 
 #intent-search-bar {
     padding: 3px 5px;
-    font-size: 15px;
+    font-size: 0.9375rem;
     border-radius: 3px;
     outline: none;
     flex-grow: 0;
@@ -125,13 +125,13 @@ body {
 .intent-item span {
     flex: 1;
     color: black;
-    font-size: 15px;
+    font-size: 0.9375rem;
     text-align: center;
 }
 
 .intent-item span i {
     line-height: 100%;
-    font-size: 11px;
+    font-size: 0.6875rem;
     vertical-align: middle;
 }
 
@@ -143,7 +143,7 @@ body {
     word-break: break-all;
     text-decoration: none;
     color: black;
-    font-size: 15px;
+    font-size: 0.9375rem;
 }
 
 .intent-item a b {

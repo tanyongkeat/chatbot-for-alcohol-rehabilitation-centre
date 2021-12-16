@@ -27,7 +27,7 @@ label {
 }
 
 #intent-name-input {
-    font-size: 23px;
+    font-size: 1.4375rem;
     display: inline-block;
     /* padding: 6px; */
     outline: none;
@@ -47,7 +47,7 @@ label {
 }
 
 .save-button, .cancel-button {
-    font-size: 13px !important;
+    font-size: 0.8125rem !important;
     text-decoration: none;
     font-weight: 400;
     float: right;
