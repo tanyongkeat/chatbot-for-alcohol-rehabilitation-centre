@@ -208,6 +208,7 @@ def update_training_data(training_data_id, user_message):
     return new_training_data
 
 def model_encode(text):
+    print('encoding', text)
     return json.dumps(model.encode(text).tolist())
 
 def encode_response_selection(response, outdated=False):
@@ -253,7 +254,7 @@ def create_response(intent_id, text, selection):
         print(translated_text, translated_selection)
         
         db.session.add(Response(intent_id=intent_id, lang=lang, 
-                                text=translated_text, selection=translated_selection, selection_encoding=translated_selection))
+                                text=translated_text, selection=translated_selection, selection_encoding=translated_selection_encoding))
         
     db.session.commit()
 
