@@ -1,5 +1,7 @@
 {% extends "intents_base.html" %}
 
+{% block title %}Managing {{ intent.intent_name }}{% endblock %}
+
 {% block angularjs_ng_app %}
 ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditData();'
 {% endblock %}

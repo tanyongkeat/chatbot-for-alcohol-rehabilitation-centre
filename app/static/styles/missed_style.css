@@ -70,6 +70,7 @@ body {
 
 .select2-selection__rendered, 
 .select2-results__option {
+    font-size: 0.93rem;
     text-align: center;
 }
 

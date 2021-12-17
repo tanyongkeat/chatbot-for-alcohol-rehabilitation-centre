@@ -45,7 +45,8 @@ def percentage_thumbsdown_by_week():
         go.Scatter(
             x=df_1.index, y=df_1.total_messages, fill='tonexty', 
             marker=dict(color=px.colors.qualitative.Plotly[0]), 
-            name='Total responses', hoverlabel = dict(namelength = -1)
+            name='Total responses', hoverlabel = dict(namelength = -1), 
+            marker_color = '#4e79a7'
         )
     )
 
@@ -113,9 +114,9 @@ def percentage_thumbsdown_by_intent():
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)', 
         hovermode='y', 
-    #     hoverlabel=dict(
-    #         bgcolor="white"
-    #     ), 
+        hoverlabel=dict(
+            bgcolor="white"
+        ), 
         legend=dict(
             orientation='h', 
             yanchor="top",
@@ -127,7 +128,8 @@ def percentage_thumbsdown_by_intent():
     )
 
     fig.update_traces(
-        hovertemplate="%{customdata[1]}% of total %{customdata[0]} reponse(s)"
+        hovertemplate="%{customdata[1]}% of total %{customdata[0]} reponse(s)", 
+        marker_color='rgba(239, 85, 59, 0.7)'
     )
 
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
@@ -220,8 +222,8 @@ def number_of_users():
     weeks = pd.date_range(second.index.min(), second.index.max(), freq='W-MON')
     second = second.reindex(weeks).fillna(0)
 
-    color_0 = px.colors.qualitative.Plotly[0]
-    color_1 = px.colors.qualitative.Plotly[6]
+    color_0 = '#4e79a7' # px.colors.qualitative.Plotly[0]
+    color_1 = '#bab0ac' # px.colors.qualitative.Plotly[6]
 
     # Create figure with secondary y-axis
     fig = make_subplots(specs=[[{"secondary_y": True}]])
