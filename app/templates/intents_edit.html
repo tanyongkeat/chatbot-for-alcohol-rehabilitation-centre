@@ -31,8 +31,9 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
     {% endwith %}
     #}
     
-    {% if not intent.system %}
-        <div id="switches">
+    
+    <div id="switches">
+        {% if not intent.system %}
             <div>
                 <div>Deployed</div>
                 <md-switch ng-model="switches.deployed" aria-label="deployed_switch" ng-change="toggle({{ intent.id }}, 'deployed');"></md-switch>
@@ -41,8 +42,14 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
                 <div>Casual</div>
                 <md-switch ng-model="switches.small_talk" aria-label="casual_switch" ng-change="toggle({{ intent.id }}, 'small_talk');"></md-switch>
             </div>
-        </div>
-    {% endif %}
+        {% endif %}
+        {% if not intent.system or intent.intent_name == "opening text" %}
+            <div>
+                <div>Unique selections</div>
+                <md-switch ng-model="switches.unique_selection" aria-label="uniqueselection_switch" ng-change="toggle({{ intent.id }}, 'unique_selection');"></md-switch>
+            </div>
+        {% endif %}
+    </div>
     
     {% if intent.system or intent.small_talk %}
         {% set style_injection = 'style=display:none;' %}
@@ -93,18 +100,20 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
         <input type="hidden" name="parent_id" value="{{ intent.id }}">
     </form>
 
-    <form id='children-form' method="POST" action=''>
-        <label for="children">Next Level Selections</label>
-        <input type="hidden" name="job" value="update_children">
-        <select data-js-select2="" name="children" id='children' class='select2-select' multiple>
-            {% for intent in intents %}
-                <option value='{{ intent.id }}' {% if intent.id in children_ids %}selected{% endif %}>{{ intent.intent_name }}</option>
-            {% endfor %}
-        </select>
+    {% if not intent.system or intent.intent_name == "opening text" %}
+        <form id='children-form' method="POST" action=''>
+            <label for="children">Next Level Selections</label>
+            <input type="hidden" name="job" value="update_children">
+            <select data-js-select2="" name="children" id='children' class='select2-select' multiple>
+                {% for intent in intents %}
+                    <option value='{{ intent.id }}' {% if intent.id in children_ids %}selected{% endif %}>{{ intent.intent_name }}</option>
+                {% endfor %}
+            </select>
 
-        <button id='children-form-submit' type="submit" class='save-button'>save changes</button>
-        <button id='create-child-form-submit' type='submit' class='create-child-button edit-button' form="create-child-form">create selection and add</button>
-    </form>
+            <button id='children-form-submit' type="submit" class='save-button'>save changes</button>
+            <button id='create-child-form-submit' type='submit' class='create-child-button edit-button' form="create-child-form">create selection and add</button>
+        </form>
+    {% endif %}
 
     {% if not intent.system %}
         <h2>Training samples</h2>
@@ -231,7 +240,8 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
             $scope.dummy;
             $scope.switches = {
                 'deployed': false, 
-                'small_talk': false
+                'small_talk': false, 
+                'unique_selection': false
             };
             $scope.add_intent_form = {
                 'intent_id': parseInt("{{ intent.id }}"), 
@@ -246,6 +256,7 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
                             $scope.data_intents_edit = response.data.training_data;
                             $scope.switches.deployed = response.data.deployed;
                             $scope.switches.small_talk = response.data.small_talk;
+                            $scope.switches.unique_selection = response.data.unique_selection;
                         }, 
                     function(response)
                         {

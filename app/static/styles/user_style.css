@@ -206,6 +206,10 @@ footer img {
     width: 100%;
 }
 
+#D3Cube #side4 a {
+    position: absolute;
+}
+
 #D3Cube .box-surface img {
     display: block;
     width: 100%;

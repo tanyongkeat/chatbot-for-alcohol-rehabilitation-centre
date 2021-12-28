@@ -76,6 +76,8 @@ function chatboxInit() {
     autoResize(document.getElementById('textInput'));
 
     preventZoomOnInput();
+
+    getBotResponse(raw_text='opening dummy', opening=true)
 }
 
 
@@ -104,8 +106,8 @@ function sanitize(string) {
     return document.createElement('div').appendChild(document.createTextNode(string)).parentNode.innerHTML;
 }
 
-function getBotResponse(raw_text='') {
-    var is_selection = raw_text.length != 0
+function getBotResponse(raw_text='', opening=false) {
+    var is_selection = (raw_text.length != 0) | opening // to prevent feedback mechanism from being added
 
     var current_message_counter = message_counter;
     message_counter += 1;
@@ -118,12 +120,12 @@ function getBotResponse(raw_text='') {
         autoResize(document.getElementById('textInput'));
     }
 
-    sendMessage(raw_text, 'user', current_message_counter);
+    if (!opening) sendMessage(raw_text, 'user', current_message_counter);
     // https://img.icons8.com/office/23/fa314a/dots-loading--v3.png
     // static/img/loading.gif
     // var botTextObj = sendMessage('<img src="https://img.icons8.com/office/23/fa314a/dots-loading--v3.png"/>', 'bot', current_message_counter);
     var botTextObj = sendMessage('<div class="loader"><span></span><span></span><span></span></div>', 'bot', current_message_counter);
-    reply(raw_text, botTextObj, current_message_counter, is_selection);
+    reply(raw_text, botTextObj, current_message_counter, is_selection, opening);
 }
 
 var haha;
@@ -138,19 +140,21 @@ function selection_clicked(obj, is_selection=false) {
     getBotResponse(selection_text);
 }
 
-function reply(utterence, target, current_message_counter, is_selection) {
+function reply(utterence, target, current_message_counter, is_selection, opening=false) {
     $.post('/reply', {
         'utterence': utterence, 
-        'is_selection': is_selection
+        'is_selection': is_selection, 
+        'opening': opening
     }).done(function(response_all) {
         thumbsdownId = "thumbsdown_" + current_message_counter;
         thumbsupId = "thumbsdown_" + current_message_counter;
         userMessageId = "userText_" + current_message_counter;
-        document.getElementById(userMessageId).setAttribute('message_id', response_all['id']);
+        if (!opening) document.getElementById(userMessageId).setAttribute('message_id', response_all['id']);
         used_lang = response_all['lang'];
         
         response = response_all['prediction'];
         returned_selections = response_all['selections'];
+        unique_selection = response_all['unique_selection'];
         if (returned_selections.length == 0) {
             var thumbsdown_icon = 'thumbsdown fa fa-thumbs-down fa-lg';
             var thumbsup_icon = 'thumbsup fa fa-thumbs-up fa-lg';
@@ -234,7 +238,7 @@ function reply(utterence, target, current_message_counter, is_selection) {
             if (!is_selection) loop_i = selections.length-1;
             for (i = 0; i < loop_i; i++) {
                 var item = selections[i];
-                item.firstChild.addEventListener('click', event => selection_clicked(event.target, is_selection||!confusion));
+                item.firstChild.addEventListener('click', event => selection_clicked(event.target, unique_selection)); // is_selection||!confusion
             }
 
         }
@@ -247,9 +251,11 @@ function reply(utterence, target, current_message_counter, is_selection) {
 }
 
 function clearAllEvent(old_element) {
-    var new_element = old_element.cloneNode(true);
-    new_element.classList.add('no-event');
-    old_element.parentNode.replaceChild(new_element, old_element);
+    if (!old_element.classList.contains('rejected')) {
+        var new_element = old_element.cloneNode(true);
+        new_element.classList.add('no-event');
+        old_element.parentNode.replaceChild(new_element, old_element);
+    }
 }
 
 function scroll(id) {

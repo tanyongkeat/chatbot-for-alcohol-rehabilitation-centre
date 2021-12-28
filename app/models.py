@@ -98,6 +98,7 @@ class Intent(db.Model):
     deployed:bool = db.Column(db.Boolean, default=True)
     system:bool = db.Column(db.Boolean, default=False)
     children:str = db.Column(db.JSON)
+    unique_selection:bool = db.Column(db.Boolean, nullable=False, default=False)
 
 @dataclass
 class Setting(db.Model):

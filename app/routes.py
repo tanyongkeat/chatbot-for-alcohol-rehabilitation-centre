@@ -73,33 +73,48 @@ def reply():
             session['chat_id'] = 1
         else:
             flask.abort(406) # important
-    ut = sanitize(request.form['utterence'])[:MAX_USER_INPUT_LEN]
-    prediction, lang = detect_intention(ut, request.form['is_selection']=='true')
-    predicted_intent_ids = [pre['intent_id'] for pre in prediction]
-    print(request.form)
-    obj = HistoryFull(
-        chat_id=session['chat_id'], 
-        utterance_original=ut, 
-        utterance=ut, 
-        predicted_intent_id_top=int(predicted_intent_ids[0]), 
-        predicted_intent_id=','.join([str(id) for id in predicted_intent_ids]), 
-        is_selection=request.form['is_selection']=='true'
-    )
-    db.session.add(obj)
-    db.session.commit()
+
+    opening = request.form['opening'] == 'true'
+
+    if opening:
+        print('opening')
+        lang = get_primary_lang()
+        opening_text = Intent.query.filter_by(intent_name='opening text').first()
+        opening_text_responses = dict(map(lambda x: (x.lang, x.text), opening_text.response))
+        prediction = [{'reply': opening_text_responses[lang], 'cosine_similarity': 0, 'nearest_message': '', 'intent_id': opening_text.id}]
+        obj_id = -1
+    else:
+        ut = sanitize(request.form['utterence'])[:MAX_USER_INPUT_LEN]
+        prediction, lang = detect_intention(ut, request.form['is_selection']=='true')
+        predicted_intent_ids = [pre['intent_id'] for pre in prediction]
+        print(request.form)
+        obj = HistoryFull(
+            chat_id=session['chat_id'], 
+            utterance_original=ut, 
+            utterance=ut, 
+            predicted_intent_id_top=int(predicted_intent_ids[0]), 
+            predicted_intent_id=','.join([str(id) for id in predicted_intent_ids]), 
+            is_selection=request.form['is_selection']=='true'
+        )
+        db.session.add(obj)
+        db.session.commit()
+
+        obj_id = obj.id
 
     selections = []
+    unique_selection = False
     if len(prediction) > 1:
         selections, prediction = prediction, selections
     elif len(prediction) == 1:
         predicted_intent = Intent.query.get(prediction[0]['intent_id'])
+        unique_selection = predicted_intent.unique_selection
         children_ids = json.loads(predicted_intent.children)
         if len(children_ids) > 0:
             children = Response.query.filter(Response.intent_id.in_(children_ids), Response.lang==lang)
             selections = [{'reply': c.text, 'cosine_similarity': float(0), 'nearest_message': c.selection, 'intent_id': int(c.intent_id)} for c in children]
 
     session['last_selections'] = [selection['intent_id'] for selection in selections]
-    return jsonify({'id': obj.id, 'prediction': prediction, 'selections': selections, 'lang': lang})
+    return jsonify({'id': obj_id, 'prediction': prediction, 'selections': selections, 'lang': lang, 'unique_selection': unique_selection})
 
 @app.route('/capture', methods=['POST'])
 def capture():
@@ -271,7 +286,8 @@ def view_intents_edit():
     intent = Intent.query.get_or_404(intent_name)
     
     with app.app_context():
-        return jsonify({'training_data': intent.training_data, 'deployed': intent.deployed, 'small_talk': intent.small_talk})
+        return jsonify({'training_data': intent.training_data, 'deployed': intent.deployed, 
+                        'small_talk': intent.small_talk, 'unique_selection': intent.unique_selection})
 
 
 
@@ -347,7 +363,7 @@ def toggle():
     intent = Intent.query.get_or_404(data['intent_id'])
     setattr(intent, data['field'], data['value'])
     db.session.commit()
-    return jsonify({'code': 200, 'deployed': intent.deployed, 'small_talk': intent.small_talk})
+    return jsonify({'code': 200, 'deployed': intent.deployed, 'small_talk': intent.small_talk, 'unique_selection': intent.unique_selection})
 
 @app.route('/intents_edit/add_sample', methods=['POST'])
 @login_required
