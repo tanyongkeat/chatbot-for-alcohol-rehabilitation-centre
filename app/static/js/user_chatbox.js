@@ -47,6 +47,7 @@ error_message = get_error_message();
 contact_admin = get_contact_admin();
 selection_responses = {[contact_admin]: 'You can email testing@gmail.com for more info'}; // not used
 
+const message_loader = '<div class="loader"><span></span><span></span><span></span></div>';
 
 
 
@@ -124,7 +125,7 @@ function getBotResponse(raw_text='', opening=false) {
     // https://img.icons8.com/office/23/fa314a/dots-loading--v3.png
     // static/img/loading.gif
     // var botTextObj = sendMessage('<img src="https://img.icons8.com/office/23/fa314a/dots-loading--v3.png"/>', 'bot', current_message_counter);
-    var botTextObj = sendMessage('<div class="loader"><span></span><span></span><span></span></div>', 'bot', current_message_counter);
+    var botTextObj = sendMessage(message_loader, 'bot', current_message_counter);
     reply(raw_text, botTextObj, current_message_counter, is_selection, opening);
 }
 
@@ -143,11 +144,10 @@ function selection_clicked(obj, is_selection=false) {
 const timer = ms => new Promise(res => setTimeout(res, ms))
 
 async function reply(utterence, target, current_message_counter, is_selection, opening=false) {
-    // const ti = document.getElementById("textInput")
-    // ti.disabled = true;
-    // const old_placeholder = ti.placeholder;
-    // ti.placeholder = 'thinking...';
-    // await timer(1000);
+    const ti = document.getElementById("textInput")
+    ti.disabled = true;
+    const old_placeholder = ti.placeholder;
+    ti.placeholder = 'thinking...';
 
     await $.post('/reply', {
         'utterence': utterence, 
@@ -163,35 +163,38 @@ async function reply(utterence, target, current_message_counter, is_selection, o
         response = response_all['prediction'];
         returned_selections = response_all['selections'];
         unique_selection = response_all['unique_selection'];
+
         if (returned_selections.length == 0) {
-            var thumbsdown_icon = 'thumbsdown fa fa-thumbs-down fa-lg';
-            var thumbsup_icon = 'thumbsup fa fa-thumbs-up fa-lg';
+            // var thumbsdown_icon = 'thumbsdown fa fa-thumbs-down fa-lg';
+            // var thumbsup_icon = 'thumbsup fa fa-thumbs-up fa-lg';
 
-            var thumbs_container = ''
-            if (!is_selection) {
-                thumbs_container = 
-                `
-                <div class='thumbs_container'>
-                    <!-- <input class="thumbsdown" id="${thumbsdownId}" type="image" alt='thumbs down' src="https://img.icons8.com/material-sharp/15/fa314a/thumbs-down.png" onclick="getPredictedWrongMessage(this.id, 'negative')"> -->
-                    <!-- <input class="thumbsup" id="${thumbsupId}" type="image" alt='thumbs up' src="https://img.icons8.com/material-rounded/15/26e07f/thumb-up.png" onclick="getPredictedWrongMessage(this.id, 'positive')"> -->
-                    <button class="${thumbsdown_icon}" id="${thumbsdownId}" type="button" 
-                        onclick="sendMessage('&#128078;', 'user', '');getPredictedWrongMessage(this.id, 'negative')">
-                    <button class="${thumbsup_icon}" id="${thumbsupId}" type="button" 
-                        onclick="sendMessage('&#128077;', 'user', '');getPredictedWrongMessage(this.id, 'positive')">                    
-                </div>
-                `
-            }
+            // var thumbs_container = ''
+            // if (!is_selection) {
+            //     thumbs_container = 
+            //     `
+            //     <div class='thumbs_container'>
+            //         <!-- <input class="thumbsdown" id="${thumbsdownId}" type="image" alt='thumbs down' src="https://img.icons8.com/material-sharp/15/fa314a/thumbs-down.png" onclick="getPredictedWrongMessage(this.id, 'negative')"> -->
+            //         <!-- <input class="thumbsup" id="${thumbsupId}" type="image" alt='thumbs up' src="https://img.icons8.com/material-rounded/15/26e07f/thumb-up.png" onclick="getPredictedWrongMessage(this.id, 'positive')"> -->
+            //         <button class="${thumbsdown_icon}" id="${thumbsdownId}" type="button" 
+            //             onclick="sendMessage('&#128078;', 'user', '');getPredictedWrongMessage(this.id, 'negative')">
+            //         <button class="${thumbsup_icon}" id="${thumbsupId}" type="button" 
+            //             onclick="sendMessage('&#128077;', 'user', '');getPredictedWrongMessage(this.id, 'positive')">                    
+            //     </div>
+            //     `
+            // }
 
-            target.innerHTML = 
-            `
-            <span>
-                <span>
-                    ${response[0]['reply']}
-                </span>
-                ${thumbs_container}
-            </span>
-            `;
-            scroll(target);
+            // target.innerHTML = 
+            // `
+            // <span>
+            //     <span>
+            //         ${response[0]['reply']}
+            //     </span>
+            //     ${thumbs_container}
+            // </span>
+            // `;
+            // scroll(target);
+            sendMultipleMessages(response, target, is_selection, current_message_counter);
+
         } else {
             selectionBox = document.createElement('div');
             selectionBox.className = 'selection-box';
@@ -257,8 +260,50 @@ async function reply(utterence, target, current_message_counter, is_selection, o
         scroll(target);
     });
 
-    // ti.placeholder = old_placeholder;
-    // ti.disabled = false;
+    ti.placeholder = old_placeholder;
+    ti.disabled = false;
+}
+
+async function sendMultipleMessages(response, target, is_selection, current_message_counter) {
+    // careful, there will be several botText with the same id
+    var thumbsdown_icon = 'thumbsdown fa fa-thumbs-down fa-lg';
+    var thumbsup_icon = 'thumbsup fa fa-thumbs-up fa-lg';
+    var response_message = response[0]['reply'].split('___n__');
+    
+    for (var i = 0; i < response_message.length-1; i++) {
+        var current_message = response_message[i].trim()
+        await timer(current_message.split(' ').length * 60000/250);
+        sendMessage(current_message, 'bot', 'none', target);
+        scroll(target);
+    }
+    var last_message = response_message[response_message.length-1].trim();
+    await timer(last_message.split(' ').length * 60000/375);
+
+    var thumbs_container = ''
+    if (!is_selection) {
+        thumbs_container = 
+        `
+        <div class='thumbs_container'>
+            <!-- <input class="thumbsdown" id="${thumbsdownId}" type="image" alt='thumbs down' src="https://img.icons8.com/material-sharp/15/fa314a/thumbs-down.png" onclick="getPredictedWrongMessage(this.id, 'negative')"> -->
+            <!-- <input class="thumbsup" id="${thumbsupId}" type="image" alt='thumbs up' src="https://img.icons8.com/material-rounded/15/26e07f/thumb-up.png" onclick="getPredictedWrongMessage(this.id, 'positive')"> -->
+            <button class="${thumbsdown_icon}" id="${thumbsdownId}" type="button" 
+                onclick="sendMessage('&#128078;', 'user', '');getPredictedWrongMessage(this.id, 'negative')">
+            <button class="${thumbsup_icon}" id="${thumbsupId}" type="button" 
+                onclick="sendMessage('&#128077;', 'user', '');getPredictedWrongMessage(this.id, 'positive')">                    
+        </div>
+        `
+    }
+
+    target.innerHTML = 
+    `
+    <span>
+        <span>
+            ${last_message}
+        </span>
+        ${thumbs_container}
+    </span>
+    `;
+    scroll(target);
 }
 
 function clearAllEvent(old_element) {
@@ -274,7 +319,7 @@ function scroll(id) {
     temp.scrollIntoView({block: 'start', behavior: 'smooth'});
 }
 
-function sendMessage(message, subject, current_message_counter) {
+function sendMessage(message, subject, current_message_counter, position=null) {
     var textId = `${subject}Text_${current_message_counter}`;
     var message_box = document.createElement('div');
     message_box.className = subject + 'Text';
@@ -285,7 +330,8 @@ function sendMessage(message, subject, current_message_counter) {
     var last_area = areas[areas.length-1];
     current_area_class = subject + 'Area';
     if (last_area.classList.contains(current_area_class)) {
-        last_area.append(message_box);
+        if (position) position.parentNode.insertBefore(message_box, position);
+        else last_area.append(message_box);
     } else {
         new_area = document.createElement('div');
         new_area.className = 'area';
