@@ -1,4 +1,4 @@
-#reply-messages-adding {
+.response-adding {
     width: 95%;
     margin: 5px auto;
 }
@@ -7,7 +7,7 @@ label {
     display: block;
 }
 
-#reply-messages-adding textarea {
+.response-adding textarea {
     margin-top: 5px;
     width: 85%;
     box-sizing: border-box;

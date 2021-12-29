@@ -32,20 +32,23 @@
         {% endif %}
     {% endwith %}
     #}
-
+    
     <h2>Chatbot response</h2>
+    {% for elem in [['Chatbot response', 'reply-messages-adding', 'reply_message', 'Reply message', MAX_REPLY_LEN], 
+                    ['Selection text', 'selections-adding', 'selection', 'Selection display text', MAX_USER_INPUT_LEN]] %}
     <!-- <div id='reply-message-header'>
         <input type='submit' name='english' value='english'>
         <input type='submit' name='malay' value='malay'>
     </div> -->
-    <div id='reply-messages-adding'>
-        <label for='reply_message'>Reply message <strong>{{ primary_lang }}</strong></label>
-        <textarea name="reply_message" form='add_form' maxlength="{{ MAX_REPLY_LEN }}" required>{% if form_data %}{{ form_data.reply_message }}{% endif %}</textarea>
+    <div id='{{ elem[1] }}' class='response-adding'>
+        <label for='{{ elem[2] }}'>{{ elem[3] }} <strong>{{ primary_lang }}</strong></label>
+        <textarea name="{{ elem[2] }}" form='add_form' maxlength="{{ elem[4] }}" required>{% if form_data %}{{ form_data[elem[2]] }}{% endif %}</textarea>
         <!-- <label for='reply_message_en'>English</label>
         <textarea name="reply_message_en" form='add_form' required>{% if form_data %}{{ form_data.reply_message_en }}{% endif %}</textarea>
         <label for='reply_message_my'>Malay</label>
         <textarea cols=100 rows=5 name="reply_message_my" form='add_form' required>{% if form_data %}{{ form_data.reply_message_my }}{% endif %}</textarea> -->
     </div>
+    {% endfor %}
 
 
     <h2>Training samples</h2>

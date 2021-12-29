@@ -4,6 +4,7 @@ from flask import render_template, render_template_string, jsonify, flash, redir
 from flask_login import current_user, login_user, logout_user, login_required
 import werkzeug
 from werkzeug.urls import url_parse
+import urllib.parse
 from werkzeug.exceptions import BadRequest
 from werkzeug.wrappers import Response
 
@@ -406,10 +407,11 @@ def intents_add():
             """
             intent_name = request.form['intent_name']
             reply_message = request.form['reply_message']
+            selection = request.form['selection']
             # reply_message_en = request.form['reply_message_en']
             # reply_message_my = request.form['reply_message_my']
             intent = create_intent(intent_name=intent_name, reply_message_en='', reply_message_my='')
-            create_response(intent.id, reply_message, 'to be filled in')
+            create_response(intent.id, reply_message, selection)
             # TODO ajax to signify that a training sample is used
             for training_data in training_datas:
                 try:
@@ -437,7 +439,8 @@ def intents_add():
 
             form_data = {
                 'intent_name': intent_name, 
-                'reply_message': reply_message
+                'reply_message': reply_message, 
+                'selection': selection
                 # 'reply_message_en': reply_message_en, 
                 # 'reply_message_my': reply_message_my
             }
@@ -472,12 +475,14 @@ def delete_intent():
     db.session.commit()
 
     print(referrer)
+    print(url_parse(referrer))
+    print(urllib.parse.unquote(referrer))
     print(url_parse(referrer).host)
     print(temp.intent_name in referrer)
     if referrer\
         and (url_parse(referrer).host in ["rehabot.my", "localhost"])\
         and ('intents_edit' in referrer)\
-        and (temp.intent_name not in referrer):
+        and (temp.intent_name not in urllib.parse.unquote(referrer)):
         return redirect(referrer)
 
     # refresh_dataset()

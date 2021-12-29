@@ -231,12 +231,12 @@ def create_response(intent_id, text, selection):
     if not text or not selection:
         raise EmptyRequiredField('The reply messages')
 
-    selection = ' '.join(intent.intent_name.split('_'))
+    # selection = ' '.join(intent.intent_name.split('_'))
     print(text, selection)
     for lang in get_langs():
         if lang == primary_lang:
             translated_text = text
-            translated_selection = selection
+            translated_selection = selection # translate(selection, dest=lang)[:MAX_USER_INPUT_LEN] # selection
             translated_selection_encoding = model_encode(translated_selection)
         elif lang not in selected_lang:
             translated_text = OUTDATED_FLAG

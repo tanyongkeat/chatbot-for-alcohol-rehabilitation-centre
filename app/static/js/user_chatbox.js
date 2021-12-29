@@ -140,8 +140,16 @@ function selection_clicked(obj, is_selection=false) {
     getBotResponse(selection_text);
 }
 
-function reply(utterence, target, current_message_counter, is_selection, opening=false) {
-    $.post('/reply', {
+const timer = ms => new Promise(res => setTimeout(res, ms))
+
+async function reply(utterence, target, current_message_counter, is_selection, opening=false) {
+    // const ti = document.getElementById("textInput")
+    // ti.disabled = true;
+    // const old_placeholder = ti.placeholder;
+    // ti.placeholder = 'thinking...';
+    // await timer(1000);
+
+    await $.post('/reply', {
         'utterence': utterence, 
         'is_selection': is_selection, 
         'opening': opening
@@ -248,6 +256,9 @@ function reply(utterence, target, current_message_counter, is_selection, opening
         target.querySelector('span span').innerHTML = error_message[used_lang];
         scroll(target);
     });
+
+    // ti.placeholder = old_placeholder;
+    // ti.disabled = false;
 }
 
 function clearAllEvent(old_element) {

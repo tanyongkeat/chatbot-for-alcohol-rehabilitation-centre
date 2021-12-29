@@ -204,6 +204,10 @@ all and (max-height: 480px) {
     /* margin-bottom: 15px; */
 }
 
+.botText img {
+    width: 100%;
+}
+
 #chatbox > div > div > span {
     display: inline-block;
     margin: 0px;
