@@ -1,4 +1,6 @@
 var message_counter = 0;
+var current_question_no = -1;
+var current_assessment = '';
 var primary_lang = '{{ primary_lang }}';
 var used_lang = primary_lang;
 
@@ -130,7 +132,7 @@ function getBotResponse(raw_text='', opening=false) {
 }
 
 var haha;
-function selection_clicked(obj, is_selection=false) {
+function selection_clicked(obj, is_selection=false, getResponse=true) {
     haha = obj;
     var selection_text = obj.innerText;
     // sendMessage(selection_responses[selection_text], 'bot', '');
@@ -138,7 +140,7 @@ function selection_clicked(obj, is_selection=false) {
         var sibling_nodes = obj.parentNode.parentNode.childNodes;
         sibling_nodes.forEach(clearAllEvent);
     }
-    getBotResponse(selection_text);
+    if (getResponse) getBotResponse(selection_text);
 }
 
 const timer = ms => new Promise(res => setTimeout(res, ms))
@@ -196,8 +198,6 @@ async function reply(utterence, target, current_message_counter, is_selection, o
             sendMultipleMessages(response, target, is_selection, current_message_counter);
 
         } else {
-            selectionBox = document.createElement('div');
-            selectionBox.className = 'selection-box';
 
             // it is not necessary to preload confirmation_text, we can return it as response, but this is done earlier, so...
             var prompt_message = confirmation_text[used_lang];
@@ -210,18 +210,8 @@ async function reply(utterence, target, current_message_counter, is_selection, o
                 response[response.length] = {'reply': selection_responses[contact_admin], 'nearest_message': contact_admin[used_lang]};
             }
 
-            var selection;
-            var selections = [];
-            for (i = 0; i < response.length; i++){
-                selection = document.createElement('div');
-                selection_responses[response[i]['nearest_message']] = response[i]['reply'];
-                selection.className = 'selection';
-                selection.innerHTML = `<span>${response[i]['nearest_message']}</span>`;
-                selectionBox.appendChild(selection);
-                selections.push(selection);
-            }
-            
-            target.append(selectionBox);
+            var selections = createSelections(target, response, 'nearest_message');
+            var selection = selections[selections.length-1];
 
             if (!is_selection) {
                 selection.classList.toggle('rejected');
@@ -229,7 +219,7 @@ async function reply(utterence, target, current_message_counter, is_selection, o
                 selection.firstChild.addEventListener('click', event => sendMessage(event.target.innerHTML, 'user', ''));
             }
 
-            scroll(selection);
+            // scroll(selection);
 
             // selections.forEach(item => {
             //     item.firstChild.addEventListener('click', event => sendMessage(event.target.innerHTML, 'user', ''));
@@ -264,6 +254,70 @@ async function reply(utterence, target, current_message_counter, is_selection, o
     ti.disabled = false;
 }
 
+function createSelections(target, response, index_name) {
+    selectionBox = document.createElement('div');
+    selectionBox.className = 'selection-box';
+    
+    var selections = [];
+    for (i = 0; i < response.length; i++){
+        var selection = document.createElement('div');
+        // selection_responses[response[i]['nearest_message']] = response[i]['reply'];
+        selection.className = 'selection';
+        selection.innerHTML = `<span>${response[i][index_name]}</span>`;
+        selectionBox.appendChild(selection);
+        selections.push(selection);
+    }
+    
+    target.append(selectionBox);
+    scroll(selection);
+
+    return selections;
+}
+
+const assessments = {
+    'audit-c': [
+        {'question': '1How is ...', 'answer': [['no', 0], ['sometimes', 1], ['frequently', 2]]}, 
+        {'question': '2How is ...', 'answer': [['no2', 0], ['sometimes2', 1], ['frequently2', 2]]}, 
+        {'question': '3How is ...', 'answer': [['no3', 0], ['sometimes3', 1], ['frequently3', 2]]}
+    ]
+}
+
+var assessments_results = {'audit-c': {}}
+
+function doAssessment(assessment, index=0) {
+    console.log(index);
+    current_assessment = assessment;
+    current_question_no = index;
+    var targetAssessment = assessments[assessment][index];
+    console.log(targetAssessment);
+    var target = sendMessage(targetAssessment['question'], 'bot', '')
+    var selections = createSelections(target, targetAssessment['answer'], 0);
+
+    for (i = 0; i < selections.length; i++) {
+        var item = selections[i];
+        item.firstChild.setAttribute('index', index);
+        item.firstChild.setAttribute('value', targetAssessment['answer'][i][1]);
+        item.firstChild.setAttribute('assessment', assessment)
+
+        item.firstChild.addEventListener('click', event => {
+            selection_clicked(event.target, true, false);
+            assessment = event.target.getAttribute('assessment');
+            index = parseInt(event.target.getAttribute('index'));
+            value = parseInt(event.target.getAttribute('value'));
+
+            assessments_results[assessment][index] = value;
+
+            if (index < assessments[assessment].length-1) doAssessment(assessment, index+1);
+        });
+
+        if (index == assessments[assessment].length-1) item.firstChild.addEventListener('click', event => {
+            current_question_no = -1;
+            current_assessment = '';
+            console.log(assessments_results[assessment]);
+        });
+    }
+}
+
 async function sendMultipleMessages(response, target, is_selection, current_message_counter) {
     // careful, there will be several botText with the same id
     var thumbsdown_icon = 'thumbsdown fa fa-thumbs-down fa-lg';
@@ -272,12 +326,12 @@ async function sendMultipleMessages(response, target, is_selection, current_mess
     
     for (var i = 0; i < response_message.length-1; i++) {
         var current_message = response_message[i].trim()
-        await timer(current_message.split(' ').length * 60000/250);
+        await timer(current_message.split(' ').length * 60000/500);
         sendMessage(current_message, 'bot', 'none', target);
         scroll(target);
     }
     var last_message = response_message[response_message.length-1].trim();
-    await timer(last_message.split(' ').length * 60000/375);
+    await timer(last_message.split(' ').length * 60000/750);
 
     var thumbs_container = ''
     if (!is_selection) {
