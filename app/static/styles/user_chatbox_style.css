@@ -289,6 +289,16 @@ all and (max-height: 480px) {
     cursor: default;
 }
 
+.selection.no-event-selected span {
+    border-color: black;
+    color: black;
+}
+
+.selection.no-event-selected span:hover {
+    border-color: black;
+    color: black;
+}
+
 .botText button[class^='thumbs'] {
     display: block;
     position: relative;
@@ -377,4 +387,19 @@ all and (max-height: 480px) {
 
 .pushup {
     bottom: calc(var(--ori-bottom) + var(--footer-height)) !important;
+}
+
+#continue-assessment-button {
+    border: none;
+    outline: none;
+    display: none;
+    height: 100%;
+    line-height: 100%;
+    vertical-align: middle;
+    color: rgb(255, 136, 0);
+    font-size: 0.7rem;
+}
+
+#continue-assessment-button:hover {
+    cursor: pointer;
 }

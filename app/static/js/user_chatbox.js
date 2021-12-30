@@ -1,6 +1,8 @@
 var message_counter = 0;
 var current_question_no = -1;
+var current_question = null;
 var current_assessment = '';
+var assessments = {};
 var primary_lang = '{{ primary_lang }}';
 var used_lang = primary_lang;
 
@@ -80,7 +82,13 @@ function chatboxInit() {
 
     preventZoomOnInput();
 
-    getBotResponse(raw_text='opening dummy', opening=true)
+    document.getElementById('continue-assessment-button').addEventListener('click', event => {
+        scroll(current_question, 'end');
+        console.log(current_question);
+        event.target.style.setProperty('display', 'none');
+    })
+
+    getBotResponse(raw_text='opening dummy', opening=true);
 }
 
 
@@ -128,7 +136,7 @@ function getBotResponse(raw_text='', opening=false) {
     // static/img/loading.gif
     // var botTextObj = sendMessage('<img src="https://img.icons8.com/office/23/fa314a/dots-loading--v3.png"/>', 'bot', current_message_counter);
     var botTextObj = sendMessage(message_loader, 'bot', current_message_counter);
-    reply(raw_text, botTextObj, current_message_counter, is_selection, opening);
+    reply({'utterance': raw_text}, botTextObj, current_message_counter, is_selection, opening);
 }
 
 var haha;
@@ -138,24 +146,29 @@ function selection_clicked(obj, is_selection=false, getResponse=true) {
     // sendMessage(selection_responses[selection_text], 'bot', '');
     if (is_selection) {
         var sibling_nodes = obj.parentNode.parentNode.childNodes;
-        sibling_nodes.forEach(clearAllEvent);
+        // sibling_nodes.forEach(clearAllEvent);
+        for (i = 0; i < sibling_nodes.length; i++) {
+            var new_node = clearAllEvent(sibling_nodes[i]);
+            if (new_node && (new_node.innerText == selection_text)) new_node.classList.add('no-event-selected');
+        }
     }
     if (getResponse) getBotResponse(selection_text);
 }
 
 const timer = ms => new Promise(res => setTimeout(res, ms))
 
-async function reply(utterence, target, current_message_counter, is_selection, opening=false) {
+async function reply(parameters, target, current_message_counter, is_selection, opening=false) {
     const ti = document.getElementById("textInput")
     ti.disabled = true;
     const old_placeholder = ti.placeholder;
     ti.placeholder = 'thinking...';
 
-    await $.post('/reply', {
-        'utterence': utterence, 
-        'is_selection': is_selection, 
-        'opening': opening
-    }).done(function(response_all) {
+    parameters['is_selection'] = is_selection;
+    parameters['opening'] = opening;
+    await $.post('/reply', parameters)
+    .done(function(response_all) {
+        console.log(response_all);
+        if (current_question) document.getElementById('continue-assessment-button').style.setProperty('display', 'inline-block');
         thumbsdownId = "thumbsdown_" + current_message_counter;
         thumbsupId = "thumbsdown_" + current_message_counter;
         userMessageId = "userText_" + current_message_counter;
@@ -165,6 +178,9 @@ async function reply(utterence, target, current_message_counter, is_selection, o
         response = response_all['prediction'];
         returned_selections = response_all['selections'];
         unique_selection = response_all['unique_selection'];
+        return_assessment = response_all['return_assessment'];
+        var isAssessment = Object.keys(return_assessment).length != 0;
+        if (isAssessment) assessments[return_assessment['assessment_name']] = return_assessment['assessment'];
 
         if (returned_selections.length == 0) {
             // var thumbsdown_icon = 'thumbsdown fa fa-thumbs-down fa-lg';
@@ -195,7 +211,9 @@ async function reply(utterence, target, current_message_counter, is_selection, o
             // </span>
             // `;
             // scroll(target);
-            sendMultipleMessages(response, target, is_selection, current_message_counter);
+            var isAssessment = Object.keys(return_assessment).length != 0;
+            sendMultipleMessages(response, target, is_selection, current_message_counter, delay=!isAssessment);
+            if (isAssessment) doAssessment(return_assessment['assessment_name']);
 
         } else {
 
@@ -274,15 +292,8 @@ function createSelections(target, response, index_name) {
     return selections;
 }
 
-const assessments = {
-    'audit-c': [
-        {'question': '1How is ...', 'answer': [['no', 0], ['sometimes', 1], ['frequently', 2]]}, 
-        {'question': '2How is ...', 'answer': [['no2', 0], ['sometimes2', 1], ['frequently2', 2]]}, 
-        {'question': '3How is ...', 'answer': [['no3', 0], ['sometimes3', 1], ['frequently3', 2]]}
-    ]
-}
-
-var assessments_results = {'audit-c': {}}
+var assessments_results = {'audit-c': {}, 'audit-10': {}}
+var audit_flow = {'audit-c': auditc_flow, 'audit-10': audit10_flow}
 
 function doAssessment(assessment, index=0) {
     console.log(index);
@@ -306,32 +317,75 @@ function doAssessment(assessment, index=0) {
             value = parseInt(event.target.getAttribute('value'));
 
             assessments_results[assessment][index] = value;
+            sendMessage(event.target.innerText, 'user', '')
 
-            if (index < assessments[assessment].length-1) doAssessment(assessment, index+1);
+            if (index < assessments[assessment].length-1) doAssessment(assessment, audit_flow[assessment](index));
         });
 
         if (index == assessments[assessment].length-1) item.firstChild.addEventListener('click', event => {
             current_question_no = -1;
             current_assessment = '';
+            current_question = null;
+            document.getElementById('continue-assessment-button').style.setProperty('display', 'none');
             console.log(assessments_results[assessment]);
+
+            var target = sendMessage(message_loader, 'bot', '');
+            parameters = {
+                'assessment': assessment, 
+                'assessment_results': JSON.stringify(assessments_results[assessment])
+            }
+            reply(parameters, target, current_message_counter='', is_selection=true, opening=false)
         });
     }
+
+    current_question = selections[selections.length-1];
+    scroll(current_question);
 }
 
-async function sendMultipleMessages(response, target, is_selection, current_message_counter) {
+function auditc_flow(index) {
+    return index + 1;
+}
+
+function audit10_flow(index) {
+    var results = assessments_results['audit-10'];
+
+    if (index == 0) {
+        if (results[0] == 0) {
+            for (i = 1; i < 8; i++) {
+                results[i] = 0;
+            }
+            return 8;
+        }
+    }
+
+    if (index == 2) {
+        if (results[1] + results[2] == 0) {
+            for (i = 3; i < 8; i++) {
+                results[i] = 0;
+            }
+            return 8;
+        }
+    }
+
+    return index + 1;
+}
+
+async function sendMultipleMessages(response, target, is_selection, current_message_counter, delay=true) {
     // careful, there will be several botText with the same id
     var thumbsdown_icon = 'thumbsdown fa fa-thumbs-down fa-lg';
     var thumbsup_icon = 'thumbsup fa fa-thumbs-up fa-lg';
     var response_message = response[0]['reply'].split('___n__');
+    var time = 60000;
+    if (!delay) time = 0;
     
     for (var i = 0; i < response_message.length-1; i++) {
         var current_message = response_message[i].trim()
-        await timer(current_message.split(' ').length * 60000/500);
+        await timer(current_message.split(' ').length * time/500);
         sendMessage(current_message, 'bot', 'none', target);
         scroll(target);
     }
     var last_message = response_message[response_message.length-1].trim();
-    await timer(last_message.split(' ').length * 60000/750);
+    await timer(last_message.split(' ').length * time/750);
 
     var thumbs_container = ''
     if (!is_selection) {
@@ -366,11 +420,14 @@ function clearAllEvent(old_element) {
         new_element.classList.add('no-event');
         old_element.parentNode.replaceChild(new_element, old_element);
     }
+    return new_element;
 }
 
-function scroll(id) {
+function scroll(id, position='start') {
+    // console.log('scrolling to ' + id);
+    if (!id) return;
     var temp = (typeof(id) == 'object')? id: document.getElementById(id);
-    temp.scrollIntoView({block: 'start', behavior: 'smooth'});
+    temp.scrollIntoView({block: position, behavior: 'smooth'});
 }
 
 function sendMessage(message, subject, current_message_counter, position=null) {

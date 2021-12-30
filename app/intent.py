@@ -59,6 +59,7 @@ def read_data(target_language, is_selection):
     # reply = query_db('select id, reply_message, small_talk, intent_name as intention from intent')
     filter_con = ((Intent.deployed==True) | (Intent.id.in_(session['last_selections']))) & (Intent.system==False)
     if is_selection:
+        print('including all intents except systems')
         filter_con = Intent.system==False
     reply = pd.read_sql_query(
         sql = Intent.query.with_entities(

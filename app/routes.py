@@ -18,6 +18,7 @@ from app.util import create_training_data, update_training_data, create_intent, 
     get_selected_lang, update_selected_lang, get_primary_lang, update_primary_lang, get_langs,\
     create_response, update_response, refresh_response, compare_response
 from app.plot import percentage_thumbsdown_by_week, percentage_thumbsdown_by_intent, popular_questions, number_of_users
+from app.audit import assessment, assessment_flow
 from sqlalchemy import func
 from functools import cmp_to_key
 from datetime import timedelta
@@ -76,17 +77,25 @@ def reply():
             flask.abort(406) # important
 
     opening = request.form['opening'] == 'true'
+    is_selection = request.form['is_selection'] == '1'
+    lang = get_primary_lang() if 'last_lang' not in session else session['last_lang']
+    print(request.form)
 
     if opening:
         print('opening')
-        lang = get_primary_lang()
-        opening_text = Intent.query.filter_by(intent_name='opening text').first()
-        opening_text_responses = dict(map(lambda x: (x.lang, x.text), opening_text.response))
-        prediction = [{'reply': opening_text_responses[lang], 'cosine_similarity': 0, 'nearest_message': '', 'intent_id': opening_text.id}]
-        obj_id = -1
+        # opening_text = Intent.query.filter_by(intent_name='opening text').first()
+        # opening_text_responses = dict(map(lambda x: (x.lang, x.text), opening_text.response))
+        # prediction = [{'reply': opening_text_responses[lang], 'cosine_similarity': 0, 'nearest_message': '', 'intent_id': opening_text.id}]
+        # obj_id = -1
+        prediction, obj_id = preset_prediction('opening text', lang=lang)
+    elif 'assessment' in request.form:
+        print('doing assessment')
+        assessment_result = assessment_flow(request.form['assessment'], json.loads(request.form['assessment_results']))
+        print(assessment_result)
+        prediction, obj_id = preset_prediction(assessment_result, lang=lang)
     else:
-        ut = sanitize(request.form['utterence'])[:MAX_USER_INPUT_LEN]
-        prediction, lang = detect_intention(ut, request.form['is_selection']=='true')
+        ut = sanitize(request.form['utterance'])[:MAX_USER_INPUT_LEN]
+        prediction, lang = detect_intention(ut, is_selection)
         predicted_intent_ids = [pre['intent_id'] for pre in prediction]
         print(request.form)
         obj = HistoryFull(
@@ -95,7 +104,7 @@ def reply():
             utterance=ut, 
             predicted_intent_id_top=int(predicted_intent_ids[0]), 
             predicted_intent_id=','.join([str(id) for id in predicted_intent_ids]), 
-            is_selection=request.form['is_selection']=='true'
+            is_selection=is_selection
         )
         db.session.add(obj)
         db.session.commit()
@@ -103,19 +112,46 @@ def reply():
         obj_id = obj.id
 
     selections = []
+    return_assessment = {}
     unique_selection = False
     if len(prediction) > 1:
         selections, prediction = prediction, selections
     elif len(prediction) == 1:
-        predicted_intent = Intent.query.get(prediction[0]['intent_id'])
-        unique_selection = predicted_intent.unique_selection
-        children_ids = json.loads(predicted_intent.children)
-        if len(children_ids) > 0:
-            children = Response.query.filter(Response.intent_id.in_(children_ids), Response.lang==lang)
-            selections = [{'reply': c.text, 'cosine_similarity': float(0), 'nearest_message': c.selection, 'intent_id': int(c.intent_id)} for c in children]
+        selections, return_assessment, unique_selection = case_single_prediction(prediction, lang)
 
     session['last_selections'] = [selection['intent_id'] for selection in selections]
-    return jsonify({'id': obj_id, 'prediction': prediction, 'selections': selections, 'lang': lang, 'unique_selection': unique_selection})
+    session['last_lang'] = lang
+    return jsonify({'id': obj_id, 'prediction': prediction, 'selections': selections, 'lang': lang, 'unique_selection': unique_selection, 
+                    'return_assessment': return_assessment})
+
+def preset_prediction(intent_name, lang):
+    intent = Intent.query.filter_by(intent_name=intent_name).first()
+    intent_responses= dict(map(lambda x: (x.lang, x.text), intent.response))
+    prediction = [{'reply': intent_responses[lang], 'cosine_similarity': 0, 'nearest_message': '', 'intent_id': intent.id}]
+    obj_id = -1
+    return prediction, obj_id
+
+def case_single_prediction(prediction, lang):
+    selections = []
+    return_assessment = {}
+    unique_selection = False
+
+    predicted_intent = Intent.query.get(prediction[0]['intent_id'])
+    unique_selection = predicted_intent.unique_selection
+    children_ids = json.loads(predicted_intent.children)
+
+    if predicted_intent.intent_name == 'audit-c assessment':
+        return_assessment['assessment'] = assessment['audit-c']['en']
+        return_assessment['assessment_name'] = 'audit-c'
+    elif predicted_intent.intent_name == 'audit-10 assessment':
+        return_assessment['assessment'] = assessment['audit-10']['en']
+        return_assessment['assessment_name'] = 'audit-10'
+    elif len(children_ids) > 0:
+        children = Response.query.filter(Response.intent_id.in_(children_ids), Response.lang==lang)
+        selections = [{'reply': c.text, 'cosine_similarity': float(0), 'nearest_message': c.selection, 'intent_id': int(c.intent_id)} for c in children]
+
+    return selections, return_assessment, unique_selection
+
 
 @app.route('/capture', methods=['POST'])
 def capture():
