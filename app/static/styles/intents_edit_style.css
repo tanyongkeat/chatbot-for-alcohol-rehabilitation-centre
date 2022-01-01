@@ -183,6 +183,11 @@
     overflow-wrap: break-word;
 }
 
+.editable-content img {
+    max-height: 90px;
+    display: block;
+}
+
 #switches {
     display: flex;
     flex-wrap: wrap;

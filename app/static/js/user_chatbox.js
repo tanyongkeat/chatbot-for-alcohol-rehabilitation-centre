@@ -395,17 +395,16 @@ async function sendMultipleMessages(response, target, feedback, current_message_
     var thumbsdown_icon = 'thumbsdown fa fa-thumbs-down fa-lg';
     var thumbsup_icon = 'thumbsup fa fa-thumbs-up fa-lg';
     var response_message = response.split('___n__');
-    var time = 60000;
     if (!delay) time = 0;
     
     for (var i = 0; i < response_message.length-1; i++) {
         var current_message = response_message[i].trim()
-        if (i != 0) await timer(current_message.split(' ').length * time/500);
+        if (i != 0) await timer(calcWaitTime(current_message));
         sendMessage(current_message, 'bot', 'none', target);
         scroll(target);
     }
     var last_message = response_message[response_message.length-1].trim();
-    if (response_message.length != 1) await timer(last_message.split(' ').length * time/750);
+    if (response_message.length != 1) await timer(calcWaitTime(last_message));
 
     var thumbs_container = ''
     if (feedback) {
@@ -436,6 +435,13 @@ async function sendMultipleMessages(response, target, feedback, current_message_
     if (returned_selections) {
         return createSelections(target, returned_selections, 'nearest_message');
     }
+}
+
+function calcWaitTime(message) {
+    var waitTime = message.split(' ').length * 60000/500;
+    if (waitTime < 3000) waitTime = 3000;
+    else if (waitTime > 5000) waitTime = 5000;
+    return waitTime;
 }
 
 function clearAllEvent(old_element) {

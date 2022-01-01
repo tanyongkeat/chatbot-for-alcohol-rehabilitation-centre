@@ -195,6 +195,11 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
                 closeOnSelect: false
             })
 
+            const temp = document.getElementsByClassName('editable-content');
+            for (i = 0; i < temp.length; i++) {
+                temp[i].innerHTML = temp[i].innerText
+            }
+
             // var error_messages = {{ get_flashed_messages() | tojson | safe }};
             // flashError(error_messages);
             var error_messages = get_flashed();
