@@ -157,6 +157,8 @@ function selection_clicked(obj, is_selection=false, getResponse=true) {
 
 const timer = ms => new Promise(res => setTimeout(res, ms))
 
+
+var debug;
 async function reply(parameters, target, current_message_counter, is_selection, opening=false) {
     const ti = document.getElementById("textInput")
     ti.disabled = true;
@@ -212,53 +214,71 @@ async function reply(parameters, target, current_message_counter, is_selection, 
             // `;
             // scroll(target);
             var isAssessment = Object.keys(return_assessment).length != 0;
-            sendMultipleMessages(response, target, is_selection, current_message_counter, delay=!isAssessment);
+            sendMultipleMessages(response[0]['reply'], target, feedback=!is_selection, current_message_counter, delay=!isAssessment);
             if (isAssessment) doAssessment(return_assessment['assessment_name']);
 
         } else {
 
             // it is not necessary to preload confirmation_text, we can return it as response, but this is done earlier, so...
-            var prompt_message = confirmation_text[used_lang];
-            var confusion = response.length == 0;
-            if (!confusion) prompt_message = response[0]['reply'];
-            target.innerHTML = `<span><span>${prompt_message}</span></span>`;
+            // var prompt_message = confirmation_text[used_lang];
+            // var confusion = response.length == 0;
+            // if (!confusion) prompt_message = response[0]['reply'];
+            // target.innerHTML = `<span><span>${prompt_message}</span></span>`;
 
-            response = returned_selections; // lazy to change name
+            // response = returned_selections; // lazy to change name
             if (!is_selection) {
-                response[response.length] = {'reply': selection_responses[contact_admin], 'nearest_message': contact_admin[used_lang]};
-            }
-
-            var selections = createSelections(target, response, 'nearest_message');
-            var selection = selections[selections.length-1];
-
-            if (!is_selection) {
-                selection.classList.toggle('rejected');
-                selection.id = 'contactAdminSelection_' + current_message_counter;
-                selection.firstChild.addEventListener('click', event => sendMessage(event.target.innerHTML, 'user', ''));
-            }
-
-            // scroll(selection);
-
-            // selections.forEach(item => {
-            //     item.firstChild.addEventListener('click', event => sendMessage(event.target.innerHTML, 'user', ''));
-            // });
-
-            if (!is_selection) {
-                selection.firstChild.onclick = function() {
-                    getPredictedWrongMessage(this.parentNode.id, 'negative');
+                returned_selections[returned_selections.length] = {
+                    'reply': selection_responses[contact_admin], 'nearest_message': contact_admin[used_lang]
                 };
             }
 
+            var confusion = response.length == 0;
+            var prompt_message = confirmation_text[used_lang];
+            if (!confusion) prompt_message = response[0]['reply'];
+            sendMultipleMessages(
+                prompt_message, target, feedback=false, 
+                current_message_counter, delay=true, returned_selections=returned_selections, is_selection=is_selection
+            ).then(r => {
+                var selections = r;
+                debug = selections;
+                var selection = selections[selections.length-1];
 
-            // selections.forEach(item => { ####previously used
-            // 	item.addEventListener('click', event => selection_clicked(event.target));
-            // });
-            var loop_i = selections.length;
-            if (!is_selection) loop_i = selections.length-1;
-            for (i = 0; i < loop_i; i++) {
-                var item = selections[i];
-                item.firstChild.addEventListener('click', event => selection_clicked(event.target, unique_selection)); // is_selection||!confusion
-            }
+                console.log(is_selection);
+                if (!is_selection) {
+                    selection.classList.toggle('rejected');
+                    selection.id = 'contactAdminSelection_' + current_message_counter;
+                    selection.firstChild.addEventListener('click', event => sendMessage(event.target.innerHTML, 'user', ''));
+                }
+
+                // scroll(selection);
+
+                // selections.forEach(item => {
+                //     item.firstChild.addEventListener('click', event => sendMessage(event.target.innerHTML, 'user', ''));
+                // });
+
+                if (!is_selection) {
+                    selection.firstChild.onclick = function() {
+                        getPredictedWrongMessage(this.parentNode.id, 'negative');
+                    };
+                }
+
+
+                // selections.forEach(item => { ####previously used
+                // 	item.addEventListener('click', event => selection_clicked(event.target));
+                // });
+                var loop_i = selections.length;
+                if (!is_selection) loop_i = selections.length-1;
+                for (i = 0; i < loop_i; i++) {
+                    var item = selections[i];
+                    item.firstChild.addEventListener('click', event => selection_clicked(event.target, unique_selection)); // is_selection||!confusion
+                }
+
+                scroll(selection);
+            })
+
+
+            // var selections = createSelections(target, returned_selections, 'nearest_message');
+            
 
         }
 
@@ -370,25 +390,25 @@ function audit10_flow(index) {
     return index + 1;
 }
 
-async function sendMultipleMessages(response, target, is_selection, current_message_counter, delay=true) {
+async function sendMultipleMessages(response, target, feedback, current_message_counter, delay=true, returned_selections=null, is_selection=false) {
     // careful, there will be several botText with the same id
     var thumbsdown_icon = 'thumbsdown fa fa-thumbs-down fa-lg';
     var thumbsup_icon = 'thumbsup fa fa-thumbs-up fa-lg';
-    var response_message = response[0]['reply'].split('___n__');
+    var response_message = response.split('___n__');
     var time = 60000;
     if (!delay) time = 0;
     
     for (var i = 0; i < response_message.length-1; i++) {
         var current_message = response_message[i].trim()
-        await timer(current_message.split(' ').length * time/500);
+        if (i != 0) await timer(current_message.split(' ').length * time/500);
         sendMessage(current_message, 'bot', 'none', target);
         scroll(target);
     }
     var last_message = response_message[response_message.length-1].trim();
-    await timer(last_message.split(' ').length * time/750);
+    if (response_message.length != 1) await timer(last_message.split(' ').length * time/750);
 
     var thumbs_container = ''
-    if (!is_selection) {
+    if (feedback) {
         thumbs_container = 
         `
         <div class='thumbs_container'>
@@ -412,6 +432,10 @@ async function sendMultipleMessages(response, target, is_selection, current_mess
     </span>
     `;
     scroll(target);
+
+    if (returned_selections) {
+        return createSelections(target, returned_selections, 'nearest_message');
+    }
 }
 
 function clearAllEvent(old_element) {

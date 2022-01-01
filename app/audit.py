@@ -1,18 +1,51 @@
+def assessment_flow(assessment, results):
+    print(assessment, results)
+
+    score = 0
+
+    if assessment == 'audit-c':
+        n_question = 3
+        for i in range(n_question):
+            if str(i) not in results:
+                return 'audit-c error'
+            score += results[str(i)]
+        
+        if score > 4:
+            return 'audit-c high risk'
+        if score > 2:
+            return 'audit-c medium risk'
+        return 'audit-c low risk'
+    
+    if assessment == 'audit-10':
+        n_question = 10
+        for i in range(n_question):
+            if str(i) not in results:
+                return 'audit-10 error'
+            score += results[str(i)]
+        
+        if score > 14:
+            return 'audit-10 >= 15'
+        return 'audit-10 < 15'
+    
+    return 'audit-c results'
+
+
+
 assessment = {
     'audit-c': {
         'en': [
             {
-                'question': 'Within the past year, how often did you have a drink of alcohol?', 
+                'question': 'Within the past 12 months, how often did you have a drink of alcohol?', 
                 'answer': [
                     ['Never', 0], 
-                    ['Monthly', 1], 
+                    ['Once per month or less', 1], 
                     ['2-4 times a month', 2], 
                     ['2-3 times a week', 3], 
                     ['4 or more times a week', 4]
                 ]
             }, 
             {
-                'question': 'Within the past year, how many standard drinks containing alcohol did you have on a typical day?', 
+                'question': 'Within the past 12 months, how many standard drinks containing alcohol did you have on a typical day?', 
                 'answer': [
                     ['1 or 2', 0], 
                     ['3 or 4', 1], 
@@ -22,7 +55,7 @@ assessment = {
                 ]
             }, 
             {
-                'question': 'Within the past year, how often did you have six or more drinks on one occasion?', 
+                'question': 'Within the past 12 months, how often did you have six or more drinks on one occasion?', 
                 'answer': [
                     ['Never', 0], 
                     ['Less than monthly', 1], 
@@ -30,7 +63,39 @@ assessment = {
                     ['Weekly', 3], 
                     ['Daily or almost daily', 4]
                 ]
+            }
+        ], 
+        'ms': [
+            {
+                'question': ' Dalam tempoh 12 bulan yang lepas berapa kerapkah anda minum minuman keras / arak / beralkohol?', 
+                'answer': [
+                    ['Tak pernah', 0], 
+                    ['Sekali sebulan atau kurang', 1], 
+                    ['2-4 kali sebulan', 2], 
+                    ['2-3 kali seminggu', 3], 
+                    ['4 kali atau lebih seminggu', 4]
+                ]
             }, 
+            {
+                'question': ' Kebiasaannya pada hari yang anda minum, berapa banyakkah anda minum minuman keras / arak / beralkohol?', 
+                'answer': [
+                    ['1 atau 2 minuman alkohol', 0], 
+                    ['3 atau 4 minuman alkohol', 1], 
+                    ['5 atau 6 minuman alkohol', 2], 
+                    ['7, 8, atau 9 minuman alkohol', 3], 
+                    ['10 atau lebih minuman alkohol', 4]
+                ]
+            }, 
+            {
+                'question': 'Berapa kerap anda minum enam minuman alkohol atau lebih minuman beralkohol pada satu masa?', 
+                'answer': [
+                    ['Tak pernah', 0], 
+                    ['Kurang dari sekali sebulan', 1], 
+                    ['Sekali sebulan', 2], 
+                    ['Sekali seminggu', 3], 
+                    ['Setiap hari atau hampir setiap hari', 4]
+                ]
+            }
         ]
     }, 
     'audit-10': {
@@ -66,7 +131,7 @@ assessment = {
                 ]
             }, 
             {
-                'question': 'How often during the last year have you found that you were not able to stop drinking once you had started?', 
+                'question': 'How often during the past 12 months have you found that you were not able to stop drinking once you had started?', 
                 'answer': [
                     ['Never', 0], 
                     ['Less than monthly', 1], 
@@ -76,7 +141,7 @@ assessment = {
                 ]
             }, 
             {
-                'question': 'How often during the last year have you failed to do what was normally expected from you because of drinking?', 
+                'question': 'How often during the past 12 months have you failed to do what was normally expected from you because of drinking?', 
                 'answer': [
                     ['Never', 0], 
                     ['Less than monthly', 1], 
@@ -96,7 +161,7 @@ assessment = {
                 ]
             }, 
             {
-                'question': 'How often during the last year have you had a feeling of guilt or remorse after drinking?', 
+                'question': 'How often during the past 12 months have you had a feeling of guilt or remorse after drinking?', 
                 'answer': [
                     ['Never', 0], 
                     ['Less than monthly', 1], 
@@ -106,7 +171,7 @@ assessment = {
                 ]
             }, 
             {
-                'question': 'How often during the last year have you been unable to remember what happened the night before because you had been drinking?', 
+                'question': 'How often during the past 12 months have you been unable to remember what happened the night before because you had been drinking?', 
                 'answer': [
                     ['Never', 0], 
                     ['Less than monthly', 1], 
@@ -131,37 +196,104 @@ assessment = {
                     ['Yes, during the last year', 4]
                 ]
             }
+        ], 
+        'ms': [
+            {
+                'question': 'Dalam tempoh 12 bulan yang lepas berapa kerapkah anda minum minuman keras / arak / beralkohol?', 
+                'answer': [
+                    ['Tak pernah', 0], 
+                    ['Sekali sebulan atau kurang', 1], 
+                    ['2-4 kali sebulan', 2], 
+                    ['2-3 kali seminggu', 3], 
+                    ['4 kali atau lebih seminggu', 4]
+                ]
+            }, 
+            {
+                'question': 'Kebiasaannya pada hari yang anda minum, berapa banyakkah anda minum minuman keras / arak / beralkohol?', 
+                'answer': [
+                    ['1 atau 2', 0], 
+                    ['3 atau 4', 1], 
+                    ['5 atau 6', 2], 
+                    ['7, 8, atau 9', 3], 
+                    ['10 atau lebih', 4]
+                ]
+            }, 
+            {
+                'question': 'Berapa kerap anda minum enam minuman alkohol atau lebih minuman beralkohol pada satu masa?', 
+                'answer': [
+                    ['Tak pernah', 0], 
+                    ['Kurang dari sekali sebulan', 1], 
+                    ['Sekali sebulan', 2], 
+                    ['Sekali seminggu', 3], 
+                    ['Setiap hari atau hampir setiap hari', 4]
+                ]
+            }, 
+            {
+                'question': 'Dalam tempoh 12 bulan yang lepas, berapa kerapkah anda tidak boleh berhenti minum apabila anda mula minum minuman keras / arak / beralkohol?', 
+                'answer': [
+                    ['Tak pernah', 0], 
+                    ['Kurang dari sekali sebulan', 1], 
+                    ['Sekali sebulan', 2], 
+                    ['Sekali seminggu', 3], 
+                    ['Setiap hari atau hampir setiap hari', 4]
+                ]
+            }, 
+            {
+                'question': 'Dalam tempoh 12 bulan yang lepas, akibat dari minum minuman keras / arak / beralkohol berapa kerapkah anda tidak boleh melakukan apa yang biasanya anda lakukan?', 
+                'answer': [
+                    ['Tak pernah', 0], 
+                    ['Kurang dari sekali sebulan', 1], 
+                    ['Sekali sebulan', 2], 
+                    ['Sekali seminggu', 3], 
+                    ['Setiap hari atau hampir setiap hari', 4]
+                ]
+            }, 
+            {
+                'question': 'Dalam tempoh 12 bulan yang lepas, selepas meminum minuman keras / arak / beralkohol dalam jumlah banyak, berapa kerapkah pada pagi esoknya anda perlu meminum minuman keras / arak / beralkohol sebelum memulakan hari anda?', 
+                'answer': [
+                    ['Tak pernah', 0], 
+                    ['Kurang dari sekali sebulan', 1], 
+                    ['Sekali sebulan', 2], 
+                    ['Sekali seminggu', 3], 
+                    ['Setiap hari atau hampir setiap hari', 4]
+                ]
+            }, 
+            {
+                'question': ' Dalam tempoh 12 bulan yang lepas, berapa kerapkah anda rasa bersalah atau menyesal selepas minum minuman keras / arak / beralkohol?', 
+                'answer': [
+                    ['Tak pernah', 0], 
+                    ['Kurang dari sekali sebulan', 1], 
+                    ['Sekali sebulan', 2], 
+                    ['Sekali seminggu', 3], 
+                    ['Setiap hari atau hampir setiap hari', 4]
+                ]
+            }, 
+            {
+                'question': 'Dalam tempoh 12 bulan yang lepas, berapa kerapkah anda tidak dapat mengingati apakah yang telah berlaku malam sebelumnya disebabkan anda telah mengambil minuman keras / arak / beralkohol?', 
+                'answer': [
+                    ['Tak pernah', 0], 
+                    ['Kurang dari sekali sebulan', 1], 
+                    ['Sekali sebulan', 2], 
+                    ['Sekali seminggu', 3], 
+                    ['Setiap hari atau hampir setiap hari', 4]
+                ]
+            }, 
+            {
+                'question': 'Pernahkah anda atau orang lain tercedera disebabkan anda meminum minuman keras / arak / beralkohol?', 
+                'answer': [
+                    ['Tidak', 0], 
+                    ['Ya, tetapi bukan dalam tempoh setahun yang lepas', 2], 
+                    ['Ya, dalam tempoh setahun yang lalu', 4]
+                ]
+            }, 
+            {
+                'question': 'Pernahkah saudara anda atau kawan atau doktor atau anggota kesihatan mengambil berat atau mencadangkan supaya anda mengurangkan pengambilan minuman keras / arak/ beralkohol?', 
+                'answer': [
+                    ['Tidak', 0], 
+                    ['Ya, tetapi bukan dalam tempoh setahun yang lepas', 2], 
+                    ['Ya, dalam tempoh setahun yang lalu', 4]
+                ]
+            }
         ]
     }
 }
-
-def assessment_flow(assessment, results):
-    print(assessment, results)
-
-    score = 0
-
-    if assessment == 'audit-c':
-        n_question = 3
-        for i in range(n_question):
-            if str(i) not in results:
-                return 'audit-c error'
-            score += results[str(i)]
-        
-        if score > 4:
-            return 'audit-c high risk'
-        if score > 2:
-            return 'audit-c medium risk'
-        return 'audit-c low risk'
-    
-    if assessment == 'audit-10':
-        n_question = 10
-        for i in range(n_question):
-            if str(i) not in results:
-                return 'audit-10 error'
-            score += results[str(i)]
-        
-        if score > 14:
-            return 'audit-10 >= 15'
-        return 'audit-10 < 15'
-    
-    return 'audit-c results'

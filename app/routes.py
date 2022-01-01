@@ -141,10 +141,14 @@ def case_single_prediction(prediction, lang):
     children_ids = json.loads(predicted_intent.children)
 
     if predicted_intent.intent_name == 'audit-c assessment':
-        return_assessment['assessment'] = assessment['audit-c']['en']
+        if lang not in assessment['audit-c']:
+            lang = get_primary_lang()
+        return_assessment['assessment'] = assessment['audit-c'][lang]
         return_assessment['assessment_name'] = 'audit-c'
     elif predicted_intent.intent_name == 'audit-10 assessment':
-        return_assessment['assessment'] = assessment['audit-10']['en']
+        if lang not in assessment['audit-10']:
+            lang = get_primary_lang()
+        return_assessment['assessment'] = assessment['audit-10'][lang]
         return_assessment['assessment_name'] = 'audit-10'
     elif len(children_ids) > 0:
         children = Response.query.filter(Response.intent_id.in_(children_ids), Response.lang==lang)

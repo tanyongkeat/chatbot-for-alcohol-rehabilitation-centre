@@ -22,7 +22,7 @@ if model_on:
     model = SentenceTransformer('paraphrase-xlm-r-multilingual-v1')
     # dataset = read_data()
 
-from app.util import translate, detect_lang, get_primary_lang, get_langs
+from app.util import translate, detect_lang, get_primary_lang, get_langs, get_selected_lang, OUTDATED_FLAG
 
 ###########################################################################################################
 # from malaya import deep_model
@@ -44,7 +44,7 @@ def read_data(target_language, is_selection):
     primary_lang = get_primary_lang()
     filter_con = Response.lang.in_([primary_lang, target_language])
     if is_selection:
-        filter_con = Response.lang.in_(get_langs())
+        filter_con = Response.lang.in_(get_selected_lang())
     dataset2 = pd.read_sql_query(
         sql = Response.query.with_entities(
             Response.selection.label('user_message'), 
@@ -75,6 +75,7 @@ def read_data(target_language, is_selection):
     dataset = reply.merge(dataset, how='inner', left_on='id', right_on='intent_id')
     # dataset = dataset[dataset.deployed]
     
+    print(dataset.encoding)
     loaded_encoding = dataset.encoding.apply(lambda x: json.loads(x)).tolist()
     dataset = pd.concat([dataset, pd.DataFrame(loaded_encoding)], axis=1)
     return dataset

@@ -54,7 +54,11 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
     {% if intent.system or intent.small_talk %}
         {% set style_injection = 'style=display:none;' %}
     {% endif %}
-    {% for elem in [['reply-message', 'text', 'Chatbot response'], ['selection-text', 'selection', 'Selection text']] %}
+    {% for elem in [
+        ['reply-message', 'text', 'Chatbot response', 'style=height:120px;max-height:120px;'], 
+        ['selection-text', 'selection', 'Selection text', 'style="height:60px"']
+       ] 
+    %}
         {% set category = elem[0] %}
         {% set category_field = elem[1] %}
         {% set section_title = elem[2] %}
@@ -80,7 +84,7 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
                             <form action="" method='POST'>
                                 <input type="hidden" name="lang" value="{{ response.lang }}">
                                 <input type="hidden" name="job" value="update_{{ category }}">
-                                <textarea style='height:60px;' class='editable-content' name='modified_content' id='{{ category }}-e_{{ response.lang }}' 
+                                <textarea {{ elem[3] }} class='editable-content' name='modified_content' id='{{ category }}-e_{{ response.lang }}' 
                                     maxlength="{{ MAX_REPLY_LEN }}" ori_value="{{ response[category_field] }}" required>{{ response[category_field] }}</textarea>
                                 <!-- <input id='save-button_{{ response.lang }}' class='save-button' type='submit' value='save'>
                                 <input id='cancel-button_{{ response.lang }}' class='cancel-button' type='submit' form='' value='cancel' 

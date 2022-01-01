@@ -27,6 +27,18 @@
     box-sizing: border-box;
 }
 
+#reply-messages {
+    height: 150px;
+}
+
+.reply-message-language-section {
+    height: 130px;
+}
+
+.reply-message-language-section .editable-content {
+    max-height: 120px;
+}
+
 .editable {
     width: 100%;
 }
