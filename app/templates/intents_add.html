@@ -78,6 +78,9 @@
             // var error_messages = get_flashed();
             flashFlashed();
 
+            const save_button = document.getElementsByClassName('save-button')[0];
+            save_button.addEventListener('click', e => document.getElementById('loading-screen').style.setProperty('display', 'flex'));
+
             var training_datas = get_training_datas();
             console.log(training_datas)
             for (i = 0; i < training_datas.length; i++) add_training_samples(training_datas[i]);

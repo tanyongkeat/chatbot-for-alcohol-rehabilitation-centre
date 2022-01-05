@@ -23,7 +23,9 @@ body {
     /* background-color: white; */
     box-sizing: border-box;
     /* border-right: 1px solid black; */
-    box-shadow: 2px 0 5px #888888;
+    /* box-shadow: 2px 0 5px #888888; */
+    box-shadow: 2px 0 5px #aaaaaa;
+    /* border-right: 1px solid #aaaaaa; */
     display: flex;
     flex-direction: column;
     /* position: absolute;
@@ -144,6 +146,10 @@ body {
     text-decoration: none;
     color: black;
     font-size: 0.9375rem;
+}
+
+.intent-item .not-deployed {
+    background-color: rgb(233, 233, 233);
 }
 
 .intent-item a b {

@@ -90,8 +90,17 @@ def reply():
         prediction, obj_id = preset_prediction('opening text', lang=lang)
     elif 'assessment' in request.form:
         print('doing assessment')
-        assessment_result = assessment_flow(request.form['assessment'], json.loads(request.form['assessment_results']))
-        print(assessment_result)
+        assessment_type = request.form['assessment']
+        assessment_form = request.form['assessment_results']
+        assessment_result, assessment_score = assessment_flow(assessment_type, json.loads(assessment_form))
+        print(assessment_result, assessment_score)
+
+        assessment_type_db = assessment_type.replace('-', '')
+        ch_obj = ChatHistory.query.get(session['chat_id'])
+        setattr(ch_obj, assessment_type_db+'_score', assessment_score)
+        setattr(ch_obj, assessment_type_db+'_form', assessment_form)
+        setattr(ch_obj, assessment_type_db+'_result', assessment_result)
+        db.session.commit()
         prediction, obj_id = preset_prediction(assessment_result, lang=lang)
     else:
         ut = sanitize(request.form['utterance'])[:MAX_USER_INPUT_LEN]
@@ -118,6 +127,7 @@ def reply():
         selections, prediction = prediction, selections
     elif len(prediction) == 1:
         selections, return_assessment, unique_selection = case_single_prediction(prediction, lang)
+        selections = sorted(selections, key=lambda x: (x['continue'], x['intent_id']))
 
     session['last_selections'] = [selection['intent_id'] for selection in selections]
     session['last_lang'] = lang
@@ -152,7 +162,15 @@ def case_single_prediction(prediction, lang):
         return_assessment['assessment_name'] = 'audit-10'
     elif len(children_ids) > 0:
         children = Response.query.filter(Response.intent_id.in_(children_ids), Response.lang==lang)
-        selections = [{'reply': c.text, 'cosine_similarity': float(0), 'nearest_message': c.selection, 'intent_id': int(c.intent_id)} for c in children]
+        selections = [
+            {
+                'reply': c.text, 
+                'cosine_similarity': float(0), 
+                'nearest_message': c.selection, 
+                'intent_id': int(c.intent_id), 
+                'continue': 'continue' in c.selection.lower()
+            } for c in children
+        ]
 
     return selections, return_assessment, unique_selection
 

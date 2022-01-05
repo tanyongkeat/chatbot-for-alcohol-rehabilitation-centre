@@ -1,5 +1,7 @@
 html {
     --grey-option: #dad8d8;
+    --continue-color: rgb(255, 136, 0);
+    --continue-hover-color: rgba(255, 199, 86, 1);
 }
 
 .hidden {
@@ -264,11 +266,13 @@ all and (max-height: 480px) {
 }
 
 .selection span {
-    color: green;
+    --normal-color: green;
+    --hover-color: lightgreen;
+    color: var(--normal-color);
     background-color: white;
     padding: 7px;
     border-radius: 5px;
-    border-color: green;
+    border-color: var(--normal-color);
     border-style: solid;
     margin: 3px 10px;
     border-width: 1px;
@@ -276,8 +280,8 @@ all and (max-height: 480px) {
 }
 
 .selection span:hover {
-    color: lightgreen;
-    border-color: lightgreen;
+    color: var(--hover-color);
+    border-color: var(--hover-color);
     cursor: pointer;
 }
 
@@ -311,6 +315,15 @@ all and (max-height: 480px) {
 .selection.no-event-selected span:hover {
     border-color: black;
     color: black;
+}
+
+.selection.continue-selection span {
+    --normal-color: var(--continue-color);
+    --hover-color: var(--continue-hover-color);
+}
+
+.selection.assessment-selection {
+    display: block;
 }
 
 .botText button[class^='thumbs'] {
@@ -410,10 +423,59 @@ all and (max-height: 480px) {
     height: 100%;
     line-height: 100%;
     vertical-align: middle;
-    color: rgb(255, 136, 0);
+    color: var(--continue-color);
     font-size: 0.7rem;
 }
 
 #continue-assessment-button:hover {
     cursor: pointer;
+    color: --continue-hover-color;
 }
+
+.bounce {
+    display: inline-block;
+    position: relative;
+    font-size: 0.8rem;
+    margin-right: 0.1rem;
+    --animation-input: bounce 1.7s infinite linear;;
+    -moz-animation: var(--animation-input);
+    -o-animation: var(--animation-input);
+    -webkit-animation: var(--animation-input);
+    animation: var(--animation-input);
+  }
+
+  @-webkit-keyframes bounce {
+    0% { top: 0; }
+    30% {top: 0; }
+    50% { top: -0.3em; }
+    70% { top: 0em; }
+    100% { top: 0; }
+  }
+  @-moz-keyframes bounce {
+    0% { top: 0; }
+    30% {top: 0; }
+    50% { top: -0.3em; }
+    70% { top: 0em; }
+    100% { top: 0; }
+  }
+  @-o-keyframes bounce {
+    0% { top: 0; }
+    30% {top: 0; }
+    50% { top: -0.3em; }
+    70% { top: 0em; }
+    100% { top: 0; }
+  }
+  @-ms-keyframes bounce {
+    0% { top: 0; }
+    30% {top: 0; }
+    50% { top: -0.3em; }
+    70% { top: 0em; }
+    100% { top: 0; }
+  }
+  @keyframes bounce {
+    0% { top: 0; }
+    30% {top: 0; }
+    50% { top: -0.3em; }
+    70% { top: 0em; }
+    100% { top: 0; }
+  }

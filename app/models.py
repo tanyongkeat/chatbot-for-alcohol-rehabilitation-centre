@@ -59,6 +59,13 @@ class ChatHistory(db.Model):
     user_email:str = db.Column(db.String(MAX_EMAIL_LEN)) # max email address character number is 320, setting nullable first to prevent stakeholder from changing their mind to suddenly respect the 'privacy' of the users
     user_name:str = db.Column(db.String(MAX_USER_INPUT_LEN))
     history_full:HistoryFull = db.relationship('HistoryFull', backref='chat_history', cascade='all,delete')
+    timestamp:datetime = db.Column(db.DateTime, default=datetime.utcnow)
+    auditc_score:int = db.Column(db.Integer)
+    auditc_form:str = db.Column(db.JSON)
+    auditc_result:str = db.Column(db.String(MAX_INTENT_NAME_LEN))
+    audit10_score:int = db.Column(db.Integer)
+    audit10_form:str = db.Column(db.JSON)
+    audit10_result:str = db.Column(db.String(MAX_INTENT_NAME_LEN))
 
 @dataclass
 class TrainingData(db.Model):

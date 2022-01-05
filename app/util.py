@@ -169,7 +169,7 @@ def create_intent(intent_name, reply_message_en, reply_message_my):
     return intent
 
 def get_ordered_intent():
-    intents = Intent.query.with_entities(Intent.id, Intent.intent_name, Intent.system).distinct().all()
+    intents = Intent.query.with_entities(Intent.id, Intent.intent_name, Intent.system, Intent.deployed, Intent.small_talk).distinct().all()
     return sorted(intents, key=lambda x: (-int(x[2]), x[1]))
 
 def create_training_data(user_message, intent_id):

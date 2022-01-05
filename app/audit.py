@@ -7,27 +7,27 @@ def assessment_flow(assessment, results):
         n_question = 3
         for i in range(n_question):
             if str(i) not in results:
-                return 'audit-c error'
+                return 'audit-c error', -1
             score += results[str(i)]
         
         if score > 4:
-            return 'audit-c high risk'
+            return 'audit-c high risk', score
         if score > 2:
-            return 'audit-c medium risk'
-        return 'audit-c low risk'
+            return 'audit-c medium risk', score
+        return 'audit-c low risk', score
     
     if assessment == 'audit-10':
         n_question = 10
         for i in range(n_question):
             if str(i) not in results:
-                return 'audit-10 error'
+                return 'audit-10 error', score
             score += results[str(i)]
         
         if score > 14:
             return 'audit-10 >= 15'
-        return 'audit-10 < 15'
+        return 'audit-10 < 15', score
     
-    return 'audit-c results'
+    return 'audit-c results', score
 
 
 

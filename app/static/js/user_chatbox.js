@@ -170,7 +170,7 @@ async function reply(parameters, target, current_message_counter, is_selection, 
     await $.post('/reply', parameters)
     .done(function(response_all) {
         console.log(response_all);
-        if (current_question) document.getElementById('continue-assessment-button').style.setProperty('display', 'inline-block');
+        
         thumbsdownId = "thumbsdown_" + current_message_counter;
         thumbsupId = "thumbsdown_" + current_message_counter;
         userMessageId = "userText_" + current_message_counter;
@@ -183,6 +183,12 @@ async function reply(parameters, target, current_message_counter, is_selection, 
         return_assessment = response_all['return_assessment'];
         var isAssessment = Object.keys(return_assessment).length != 0;
         if (isAssessment) assessments[return_assessment['assessment_name']] = return_assessment['assessment'];
+
+        var hasContinue = false;
+        for (i = 0; i < returned_selections.length; i++) {
+            if (returned_selections[i]['continue']) hasContinue = true;
+        }
+        console.log(current_question, isAssessment, hasContinue);
 
         if (returned_selections.length == 0) {
             // var thumbsdown_icon = 'thumbsdown fa fa-thumbs-down fa-lg';
@@ -213,6 +219,7 @@ async function reply(parameters, target, current_message_counter, is_selection, 
             // </span>
             // `;
             // scroll(target);
+
             var isAssessment = Object.keys(return_assessment).length != 0;
             sendMultipleMessages(response[0]['reply'], target, feedback=!is_selection, current_message_counter, delay=!isAssessment);
             if (isAssessment) doAssessment(return_assessment['assessment_name']);
@@ -282,6 +289,12 @@ async function reply(parameters, target, current_message_counter, is_selection, 
 
         }
 
+        if (current_question!==null & !isAssessment & !hasContinue) {
+            document.getElementById('continue-assessment-button').style.setProperty('display', 'inline-block');
+        } else {
+            document.getElementById('continue-assessment-button').style.setProperty('display', 'none');
+        }
+
     }).fail(function(response) {
         console.log(response);
         target.querySelector('span span').innerHTML = error_message[used_lang];
@@ -301,6 +314,11 @@ function createSelections(target, response, index_name) {
         var selection = document.createElement('div');
         // selection_responses[response[i]['nearest_message']] = response[i]['reply'];
         selection.className = 'selection';
+        if (response[i]['continue']) {
+            selection.classList.add('continue-selection');
+            selection.addEventListener('click', r => { current_question = null; })
+            current_question = selection;
+        }
         selection.innerHTML = `<span>${response[i][index_name]}</span>`;
         selectionBox.appendChild(selection);
         selections.push(selection);
@@ -326,6 +344,8 @@ function doAssessment(assessment, index=0) {
 
     for (i = 0; i < selections.length; i++) {
         var item = selections[i];
+        item.classList.add('continue-selection');
+        item.classList.add('assessment-selection');
         item.firstChild.setAttribute('index', index);
         item.firstChild.setAttribute('value', targetAssessment['answer'][i][1]);
         item.firstChild.setAttribute('assessment', assessment)

@@ -10,6 +10,38 @@
 {% endblock %}
 
 {% block body %}
+    <div id='loading-screen'>
+        <div class="words word-1">
+            <span>T</span>
+            <span>R</span>
+            <span>A</span>
+            <span>N</span>
+            <span>S</span>
+            <span>L</span>
+            <span>A</span>
+            <span>T</span>
+            <span>I</span>
+            <span>O</span>
+            <span>N</span>
+        </div>
+        
+        <div class="words word-2">
+            <span>I</span>
+            <span>N</span>
+        </div>
+        
+        <div class="words word-3">
+            <span>P</span>
+            <span>R</span>
+            <span>O</span>
+            <span>G</span>
+            <span>R</span>
+            <span>E</span>
+            <span>S</span>
+            <span>S</span>
+        </div>
+    </div>
+
     <div class='flex-container'>
         <div class='flex-item-left {% if intent %}flex-item-left-hidden{% endif %}'> <!--  flex-item-left-hidden -->
             <input id='intent-search-bar' type='text' placeholder=''>
@@ -26,10 +58,14 @@
                                 {% if intent.id == current_intent.id %}
                                     <span><i class="fas fa-caret-right"></i></span><a><b>{{ intent.intent_name }}</b></a>
                                 {% else %}
-                                    <span></span><a href='/intents_edit/{{ intent.intent_name }}'>{{ intent.intent_name }}</a>
+                                    <span></span>
+                                    <a class="{% if not intent.deployed %}not-deployed{% endif %}" 
+                                        href='/intents_edit/{{ intent.intent_name }}'>{{ intent.intent_name }}</a>
                                 {% endif %}
                             {% else %}
-                                <span></span><a href='/intents_edit/{{ intent.intent_name }}'>{{ intent.intent_name }}</a>
+                                <span></span>
+                                <a class="{% if not intent.deployed %}not-deployed{% endif %}" 
+                                    href='/intents_edit/{{ intent.intent_name }}'>{{ intent.intent_name }}</a>
                             {% endif %}
                             <form action='/delete_intent' method='POST'>
                                 {% if intent.system %}

@@ -52,6 +52,9 @@
             flashFlashed();
         });
 
+        const save_button = document.getElementsByClassName('save-button')[0];
+        save_button.addEventListener('click', e => document.getElementById('loading-screen').style.setProperty('display', 'flex'));
+
         $(".select2-select").ready(function() {
 
             document.getElementById('select_1').addEventListener('input', function(event) {
