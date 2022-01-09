@@ -24,7 +24,7 @@ def assessment_flow(assessment, results):
             score += results[str(i)]
         
         if score > 14:
-            return 'audit-10 >= 15'
+            return 'audit-10 >= 15', score
         return 'audit-10 < 15', score
     
     return 'audit-c results', score

@@ -100,6 +100,12 @@
 
     .response-language-section .edit-button {
         position: absolute;
+        top: 132px;
+        right: 10px;
+    }
+
+    #selection-texts .edit-button {
+        position: absolute;
         top: 72px;
         right: 10px;
     }
@@ -114,7 +120,7 @@
 #children-form {
     display: block;
     width: 95%;
-    margin: 0 auto 50px;
+    margin: 10px auto 50px;
 }
 
 #children-form label {
@@ -221,4 +227,22 @@ md-switch {
     float: none;
     top: 50%;
     transform: translateY(-50%);
+}
+
+.translate-checkbox {
+    position: absolute;
+    bottom: -16px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.translate-checkbox input[type='checkbox'] {
+    -webkit-appearance: checkbox;
+    width: 0.75rem;
+    margin: 0;
+}
+
+.translate-checkbox * {
+    line-height: 100%;
+    vertical-align: middle;
 }

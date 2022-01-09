@@ -42,6 +42,12 @@ var used_lang = primary_lang;
 //     'zh-cn': 'contact admin zh-cn', 
 //     'ta': 'contact admin ta'
 // }
+continue_text = {
+    'en': 'continue', 
+    'ms': 'sambung semula', 
+    'zh-cn': '继续', 
+    'ta': 'continue'
+}
 
 apology_text = get_apology_text();
 appreciation_text = get_appreciation_text();
@@ -85,7 +91,7 @@ function chatboxInit() {
     document.getElementById('continue-assessment-button').addEventListener('click', event => {
         scroll(current_question, 'end');
         console.log(current_question);
-        event.target.style.setProperty('display', 'none');
+        document.getElementById('continue-assessment-button').style.setProperty('display', 'none');
     })
 
     getBotResponse(raw_text='opening dummy', opening=true);
@@ -159,6 +165,7 @@ const timer = ms => new Promise(res => setTimeout(res, ms))
 
 
 var debug;
+var temptemp = 0;
 async function reply(parameters, target, current_message_counter, is_selection, opening=false) {
     const ti = document.getElementById("textInput")
     ti.disabled = true;
@@ -277,7 +284,10 @@ async function reply(parameters, target, current_message_counter, is_selection, 
                 if (!is_selection) loop_i = selections.length-1;
                 for (i = 0; i < loop_i; i++) {
                     var item = selections[i];
-                    item.firstChild.addEventListener('click', event => selection_clicked(event.target, unique_selection)); // is_selection||!confusion
+                    item.firstChild.addEventListener(
+                        'click', 
+                        event => selection_clicked(event.target, false)
+                    ); // is_selection||!confusion // used "unique_selection" in place of false before unique_selection toggle was changed
                 }
 
                 scroll(selection);
@@ -290,7 +300,9 @@ async function reply(parameters, target, current_message_counter, is_selection, 
         }
 
         if (current_question!==null & !isAssessment & !hasContinue) {
-            document.getElementById('continue-assessment-button').style.setProperty('display', 'inline-block');
+            const continue_button = document.getElementById('continue-assessment-button');
+            continue_button.querySelector('span').innerText = continue_text[used_lang];
+            continue_button.style.setProperty('display', 'inline-block');
         } else {
             document.getElementById('continue-assessment-button').style.setProperty('display', 'none');
         }

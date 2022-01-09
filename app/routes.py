@@ -168,7 +168,7 @@ def case_single_prediction(prediction, lang):
                 'cosine_similarity': float(0), 
                 'nearest_message': c.selection, 
                 'intent_id': int(c.intent_id), 
-                'continue': 'continue' in c.selection.lower()
+                'continue': Intent.query.get(c.intent_id).unique_selection #'continue' in c.selection.lower()
             } for c in children
         ]
 
@@ -362,6 +362,7 @@ def intents(intent_name):
     TODO
     404 error for non-existance intents
     '''
+    print(intent_name)
     intent = Intent.query.filter_by(intent_name=intent_name).first_or_404()
     responses = Response.query.filter(Response.intent_id==intent.id, Response.lang.in_(get_selected_lang())).all()
     responses.sort(key=cmp_to_key(compare_response))
@@ -377,15 +378,18 @@ def intents(intent_name):
         if job == 'update_reply-message':
             lang = request.form['lang']
             text = request.form['modified_content']
+            affect_others = 'affect_others' in request.form
+            print('affect_others', affect_others)
             try:
-                update_response(intent.id, 'text', lang, text)
+                update_response(intent.id, 'text', lang, text, affect_others)
             except CustomError as ce:
                 flash(ce.description)
         if job == 'update_selection-text':
             lang = request.form['lang']
             text = request.form['modified_content']
+            affect_others = 'affect_others' in request.form
             try:
-                update_response(intent.id, 'selection', lang, text)
+                update_response(intent.id, 'selection', lang, text, affect_others)
             except CustomError as ce:
                 flash(ce.description)
         elif job == 'update_children':

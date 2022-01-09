@@ -92,6 +92,12 @@ ng-app='appIntentsEdit' ng-controller='ctrlIntentsEdit' ng-init='getIntentsEditD
                                 <button id='save-button_{{ response.lang }}' class='save-button' type='submit'>save</button>
                                 <button id='cancel-button_{{ response.lang }}' class='cancel-button' type='submit' form='' 
                                     onclick="cancel_edit_space_reply(this.id, '{{ category }}')">cancel</button>
+                                {% if response.lang == primary_lang %}
+                                    <div class='translate-checkbox'>
+                                        <input type="checkbox" name="affect_others" id="{{ category }}_affect_others" checked>
+                                        <span>translate</span>
+                                    </div>
+                                {% endif %}
                             </form>
                         </div>
                     </div>

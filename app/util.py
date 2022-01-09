@@ -159,6 +159,9 @@ def create_intent(intent_name, reply_message_en, reply_message_my):
     # reply_message_en = reply_message_en[:MAX_REPLY_LEN]
     # reply_message_my = reply_message_my[:MAX_REPLY_LEN]
 
+    if '/' in intent_name:
+        raise CustomError('Invalid character "/" in the intent name')
+
     same_sample = Intent.query.filter(func.lower(Intent.intent_name) == func.lower(intent_name)).first()
     if same_sample:
         raise CustomError('The intent name already exists')
@@ -258,7 +261,7 @@ def create_response(intent_id, text, selection):
         
     db.session.commit()
 
-def update_response(intent_id, field, lang, value):
+def update_response(intent_id, field, lang, value, affect_others):
     if not value:
         raise EmptyRequiredField('The reply messages')
 
@@ -276,7 +279,7 @@ def update_response(intent_id, field, lang, value):
     if field == 'selection':
         encode_response_selection(response)
     
-    if lang == primary_lang:
+    if lang == primary_lang and affect_others:
         other_lang_responses = Response.query.filter(Response.intent_id==intent_id, Response.lang!=lang).all()
         for other_lang_response in other_lang_responses:
             if not other_lang_response.lang in selected_lang:

@@ -60,12 +60,12 @@
                                 {% else %}
                                     <span></span>
                                     <a class="{% if not intent.deployed %}not-deployed{% endif %}" 
-                                        href='/intents_edit/{{ intent.intent_name }}'>{{ intent.intent_name }}</a>
+                                        href='/intents_edit/{{ intent.intent_name | urlencode }}'>{{ intent.intent_name }}</a>
                                 {% endif %}
                             {% else %}
                                 <span></span>
                                 <a class="{% if not intent.deployed %}not-deployed{% endif %}" 
-                                    href='/intents_edit/{{ intent.intent_name }}'>{{ intent.intent_name }}</a>
+                                    href='/intents_edit/{{ intent.intent_name | urlencode }}'>{{ intent.intent_name }}</a>
                             {% endif %}
                             <form action='/delete_intent' method='POST'>
                                 {% if intent.system %}
