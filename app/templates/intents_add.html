@@ -42,7 +42,7 @@
     </div> -->
     <div id='{{ elem[1] }}' class='response-adding'>
         <label for='{{ elem[2] }}'>{{ elem[3] }} <strong>{{ primary_lang }}</strong></label>
-        <textarea name="{{ elem[2] }}" form='add_form' maxlength="{{ elem[4] }}" required>{% if form_data %}{{ form_data[elem[2]] }}{% endif %}</textarea>
+        <textarea name="{{ elem[2] }}" id="{{ elem[1] }}-input" form='add_form' maxlength="{{ elem[4] }}" required>{% if form_data %}{{ form_data[elem[2]] }}{% endif %}</textarea>
         <!-- <label for='reply_message_en'>English</label>
         <textarea name="reply_message_en" form='add_form' required>{% if form_data %}{{ form_data.reply_message_en }}{% endif %}</textarea>
         <label for='reply_message_my'>Malay</label>
@@ -79,7 +79,14 @@
             flashFlashed();
 
             const save_button = document.getElementsByClassName('save-button')[0];
-            save_button.addEventListener('click', e => document.getElementById('loading-screen').style.setProperty('display', 'flex'));
+            save_button.addEventListener('click', e => {
+                console.log(document.getElementById('intent-name-input').value.length);
+                if ((document.getElementById('intent-name-input').value.length != 0) & 
+                    (document.getElementById('reply-messages-adding-input').value.length != 0) & 
+                    (document.getElementById('selections-adding-input').value.length != 0)) {
+                        document.getElementById('loading-screen').style.setProperty('display', 'flex');
+                    }
+            });
 
             var training_datas = get_training_datas();
             console.log(training_datas)

@@ -49,6 +49,30 @@ continue_text = {
     'ta': 'continue'
 }
 
+// let intersect_options = {
+//     root: document.querySelector('#chatbox'),
+//     rootMargin: '0px',
+//     threshold: 0.5
+// }
+
+// let callback = (entries, observer) => {
+//     const last_entry = entries[entries.length-1];
+//     console.log(last_entry);
+//     // entries.forEach(entry => {
+//       // Each entry describes an intersection change for one observed
+//       // target element:
+//       //   entry.boundingClientRect
+//       //   entry.intersectionRatio
+//       //   entry.intersectionRect
+//       //   entry.isIntersecting
+//       //   entry.rootBounds
+//       //   entry.target
+//       //   entry.time
+//     // });
+// };
+  
+// let observer = new IntersectionObserver(callback, intersect_options);
+
 apology_text = get_apology_text();
 appreciation_text = get_appreciation_text();
 confirmation_text = get_confirmation_text();
