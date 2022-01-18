@@ -124,7 +124,8 @@ def detect_intention2(user_input, target_language, is_selection):
     highest_confidence = scipy.special.softmax(df_temp.cos_sim*10).max()
     highest_cos_sim = df_temp.cos_sim.max()
     print(user_input, highest_confidence, highest_cos_sim)
-    if highest_confidence < 0.6 and highest_cos_sim < 0.98:
+    if highest_confidence < 0.6 and highest_cos_sim < 0.8: # highest_cos_sim < 0.98 - originally for selection
+        print(df_temp.iloc[:3][['user_message', 'cos_sim']])
         return df_temp.iloc[:3][return_col].values.tolist()
     else:
         return [df_temp.iloc[0][return_col].tolist()]
