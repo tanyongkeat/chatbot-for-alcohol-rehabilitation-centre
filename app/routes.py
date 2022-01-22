@@ -616,6 +616,10 @@ def setting():
 def handle_customError(e):
     return jsonify({'error_description': [e.description]}), e.code
 
+@app.errorhandler(404)
+def error404(e):
+    return render_template('error404.html'), 404
+
 @app.errorhandler(werkzeug.exceptions.BadRequestKeyError)
 def handle_badRequestKeyError(e):
     return "Uh uh, don't try anything nasty"

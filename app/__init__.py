@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 # from flask_migrate import Migrate
 from config import Config
+# from sassutils.wsgi import SassMiddleware
 
 
 app = Flask(__name__, template_folder='templates')
@@ -27,5 +28,9 @@ db = SQLAlchemy(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+
+# app.wsgi_app = SassMiddleware(app.wsgi_app, {
+#     'app': ('static/sass', 'static/styles', '/static/styles')
+# })
 
 from app import routes

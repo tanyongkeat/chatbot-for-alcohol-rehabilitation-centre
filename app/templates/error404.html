@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		
+		<script src="https://use.fontawesome.com/312841a3fe.js"></script>
+		<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/base.css') }}">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/user_style.css') }}">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/user_chatbox_style.css') }}">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/user_information_form_style.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/error404.css') }}">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+		<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway" />
+
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet">
+
+		<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+		<!-- <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}"> -->
+		<link rel="icon" href="{{ url_for('static', filename='img/rehabot_logo_transparent.png') }}">
+		<title>Rehabot</title>
+	</head>
+	<body>
+        <div class="wrap">
+            <div class="line">
+              <div class="left">
+                <div class="content">
+                  <span class="spanSlow">404</span>
+                </div>
+              </div><!--
+              --><div class="right">
+                <div class="content">
+                  <span class="spanSlow">404</span>
+                </div>
+              </div>
+            </div>
+            <div class="line">
+              <div class="left">
+                <div class="content">
+                  <span class="spanSlow">Page not found error</span>
+                </div>
+              </div><!--
+              --><div class="right">
+                <div class="content">
+                  <span class="spanSlow">Page not found error</span>
+                </div>
+              </div>
+              </div>
+              <div class="line">
+                  <div class="left">
+                    <div class="content">
+                      <span class="spanFast">Trust me, I am as curious as you as well</span>
+                    </div>
+                  </div><!--
+                  --><div class="right">
+                    <div class="content">
+                      <span class="spanFast">Trust me, I am as curious as you as well</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="line">
+                    <div class="left">
+                      <div class="content">
+                        <span class="spanSlow"><a href="https://rehabot.my">Go back to home page</a></span>
+                      </div>
+                    </div><!--
+                    --><div class="right">
+                      <div class="content">
+                        <span class="spanSlow"><a href="https://rehabot.my">Go back to home page</a></span>
+                      </div>
+                    </div>
+                  </div>
+        </div>
+
+        <script>
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('resize', handleWindowResize);
+
+            const spansSlow = document.querySelectorAll('.spanSlow');
+            const spansFast = document.querySelectorAll('.spanFast');
+
+            let width = window.innerWidth;
+
+            function handleMouseMove(e) {
+                let normalizedPosition = e.pageX / (width/2) - 1;
+                let speedSlow = 100 * normalizedPosition;
+                let speedFast = 200 * normalizedPosition;
+                spansSlow.forEach((span) => {
+                    span.style.transform = `translate(${speedSlow}px)`;
+                });
+                spansFast.forEach((span) => {
+                    span.style.transform = `translate(${speedFast}px)`
+                })
+            }
+            //we need to recalculate width when the window is resized
+            function handleWindowResize() {
+                width = window.innerWidth;
+            }
+        </script>
+	</body>
+</html>

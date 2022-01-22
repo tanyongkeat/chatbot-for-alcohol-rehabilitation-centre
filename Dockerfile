@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y libpq-dev gcc && pip3 install -r requir
 RUN python3 -c "from sentence_transformers import SentenceTransformer; import gc; model = SentenceTransformer('paraphrase-xlm-r-multilingual-v1'); del model; gc.collect()"
 
 # RUN apt-get install -y g++ && pip3 install plotly youtokentome malaya
-RUN apt-get install -y g++ && pip3 install plotly googletrans==4.0.0-rc1
+RUN apt-get install -y g++ && pip3 install plotly==5.5.0 googletrans==4.0.0-rc1 libsass==0.21.0
 # RUN pip3 install notebook
 
 COPY . /app
