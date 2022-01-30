@@ -19,7 +19,10 @@ services:
   app:
     image: fyp_app_ubuntu
     # build: .
-    command: gunicorn -b :5000 --access-logfile - --error-logfile - chatbot:app
+    # command: gunicorn -b :5000 --access-logfile - --error-logfile - chatbot:app
+    volumes:
+      - /var/log/gunicorn:/var/log/gunicorn
+    command: gunicorn -b :5000 --log-config log.conf chatbot:app
     ports:
       - "5001:5000"
     depends_on:
