@@ -1,10 +1,10 @@
 import os
 
 
-user = 'postgres'
+user = 'user'
 pw = 'pw'
 host = 'psqldb'
-port = '5432'
+port = '1234'
 url = f'{host}:{port}'
 database = 'database'
 
