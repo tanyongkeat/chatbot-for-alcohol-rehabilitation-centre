@@ -1,12 +1,12 @@
 import os
 
 
-user = 'postgres'
-pw = 'Byte$Postgres9479'
+user = 'user'
+pw = 'pw'
 host = 'psqldb'
-port = '5432'
+port = '1234'
 url = f'{host}:{port}'
-database = 'fyp_viva'
+database = 'database'
 
 DB_URL = f'postgresql+psycopg2://{user}:{pw}@{url}/{database}'
 
