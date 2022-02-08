@@ -56,9 +56,15 @@
                         <div class='intent-item'>
                             {% if current_intent %}
                                 {% if intent.id == current_intent.id %}
-                                    <span><i class="fas fa-caret-right"></i></span><a><b>{{ intent.intent_name }}</b></a>
+                                    <span><i class="fas fa-caret-right"></i></span><a href='/intents_edit/{{ intent.intent_name | urlencode }}'><b>{{ intent.intent_name }}</b></a>
                                 {% else %}
-                                    <span></span>
+                                    <span>
+                                        {% if current_intent.id|string in intent.children[1:-1].split(', ') %}
+                                        <i class="fas fa-level-up-alt"></i>
+                                        {% elif intent.id|string in current_intent.children[1:-1].split(', ') %}
+                                        <i class="fas fa-level-down-alt"></i>
+                                        {% endif %}
+                                    </span>
                                     <a class="{% if not intent.deployed %}not-deployed{% endif %}" 
                                         href='/intents_edit/{{ intent.intent_name | urlencode }}'>{{ intent.intent_name }}</a>
                                 {% endif %}

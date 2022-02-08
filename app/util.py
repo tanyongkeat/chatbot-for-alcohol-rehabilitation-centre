@@ -171,9 +171,30 @@ def create_intent(intent_name, reply_message_en, reply_message_my):
     db.session.commit()
     return intent
 
-def get_ordered_intent():
-    intents = Intent.query.with_entities(Intent.id, Intent.intent_name, Intent.system, Intent.deployed, Intent.small_talk).distinct().all()
-    return sorted(intents, key=lambda x: (-int(x[2]), x[1]))
+def get_ordered_intent(current_intent=None):
+    intents = Intent.query.with_entities(Intent.id, Intent.intent_name, Intent.system, Intent.deployed, Intent.small_talk, Intent.children).all()
+    intents = sorted(intents, key=lambda x: (int(x[2]), x[1]))
+    
+    if current_intent:
+        parents = []
+        current_intent_children = []
+        to_remove = []
+        for intent in intents:
+            print(intent.id)
+            if current_intent.id in json.loads(intent.children):
+                # siblings.append()
+                to_remove.append(intent)
+                parents.append(intent)
+            if intent.id == current_intent.id:
+                to_remove.append(intent)
+            if intent.id in json.loads(current_intent.children):
+                print('here')
+                to_remove.append(intent)
+                current_intent_children.append(intent)
+        for tr in to_remove:
+            intents.remove(tr)
+        intents = parents + [current_intent] + current_intent_children + intents
+    return intents
 
 def create_training_data(user_message, intent_id):
     if not user_message:

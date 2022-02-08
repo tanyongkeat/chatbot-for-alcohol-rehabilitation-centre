@@ -414,7 +414,7 @@ def intents(intent_name):
         db.session.commit()
         # refresh_dataset()
     
-    return render_template('intents_edit.html', current_page='intents', intents=get_ordered_intent(), intent=intent, responses=responses, 
+    return render_template('intents_edit.html', current_page='intents', intents=get_ordered_intent(intent), intent=intent, responses=responses, 
                            primary_lang=get_primary_lang(), language=lang, children_ids=json.loads(intent.children), 
                            MAX_USER_INPUT_LEN=MAX_USER_INPUT_LEN, MAX_REPLY_LEN=MAX_REPLY_LEN)
 
@@ -440,8 +440,9 @@ def add_sample():
 @login_required
 def intents_edit_create_child():
     parent_id = request.form['parent_id']
-    target = HistoryFull.query.get_or_404(parent_id)
-    return render_template('intents_add.html', current_page='intents', intents=get_ordered_intent(), primary_lang=get_primary_lang(), 
+    parent = Intent.query.get_or_404(parent_id)
+    # target = HistoryFull.query.get_or_404(parent_id)
+    return render_template('intents_add.html', current_page='intents', intents=get_ordered_intent(parent), intent=parent, primary_lang=get_primary_lang(), 
                             MAX_USER_INPUT_LEN=MAX_USER_INPUT_LEN, MAX_REPLY_LEN=MAX_REPLY_LEN, MAX_INTENT_NAME_LEN=MAX_INTENT_NAME_LEN, 
                             parent_id=parent_id)
 
