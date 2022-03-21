@@ -12,3 +12,6 @@ app/templates/temp.html
 __pycache__
 note.txt
 docker-compose-n.yml
+config.py
+testing_data.csv
+*.env

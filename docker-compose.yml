@@ -30,6 +30,12 @@ services:
         condition: service_healthy
     environment:
       PYTHONUNBUFFERED: 1
+    env_file:
+      - app.env
+      # PSQL_USER: ${PSQL_USER}
+      # PSQL_PW: ${PSQL_PW}
+      # PSQL_PORT: ${PSQL_PORT}
+      # PSQL_DATABASE: ${PSQL_DATABASE}
 
 # volumes:
   # fyp_psql_data:
